@@ -1,7 +1,7 @@
 ---
-name: Bug
+name: "\U0001F4A3 Bug"
 about: Signaler un bug ou un dysfonctionnement
-title: "\U0001F525 BUG - "
+title: "\U0001F4A3 BUG - "
 labels: bug
 assignees: ''
 

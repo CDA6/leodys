@@ -1,7 +1,7 @@
 ---
-name: Fonctionnalité
+name: "⚡ Fonctionnalité"
 about: Structurer les demandes de nouvelles fonctionnalités.
-title: "✨ FEAT - "
+title: "⚡ FEAT - "
 labels: feature
 assignees: ''
 
