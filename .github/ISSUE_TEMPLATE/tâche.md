@@ -1,7 +1,7 @@
 ---
 name: Tâche
 about: Décrire une tâche technique
-title: "[TASK]"
+title: "\U0001F527 TASK - "
 labels: task
 assignees: ''
 
