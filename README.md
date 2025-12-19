@@ -78,5 +78,39 @@ Les troubles de l’apprentissage (dyslexie, dyscalculie, dyspraxie, TDAH, etc.)
 
 ---
 
-## **📦 Structure du Projet**
-à définir
+# 📜 Règles de Contribution et Structure des Branches
+
+Ce projet suit un **workflow Git strict** pour garantir la qualité du code.
+**Toute contribution doit respecter les règles suivantes.**
+
+---
+
+## 🔄 Structure des Branches
+
+```mermaid
+gitGraph
+  commit id: "v0.1"
+  branch develop
+  checkout develop
+  commit id: "Initialisation de develop"
+  branch coleen-16
+  checkout coleen-16
+  commit id: "Ajout de la fonctionnalité de recherche"
+  checkout develop
+  commit id: "Mise à jour de la documentation"
+  branch guillaume-44
+  checkout guillaume-44
+  commit id: "Correction du bug d'affichage"
+  checkout develop
+  merge coleen-16 id: "Merge coleen-16 dans develop"
+  commit id: "Préparation pour la release"
+  checkout main
+  merge develop id: "Release v1.0"
+  commit id: "v1.0"
+  checkout develop
+  commit id: "Nouvelle fonctionnalité en cours"
+  checkout guillaume-44
+  commit id: "Amélioration de l'UI"
+  checkout develop
+  merge guillaume-44 id: "Merge guillaume-44 dans develop"
+```
