@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - arnaud-sonarqube
   pull_request:
     branches:
       - main
