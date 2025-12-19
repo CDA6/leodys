@@ -1,0 +1,61 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+.metadata
+
+# IntelliJ/IDE related
+*.iml
+*.ipr
+*.iws
+.idea/
+# Uncomment if you don't want to version VS Code config
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication/Obfuscation related
+app.*.symbols
+app.*.map.json
+
+# Android related
+/android/.idea/
+/android/app/build/
+/android/.gradle/
+/android/local.properties
+/android/app/src/debug/
+/android/app/src/profile/
+/android/app/release/
+/android/gradle/wrapper/gradle-wrapper.jar
+
+# Windows related
+/windows/build/
+/windows/runner/Debug/
+/windows/runner/Release/
+/windows/runner/runner.exe
+
+# Web related
+/web/build/
+
+# Gradle related
+/android/app/.gradle/
+
+# Temporary/Editor files
+*.swo
