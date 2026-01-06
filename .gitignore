@@ -3,6 +3,7 @@
 *.log
 *.pyc
 *.swp
+*.md
 .DS_Store
 .atom/
 .build/
@@ -52,10 +53,4 @@ app.*.map.json
 /windows/runner/runner.exe
 
 # Web related
-/web/build/
-
-# Gradle related
-/android/app/.gradle/
-
-# Temporary/Editor files
-*.swo
+/web/build/!/pubspec.lock!/pubspec.yaml
