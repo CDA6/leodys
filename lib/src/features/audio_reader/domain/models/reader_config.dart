@@ -6,8 +6,7 @@ la configuration de lecture audio pour un text scanné
 class ReaderConfig {
   final double speechRate; //Vitesse de lecture
   final String languageCode; // Code de langage
-  final String?
-  voiceId; // Identifiant de la voix, permet de sélectionner une voix adapter à chaque personne dys
+  final String? voiceId; // Identifiant de la voix, permet de sélectionner une voix adapter à chaque personne dys
   final bool dysFriendlyMode; // Mode de lecture pour les dys
 
   /*
