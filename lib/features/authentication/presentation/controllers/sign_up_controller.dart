@@ -1,4 +1,4 @@
-import '../../domain/usecases/sign_up.dart';
+import '../../domain/usecases/sign_up_usecase.dart';
 
 class SignUpController {
   final SignUp _signUp = SignUp();
