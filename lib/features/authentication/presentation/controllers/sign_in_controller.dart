@@ -1,4 +1,4 @@
-import 'package:leodys/features/authentication/domain/usecases/signin.dart';
+import 'package:leodys/features/authentication/domain/usecases/signin_usecase.dart';
 
 class SignInController {
   final SignIn _signIn = SignIn();
