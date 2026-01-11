@@ -11,6 +11,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   provider: ^6.1.5+1 #https://pub.dev/packages/provider
   image_picker: ^1.2.1 #https://pub.dev/packages/image_picker
+  google_mlkit_text_recognition: ^0.15.0 #https://pub.dev/packages/google_mlkit_text_recognition
+  path_provider: ^2.1.5 #https://pub.dev/packages/path_provider
+  image: ^4.7.2 #https://pub.dev/packages/image
 
 dev_dependencies:
   flutter_test:
