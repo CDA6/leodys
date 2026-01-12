@@ -8,7 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.8 #https://pub.dev/packages/cupertino_icons
   provider: ^6.1.5+1 #https://pub.dev/packages/provider
   image_picker: ^1.2.1 #https://pub.dev/packages/image_picker
   google_mlkit_text_recognition: ^0.15.0 #https://pub.dev/packages/google_mlkit_text_recognition
@@ -16,6 +16,8 @@ dependencies:
   image: ^4.7.2 #https://pub.dev/packages/image
   http: ^1.6.0 #https://pub.dev/packages/http
   connectivity_plus: ^7.0.0 #https://pub.dev/packages/connectivity_plus
+  get_it: ^9.2.0 #https://pub.dev/packages/get_it
+  dartz: ^0.10.1 #https://pub.dev/packages/dartz
 
 
 dev_dependencies:
