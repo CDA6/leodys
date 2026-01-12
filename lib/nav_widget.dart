@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'features/notification/presentation/pages/notification_page.dart';
+
 /// Page d'accueil
 class HomePage extends StatefulWidget {
   static const route = '/home';
@@ -134,8 +136,11 @@ class _HomePageState extends State<HomePage> {
             title: const Text('Messagerie'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, "/messagerie");
-
+              // Modifier pour pointer vers la nouvelle page
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NotificationPage())
+              );
             },
           ),
           ListTile(
