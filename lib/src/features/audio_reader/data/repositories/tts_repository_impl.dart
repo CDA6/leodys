@@ -7,7 +7,7 @@ import '../../domain/repositories/tts_repository.dart';
 
 class TtsRepositoryImpl implements TtsRepository{
 
-  late final TtsServiceImpl _ttsService;
+  final TtsServiceImpl _ttsService;
 
   TtsRepositoryImpl(this._ttsService);
 

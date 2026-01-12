@@ -1,0 +1,61 @@
+import 'package:flutter/cupertino.dart';
+import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
+import 'package:leodys/src/features/audio_reader/domain/usecases/read_text_usecase.dart';
+import 'package:leodys/src/features/audio_reader/domain/usecases/scan_document_usecase.dart';
+
+///Classe controller de la fonctionnalité lecture audio.
+///Il étend la classe ChangeNotifier
+///afin de notifier l'interface utilisateur qu'il y a un changement d'état,
+///grace à la classe notifyListeners()
+
+class ReaderController extends ChangeNotifier {
+
+  // Déclaration des dépendances
+  final ScanDocumentUsecase scanDocumentUsecase;
+  final ReadTextUseCase readTextUseCase;
+
+  ReaderController({
+    required this.readTextUseCase,
+    required this.scanDocumentUsecase,
+  });
+
+  // état
+  bool isLoading = false; // prevenir d'une action longue est en cours. Evite que l'interface se fige
+  String recognizedText = ''; // Variable qui doit contenir le texte après le scan.
+  String message = '';
+
+  ///Lance le scan OCR d'un document
+  Future<void> scanDocument(String imagePath) async {
+    isLoading = true;
+    message = '';
+    notifyListeners(); // informe l'interface d'un changement d'état
+
+    final text = await scanDocumentUsecase.scanDocument(imagePath);
+
+    recognizedText = text;
+    isLoading = false;
+
+    if (text.trim().isEmpty) {
+      message = 'Aucun texte détecté ';
+    }
+    notifyListeners();
+  }
+
+  ///Lancer la lecture vocal du texte
+  Future<void> readText(ReaderConfig config) async{
+    if (recognizedText.trim().isEmpty){
+      message = 'Aucun texte à lire';
+      notifyListeners();
+      return;
+    }
+
+    await readTextUseCase.execute(recognizedText, config);
+  }
+
+  ///Réinitialise la lecture
+  void reset(){
+    recognizedText='';
+    message='';
+    notifyListeners();
+  }
+}
