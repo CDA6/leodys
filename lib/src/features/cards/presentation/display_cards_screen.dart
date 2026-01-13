@@ -2,75 +2,58 @@ import 'dart:io';
 
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leodys/src/features/cards/data/cards_remote_datasource.dart';
+import 'package:leodys/src/features/cards/data/cards_repository.dart';
+import 'package:leodys/src/features/cards/domain/usecases/create_pdf_usecase.dart';
+import 'package:leodys/src/features/cards/domain/usecases/upload_card_usecase.dart';
+import 'package:leodys/src/features/cards/presentation/rename_card_screen.dart';
+import 'package:leodys/src/features/cards/providers.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf/widgets.dart' as pw;
-class DisplayCardsScreen extends StatefulWidget {
-  const DisplayCardsScreen({super.key});
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class DisplayCardsScreen extends ConsumerStatefulWidget {
+
+  const DisplayCardsScreen({
+    super.key,
+  });
 
   @override
-  State<StatefulWidget> createState() => _DisplayCardsScreenState();
+  ConsumerState<DisplayCardsScreen> createState() => _DisplayCardsScreenState();
 
 }
 
-class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
-  late List<File> savedCards;
+class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
+  List<File> savedCards = [];
   Logger logger = Logger();
-
-  Future<List<File>> getSavedCards() async {
-    final Directory output = await getApplicationDocumentsDirectory();
-    final files = output.listSync(); // liste tout
-    // Filtrer les PDF
-    final pdfFiles = files.whereType<File>().where((f) => f.path.endsWith('.pdf')).toList();
-    return pdfFiles;
-  }
+  late final repository = ref.read(cardsRepositoryProvider);
+  late final createPdfUsecase = ref.read(createPdfUseCaseProvider);
+  final user = Supabase.instance.client.auth.currentUser;
 
   Future<void> loadSavedCards() async {
-    final cards = await getSavedCards();
+    final cards = await repository.getSavedCards();
     setState(() {
       savedCards = cards;
     });
   }
 
-  void startScan(BuildContext context) async {
-    //liste des images scannées par l'appli
-    List<String> pictures;
-    final pdf = pw.Document(); // path du document pour le pdf
-    final Directory output = await getApplicationDocumentsDirectory();
-    var now = DateTime.now(); // utilise pour Créer le nom du fichier
-    String? pathFile;
-    // Chemin du fichier et nom du fichier
-    print('output : ' + output.toString());
-
-    var pathFichier =
-        "${output.path}/pdf-${now.day}-${now.month}${now.year}-${now.hour}-${now.minute}-${now.second}.pdf";
-    pathFile = pathFichier;
-    // Créer le fichier
-    final file = File(pathFichier);
+  Future<File?> startScan(BuildContext context) async {
     try {
-      // Lancer le scan
-      pictures = await CunningDocumentScanner.getPictures() ?? [];
-      // Si l'utilisateur annule le scan
-      if (!mounted) return;
-      setState(() {
-        for (var picture in pictures) {
-          // Créer une image à partir du fichier
-          final image = pw.MemoryImage(
-            File(picture).readAsBytesSync(),
-          );
-          pdf.addPage(pw.Page(build: (pw.Context context) {
-            return pw.Center(
-              child: pw.Image(image),
-            );
-          } // Center
-          ));
-          // Pag
-        }
-      });
-      //ecriture du PDF et sauvegarde dans le dossier de l'application
-      await file.writeAsBytes(await pdf.save());
-    } catch (exception) {
-      logger.e(exception); // Handle exception here
+      List<String> pictures = await CunningDocumentScanner.getPictures() ?? [];
+      if(pictures.isEmpty) return null;
+      final pdfFile = await createPdfUsecase.call(pictures);
+      final renamedFile = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => RenameCardScreen(pdfFile: pdfFile)));
+
+      if (renamedFile != null) {
+        await loadSavedCards();
+      }
+
+      return renamedFile;
+    } catch (e) {
+      logger.e(e);
+      return null;
     }
   }
 
@@ -96,18 +79,13 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
       body: Center(
         child: Column(
           children: [
-            ElevatedButton(onPressed: () async {
-              startScan(context);
-              await loadSavedCards();
-            }
-        , child: Text("Scanner une nouvelle carte")),
           Expanded(
             child: ListView.builder(
               itemCount: savedCards.length,
               itemBuilder: (context, index) {
                 final file = savedCards[index];
                 return ListTile(
-                  title: Text(file.path.split('/').last),
+                  title: Text(file.path.split('/').last.split('.').first),
                   leading: Icon(Icons.picture_as_pdf),
                   onTap: () {
                     // Ouvrir le PDF avec ton lecteur favori ou un package
@@ -115,10 +93,23 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
                 );
               },
             )
-          ),
+          )
           ],
         ),
       ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final renamedFile = await startScan(context); // await ici !
+            if (renamedFile != null) {
+              await loadSavedCards();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Carte enregistrée avec succès.')),
+              );
+            }
+          },
+          tooltip: 'Ajouter une nouvelle carte',
+          child: const Icon(Icons.add),
+        )
     );
   }
 
