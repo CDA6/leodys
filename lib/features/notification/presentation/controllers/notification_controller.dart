@@ -1,11 +1,26 @@
+import '../../domain/entities/message_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
-import '../../domain/entities/referent.dart';
+import '../../domain/entities/referent_entity.dart';
 
 class NotificationController {
   final NotificationRepository repository;
   NotificationController(this.repository);
+  Future<List<MessageEntity>> fetchHistory() => repository.getMessageHistory();
 
   Future<List<Referent>> fetchReferents() => repository.getReferents();
+
+  Future<void> addReferent(String name, String email, String category) {
+    final newRef = Referent(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      email: email,
+      role: "Contact",
+      category: category,
+    );
+    return repository.addReferent(newRef);
+  }
+
+  Future<void> removeReferent(String id) => repository.deleteReferent(id);
 
   Future<void> notify(Referent referent) {
     return repository.sendEmailToReferent(
@@ -13,5 +28,21 @@ class NotificationController {
       subject: "Alerte de suivi Leodys",
       body: "Bonjour ${referent.name},\nJe souhaite vous contacter concernant...",
     );
+  }
+
+  Future<void> sendMessage({required Referent referent, required String subject, required String body}) async {
+    // 1. Envoi réel
+    await repository.sendEmailToReferent(referent: referent, subject: subject, body: body);
+
+    // 2. Sauvegarde dans l'historique
+    final message = MessageEntity(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      referentId: referent.id,
+      referentName: referent.name,
+      subject: subject,
+      body: body,
+      sentAt: DateTime.now(),
+    );
+    await repository.saveMessage(message);
   }
 }
