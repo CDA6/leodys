@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/calculator_state.dart';
+import '../views/calculator_history.dart';
 
 /// ViewModel de la calculatrice - Gère toute la logique métier
 /// Utilise ChangeNotifier pour notifier les vues des changements d'état
@@ -8,7 +10,7 @@ class CalculatorViewModel extends ChangeNotifier {
   CalculatorState _state = CalculatorState.initial;
 
   /// Limite du nombre d'entrées dans l'historique
-  static const int _historyLimit = 4;
+  static const int _historyLimit = 1000;
 
   /// Getter pour l'état
   CalculatorState get state => _state;
@@ -73,6 +75,16 @@ class CalculatorViewModel extends ChangeNotifier {
     ));
   }
 
+  /// Gère l'appui sur le bouton d'historique
+  void onHistoryPressed(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return HistoryDialog(viewModel: this);
+      },
+    );
+  }
+
   /// Calcule et affiche le résultat
   void onEqualsPressed() {
     String fullExpr = _state.expression + _state.current;
@@ -86,9 +98,10 @@ class CalculatorViewModel extends ChangeNotifier {
 
     // Ajouter à l'historique
     List<String> newHistory = List.from(_state.history);
-    newHistory.add('$fullExpr=');
+    // Ajouter le résultat à l'historique
+    newHistory.add('$fullExpr = ${_formatResult(result)}');
     if (newHistory.length > _historyLimit) {
-      newHistory.removeAt(0);
+      newHistory.removeLast(); // .removeAt(0);
     }
 
     // Mettre à jour l'état

@@ -48,6 +48,7 @@ class _CalculatorContent extends StatelessWidget {
               onEqualsPressed: viewModel.onEqualsPressed,
               onClearPressed: viewModel.onClearPressed,
               onBackspacePressed: viewModel.onBackspacePressed,
+              onHistoryPressed: () => viewModel.onHistoryPressed(context),
             ),
           ),
         ],

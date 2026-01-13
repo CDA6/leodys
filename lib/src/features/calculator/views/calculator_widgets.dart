@@ -71,6 +71,17 @@ class OperatorBlock extends StatelessWidget {
     required this.blockWidth,
   }) : super(key: key);
 
+  /// Retourne le nom en français de l'opérateur
+  String _getOperatorName(String op) {
+    const operatorNames = {
+      '+': 'plus',
+      '-': 'moins',
+      '×': 'multiplier',
+      '÷': 'diviser'
+    };
+    return operatorNames[op] ?? 'opérateur';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -104,7 +115,7 @@ class OperatorBlock extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                'opérateur',
+                _getOperatorName(operator),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(color: Colors.white54, fontSize: 12),
@@ -152,7 +163,7 @@ class CalculatorButton extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: Text(
             text,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w500),
           ),
         ),
       ),

@@ -24,27 +24,24 @@ class CalculatorDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Historique
-          if (history.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: history
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.only(top: 2.0),
-                        child: Text(
-                          e,
-                          style: const TextStyle(
-                            color: Colors.white54,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ))
-                  .toList(),
-            ),
+          // Historique todo deplacer vers le bouton historique
+          // if (history.isNotEmpty)
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.end,
+            //   children: history
+            //       .map((e) => Text(
+            //               e,
+            //               style: const TextStyle(
+            //                 color: Colors.white54,
+            //                 fontSize: 18,
+            //               ),
+            //             ),
+            //           )
+            //       .toList(),
+            // ),
 
           // Affichage en colonnes
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          FittedBox( /// Permet de réduire l'affichage automatiquement si trop grand
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: _buildDigitColumns(display),
@@ -58,7 +55,7 @@ class CalculatorDisplay extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text(
               CalculatorHelpers.numberToWordsFromDisplay(display),
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
+              style: const TextStyle(color: Colors.white70, fontSize: 20),
               textAlign: TextAlign.right,
             ),
           ),
@@ -72,7 +69,15 @@ class CalculatorDisplay extends StatelessWidget {
               alignment: WrapAlignment.end,
               spacing: 4,
               runSpacing: 4,
-              children: _buildQuantityDots(display),
+              children: _buildQuantityDots(display)
+                  .map((dot) => FittedBox(
+                          fit: BoxFit.contain, // .scaleDown,
+                          child: Text(
+                          dot,
+                          style: const TextStyle(color: Colors.white70, fontSize: 20),
+                          ),
+                      ))
+                  .toList(),
             ),
           ),
         ],
@@ -89,7 +94,7 @@ class CalculatorDisplay extends StatelessWidget {
           decoration: BoxDecoration(border: Border.all(color: Colors.white24)),
           child: const Text(
             'Erreur',
-            style: TextStyle(color: Colors.red, fontSize: 28),
+            style: TextStyle(color: Colors.red, fontSize: 24),
           ),
         )
       ];
@@ -116,9 +121,11 @@ class CalculatorDisplay extends StatelessWidget {
       }
     }
 
+    // Parcours les tokens pour construire els objets a afficher
     final List<Widget> cols = [];
     for (int ti = 0; ti < tokens.length; ti++) {
       final tok = tokens[ti];
+      // Si on a un opérateur
       if (tok.length == 1 && ['+', '-', '×', '÷'].contains(tok)) {
         cols.add(const SizedBox(width: 12));
         cols.add(OperatorBlock(
@@ -157,7 +164,7 @@ class CalculatorDisplay extends StatelessWidget {
         label: CalculatorHelpers.placeName(posFromRight),
         blockWidth: CalculatorHelpers.blockWidth,
       ));
-      if (posFromRight % 3 == 0 && posFromRight != 0) {
+      if (posFromRight % 3 == 0 && posFromRight != 0) { ///calcul de la position de la colonne pour savoir si ecart tout les 3 colonnes
         cols.add(const SizedBox(width: 12));
       }
     }
@@ -194,8 +201,12 @@ class CalculatorDisplay extends StatelessWidget {
   }
 
   /// Construit les points représentant la quantité
-  List<Widget> _buildQuantityDots(String display) {
-    if (display == 'Erreur') return [const Text('')];
+  ///  🧊 vaut 1000
+  /// 🔲 vaut 100
+  /// ❚ vaut 10
+  /// ● vaut 1
+  List<String> _buildQuantityDots(String display) {
+    if (display == 'Erreur') return [];
 
     double? val = double.tryParse(display.replaceAll(',', '.'));
     int qty = 0;
@@ -203,17 +214,37 @@ class CalculatorDisplay extends StatelessWidget {
       qty = val.abs().floor();
     }
 
-    int shown = qty.clamp(0, 20);
-    List<Widget> dots = [];
-    for (int i = 0; i < shown; i++) {
-      dots.add(const Icon(Icons.circle, size: 8, color: Colors.white));
+    int thousands = qty ~/ 1000; /// on récupère le nombre de milliers
+    int hundreds = (qty % 1000) ~/ 100; /// on récupère le nombre de centaines
+    int tens = (qty % 100) ~/ 10; /// on récupère le nombre de dizaines
+    int units = qty % 10; /// on récupère le nombre d'unités
+
+    List<String> dots = [];
+
+    if (qty >= 1000000) { /// limite pour l'affichage (pour éviter bug)
+      dots.add('⚠️ : Nombre trop grand'); // Avertissement si la quantité est trop grande
+    } else {
+      if (thousands > 10) {
+        dots.add('$thousands🧊');
+      } else {
+        for (int i = 0; i < thousands; i++) {
+          dots.add('🧊');
+        }
+      }
+      dots.add(' ');
+      for (int i = 0; i < hundreds; i++) {
+        dots.add('🔲');
+      }
+      dots.add(' ');
+      for (int i = 0; i < tens; i++) {
+        dots.add('❚');
+      }
+      dots.add(' ');
+      for (int i = 0; i < units; i++) {
+        dots.add('●');
+      }
     }
-    if (qty > 20) {
-      dots.add(Text(
-        ' +${qty - 20}',
-        style: const TextStyle(color: Colors.white70),
-      ));
-    }
+
     return dots;
   }
 }
