@@ -20,4 +20,17 @@ en utilisant la configuration donnée.
     return ttsRepository.speak(text, config);
   }
 
+  Future<void> pause() {
+    return ttsRepository.pause();
+  }
+
+  Future<void> resume(String text, ReaderConfig config){
+
+    return ttsRepository.resume(text, config);
+  }
+
+  Future<void> stop(){
+    return ttsRepository.stop();
+  }
+
 }

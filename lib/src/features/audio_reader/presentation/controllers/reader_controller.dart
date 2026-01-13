@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
+import 'package:leodys/src/features/audio_reader/domain/usecases/document_usecase.dart';
 import 'package:leodys/src/features/audio_reader/domain/usecases/read_text_usecase.dart';
 import 'package:leodys/src/features/audio_reader/domain/usecases/scan_document_usecase.dart';
+import '../../domain/models/document.dart';
 
 ///Classe controller de la fonctionnalité lecture audio.
 ///Il étend la classe ChangeNotifier
@@ -13,10 +15,12 @@ class ReaderController extends ChangeNotifier {
   // Déclaration des dépendances
   final ScanDocumentUsecase scanDocumentUsecase;
   final ReadTextUseCase readTextUseCase;
+  final DocumentUsecase documentUsecase;
 
   ReaderController({
     required this.readTextUseCase,
     required this.scanDocumentUsecase,
+    required this.documentUsecase,
   });
 
   // état
@@ -39,6 +43,28 @@ class ReaderController extends ChangeNotifier {
       message = 'Aucun texte détecté ';
     }
     notifyListeners();
+
+    if (text.trim().isNotEmpty) {
+      final document = Document(
+        idText: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _generateTitle(text),
+        content: text,
+        createAt: DateTime.now(),
+      );
+
+      await documentUsecase.saveDocument(document);
+    }
+
+    notifyListeners();
+  }
+
+  ///Création titre pour le doucment de texte
+  String _generateTitle(String text){
+    final line = text.split('\n').first.trim();
+    if (line.length > 20){
+      return line.substring(0,20);
+    }
+    return line;
   }
 
   ///Lancer la lecture vocal du texte
@@ -48,8 +74,27 @@ class ReaderController extends ChangeNotifier {
       notifyListeners();
       return;
     }
-
     await readTextUseCase.execute(recognizedText, config);
+  }
+
+  /// Charge un document existant pour lecture
+  void loadDocument(Document document){
+    recognizedText = document.content;
+    message ='';
+    notifyListeners();
+  }
+
+
+  Future<void>pause() async{
+    await readTextUseCase.pause();
+  }
+
+  Future<void>resume(ReaderConfig config) async {
+    await readTextUseCase.resume(recognizedText, config);
+  }
+
+  Future<void>stop()async {
+    await readTextUseCase.stop();
   }
 
   ///Réinitialise la lecture
