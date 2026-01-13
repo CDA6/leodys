@@ -13,7 +13,12 @@ class TtsRepositoryImpl implements TtsRepository{
 
   @override
   Future<void> speak(String text, ReaderConfig config) async{
-    await _ttsService.speak(text, speed: config.speechRate);
+    await _ttsService.speak(
+        text: text,
+        speechRate: config.speechRate,
+        pitch: config.pitch,
+      languageCode: config.languageCode,
+    );
   }
 
   @override
@@ -23,7 +28,12 @@ class TtsRepositoryImpl implements TtsRepository{
 
   @override
   Future<void> resume(String text, ReaderConfig config) async{
-    await _ttsService.speak(text, speed: config.speechRate);
+    await _ttsService.speak(
+      text: text,
+      speechRate: config.speechRate,
+      pitch: config.pitch,
+      languageCode: config.languageCode,
+    );
   }
 
   @override
