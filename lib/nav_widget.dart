@@ -1,5 +1,7 @@
 import 'package:Leodys/utils/internet_util.dart';
+import 'package:Leodys/utils/platform_util.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Page d'accueil
@@ -147,6 +149,23 @@ class _HomePageState extends State<HomePage> {
 
             },
           ),
+
+          if (PlatformUtil.isAndroid)
+            ListTile(
+              leading: const Icon(Icons.map),
+              title: StreamBuilder<InternetConnectionStatus>(
+                initialData: InternetUtil.lastKnownStatus,
+                stream: InternetUtil.onStatusChange,
+                builder: (context, snapshot){
+                  final isOnline = snapshot.data == InternetConnectionStatus.connected;
+                  return Text(isOnline ? 'Carte (En ligne)' : 'Carte (Mode hors-ligne)');
+                },
+              ),
+              onTap: () async{
+                Navigator.pop(context);
+                Navigator.pushNamed(context, "");
+              },
+            ),
         ],
       ),
     );
@@ -156,7 +175,7 @@ class _HomePageState extends State<HomePage> {
   void _launchURL(String url, bool needsInternet) async {
     // Vérifier la connexion Internet si nécessaire
     if (needsInternet) {
-      bool hasInternet = await InternetUtil.hasInternetAccess();
+      bool hasInternet = InternetUtil.isConnected;
       if (!hasInternet) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
