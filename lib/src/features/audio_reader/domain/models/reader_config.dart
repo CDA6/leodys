@@ -5,6 +5,7 @@ la configuration de lecture audio pour un text scanné
 
 class ReaderConfig {
   final double speechRate; //Vitesse de lecture
+  final double pitch;
   final String languageCode; // Code de langage
   final String? voiceId; // Identifiant de la voix, permet de sélectionner une voix adapter à chaque personne dys
   final bool dysFriendlyMode; // Mode de lecture pour les dys
@@ -19,6 +20,7 @@ class ReaderConfig {
   const ReaderConfig({
     // parametre obligatoire
     required this.speechRate,
+    required this.pitch,
     required this.languageCode,
     // parametre facultatif
     this.voiceId,
@@ -32,7 +34,8 @@ class ReaderConfig {
    */
   static const ReaderConfig defaultConfig = ReaderConfig(
     // les parametres nommés
-    speechRate: 0.8,
+    speechRate: 0.5,
+    pitch: 1.1,
     languageCode: "fr-FR",
     dysFriendlyMode: true,
   );
@@ -45,12 +48,14 @@ class ReaderConfig {
    */
   ReaderConfig copyWith({
     double? speechRate,
+    double? pitch,
     String? languageCode,
     String? voiceId,
     bool? dysFriendlyMode,
   }) {
     return ReaderConfig(
       speechRate: speechRate ?? this.speechRate,
+      pitch: pitch ?? this.pitch,
       languageCode: languageCode ?? this.languageCode,
       voiceId: voiceId ?? this.voiceId,
       dysFriendlyMode: dysFriendlyMode ?? this.dysFriendlyMode,
