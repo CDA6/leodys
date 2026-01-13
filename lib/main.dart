@@ -1,3 +1,4 @@
+import 'package:Leodys/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -6,6 +7,9 @@ import 'nav_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  //Init our internet listener and current status
+  await InternetUtil.init();
 
   // Initialisation de Supabase avec l'URL du projet et la clé anonyme
   await Supabase.initialize(
