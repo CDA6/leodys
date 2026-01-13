@@ -1,5 +1,5 @@
+import 'package:Leodys/utils/internet_util.dart';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Page d'accueil
@@ -58,12 +58,6 @@ class _HomePageState extends State<HomePage> {
       "checkInternet": false,
     },
   ];
-
-  /// Méthode pour vérifier la connexion Internet
-  Future<bool> checkInternet() async {
-    return await InternetConnectionChecker.instance.hasConnection;
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +156,7 @@ class _HomePageState extends State<HomePage> {
   void _launchURL(String url, bool needsInternet) async {
     // Vérifier la connexion Internet si nécessaire
     if (needsInternet) {
-      bool hasInternet = await checkInternet();
+      bool hasInternet = await InternetUtil.hasInternetAccess();
       if (!hasInternet) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -187,6 +181,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  /// Méthodepour créer le titre
+  /// Méthode pour créer le titre
   Widget buildTitleText(text) => Center(child: Text(text));
 }
