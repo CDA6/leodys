@@ -1,26 +1,35 @@
-import 'package:get_it/get_it.dart';
-import 'package:leodys/features/ocr-reader/presentation/viewmodels/reader_viewmodel.dart';
+import 'dart:io';
 
+import 'package:get_it/get_it.dart';
+import 'package:leodys/core/utils/usecase.dart';
+import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/base_ocr_viewmodel.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'data/datasources/mlkit_ocr_datasource.dart';
 import 'data/datasources/ocrspace_ocr_datasource.dart';
 import 'data/repositories/ocr_repository_impl.dart';
 import 'domain/repositories/ocr_repository.dart';
-import 'domain/usecases/recognize_text_usecase.dart';
+import 'domain/usecases/recognize_handwritten_text_usecase.dart';
+import 'domain/usecases/recognize_printed_text_usecase.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // ViewModel
-  sl.registerFactory(
-        () => ReaderViewModel(
-      recognizeTextUseCase: sl(),
-    ),
+  /// ViewModels
+  sl.registerFactory<PrintedTextViewModel>(
+        () => PrintedTextViewModel(recognizeTextUseCase: sl<RecognizePrintedTextUseCase>()),
   );
 
-  // UseCases
-  sl.registerLazySingleton(() => RecognizeTextUseCase(sl()));
+  sl.registerFactory<HandwrittenTextViewModel>(
+        () => HandwrittenTextViewModel(recognizeTextUseCase: sl<RecognizeHandwrittenTextUseCase>()),
+  );
 
-  // Repository
+  /// UseCases
+  sl.registerLazySingleton(() => RecognizePrintedTextUseCase(sl()));
+  sl.registerLazySingleton(() => RecognizeHandwrittenTextUseCase(sl()));
+
+  /// Repository
   sl.registerLazySingleton<OcrRepository>(
         () => OcrRepositoryImpl(
       mlKitDataSource: sl(),
@@ -28,7 +37,7 @@ Future<void> init() async {
     ),
   );
 
-  // DataSources
+  /// DataSources
   sl.registerLazySingleton<MLKitDataSource>(
         () => MLKitDataSourceImpl(),
   );

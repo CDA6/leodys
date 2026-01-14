@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
-import 'features/ocr-reader/presentation/screens/reader_screen.dart';
-import 'features/ocr-reader/presentation/viewmodels/reader_viewmodel.dart';
+import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'features/ocr-reader/presentation/screens/ocr_type_selection.dart';
+import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +21,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => ocr_reader.sl<ReaderViewModel>(),
+          create: (_) => ocr_reader.sl<PrintedTextViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ocr_reader.sl<HandwrittenTextViewModel>(),
         ),
       ],
       child: MaterialApp(
@@ -27,9 +33,11 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        home: const ReaderScreen(),
+        home: const OcrTypeSelectionScreen(),
         routes: {
-          ReaderScreen.route: (context) => const ReaderScreen(),
+          OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
+          PrintedTextReaderScreen.route: (_) => const PrintedTextReaderScreen(),
+          HandwrittenTextReaderScreen.route: (_) => const HandwrittenTextReaderScreen(),
         },
       ),
     );
