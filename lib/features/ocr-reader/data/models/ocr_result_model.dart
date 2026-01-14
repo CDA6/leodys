@@ -1,9 +1,12 @@
 import '../../domain/entities/ocr_result.dart';
 
-class OcrResultModel extends OcrResult {
+class OcrResultModel {
+  final String text;
+  final bool isEmpty;
+
   const OcrResultModel({
-    required super.text,
-    required super.isEmpty,
+    required this.text,
+    required this.isEmpty,
   });
 
   factory OcrResultModel.fromText(String text) {

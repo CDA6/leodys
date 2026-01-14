@@ -63,9 +63,7 @@ class OCRSpaceDataSourceImpl implements OCRSpaceDataSource {
   }
 }
 
-
 class _ImageProcessor {
-
   /// Compresse l'image pour respecter la limite de 1 MB
   static Future<File> compress(File imageFile) async {
     final bytes = await imageFile.readAsBytes();

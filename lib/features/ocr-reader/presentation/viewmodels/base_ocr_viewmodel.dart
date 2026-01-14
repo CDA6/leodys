@@ -1,33 +1,37 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:leodys/core/utils/usecase.dart';
 import '../../domain/entities/ocr_result.dart';
-import '../../domain/usecases/recognize_text_usecase.dart';
-import '../../../../core/enums/text_type.dart';
 
-class ReaderViewModel extends ChangeNotifier {
-  final RecognizeTextUseCase recognizeTextUseCase;
-
-  ReaderViewModel({required this.recognizeTextUseCase});
+abstract class BaseOcrViewModel extends ChangeNotifier {
+  final UseCase<OcrResult, File> recognizeTextUseCase;
 
   File? _selectedImage;
   OcrResult? _ocrResult;
   bool _isProcessing = false;
-  TextType _selectedTextType = TextType.printed;
   String? _errorMessage;
 
+  BaseOcrViewModel({required this.recognizeTextUseCase});
+
+  // Getters
   File? get selectedImage => _selectedImage;
   OcrResult? get ocrResult => _ocrResult;
   bool get isProcessing => _isProcessing;
-  TextType get selectedTextType => _selectedTextType;
   String? get errorMessage => _errorMessage;
+  bool get canAnalyze => _selectedImage != null && !_isProcessing;
 
-  void setTextType(TextType type) {
-    _selectedTextType = type;
+  // Methods
+  Future<void> pickImageFromCamera() async => _pickImage(ImageSource.camera);
+  Future<void> pickImageFromGallery() async => _pickImage(ImageSource.gallery);
+  void clearImage() {
+    _selectedImage = null;
+    _ocrResult = null;
+    _errorMessage = null;
     notifyListeners();
   }
 
-  Future<void> pickImage(ImageSource source) async {
+  Future<void> _pickImage(ImageSource source) async {
     try {
       final pickedFile = await ImagePicker().pickImage(
         source: source,
@@ -41,8 +45,6 @@ class ReaderViewModel extends ChangeNotifier {
         _ocrResult = null;
         _errorMessage = null;
         notifyListeners();
-
-        await processImage();
       }
     } catch (e) {
       _errorMessage = 'Erreur lors de la sélection de l\'image: $e';
@@ -50,17 +52,14 @@ class ReaderViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> processImage() async {
+  Future<void> analyzeImage() async {
     if (_selectedImage == null) return;
 
     _isProcessing = true;
     _errorMessage = null;
     notifyListeners();
 
-    final result = await recognizeTextUseCase(
-      image: _selectedImage!,
-      textType: _selectedTextType,
-    );
+    final result = await recognizeTextUseCase(_selectedImage!);
 
     result.fold(
           (failure) {
@@ -71,18 +70,10 @@ class ReaderViewModel extends ChangeNotifier {
           (ocrResult) {
         _ocrResult = ocrResult;
         _errorMessage = null;
-        print('✅ Texte extrait (${ocrResult.text.length} caractères): ${ocrResult.text}');
       },
     );
 
     _isProcessing = false;
-    notifyListeners();
-  }
-
-  void clearImage() {
-    _selectedImage = null;
-    _ocrResult = null;
-    _errorMessage = null;
     notifyListeners();
   }
 }

@@ -25,13 +25,6 @@ class MLKitDataSourceImpl implements MLKitDataSource {
 
       print('=== ML Kit - Résultats ===');
       print('Blocs détectés : ${recognizedText.blocks.length}');
-      print('Texte : ${recognizedText.text}');
-
-      if (recognizedText.text.isEmpty) {
-        return OcrResultModel.fromText(
-          'Aucun texte détecté. Assurez-vous que l\'image est nette et bien éclairée.',
-        );
-      }
 
       return OcrResultModel.fromText(recognizedText.text);
     } catch (e) {
@@ -45,7 +38,6 @@ class MLKitDataSourceImpl implements MLKitDataSource {
 }
 
 class _ImageProcessor {
-
   /// Prétraite l'image pour faciliter l'analyse de ML Kit
   static Future<File> preprocess(File imageFile) async {
     final bytes = await imageFile.readAsBytes();
