@@ -1,8 +1,9 @@
 import 'package:leodys/features/authentication/domain/entities/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AuthRepository {
 
-  Future<User> signIn(String email, String password);
-  Future<User> signUp(String email, String password);
+  Future<AuthResponse> signIn(String email, String password);
+  Future<AuthResponse> signUp(String email, String password);
   Future<void> logOut();
 }
