@@ -1,3 +1,4 @@
+import 'package:Leodys/features/map/presentation/screen/map_screen.dart';
 import 'package:Leodys/utils/internet_util.dart';
 import 'package:Leodys/utils/platform_util.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +164,7 @@ class _HomePageState extends State<HomePage> {
               ),
               onTap: () async{
                 Navigator.pop(context);
-                Navigator.pushNamed(context, "");
+                Navigator.pushNamed(context, MapScreen.route);
               },
             ),
         ],

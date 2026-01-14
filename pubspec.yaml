@@ -51,6 +51,7 @@ dependencies:
   hive_flutter: ^1.1.0
   mobile_scanner: ^7.1.4
   syncfusion_flutter_datagrid: ^32.1.22
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:
