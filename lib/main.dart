@@ -1,9 +1,13 @@
+import 'package:Leodys/features/map/data/dataSources/geolocator_datasource.dart';
+import 'package:Leodys/features/map/data/repositories/location_repository_impl.dart';
+import 'package:Leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:Leodys/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'features/map/domain/useCases/watch_user_location_usecase.dart';
+import 'features/map/presentation/screen/map_screen.dart';
 import 'nav_widget.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +35,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         HomePage.route: (context) => const HomePage(),
+        MapScreen.route: (context) {
+          final dataSource = GeolocatorDatasource();
+          final repository = LocationRepositoryImpl(dataSource);
+          final useCase = WatchUserLocationUseCase(repository);
+          final viewModel = MapViewModel(useCase);
 
+          return MapScreen(viewModel: viewModel);
+        },
       },
       //initialRoute: LoginPage.route,
     );
