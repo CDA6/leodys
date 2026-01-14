@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leodys/src/features/cards/data/cards_remote_datasource.dart';
-import 'package:leodys/src/features/cards/data/cards_repository.dart';
-import 'package:leodys/src/features/cards/domain/usecases/create_pdf_usecase.dart';
-import 'package:leodys/src/features/cards/domain/usecases/upload_card_usecase.dart';
-import 'package:leodys/src/features/cards/presentation/rename_card_screen.dart';
-import 'package:leodys/src/features/cards/providers.dart';
+import 'package:leodys/features/cards/presentation/card_details_screen.dart';
+import 'package:leodys/features/cards/presentation/rename_card_screen.dart';
+import 'package:leodys/features/cards/providers.dart';
 import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../domain/card_model.dart';
+
 class DisplayCardsScreen extends ConsumerStatefulWidget {
+  static const String route = '/cards';
 
   const DisplayCardsScreen({
     super.key,
@@ -24,16 +24,21 @@ class DisplayCardsScreen extends ConsumerStatefulWidget {
 }
 
 class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
-  List<File> savedCards = [];
+  List<CardModel> savedCards = [];
   Logger logger = Logger();
   late final repository = ref.read(cardsRepositoryProvider);
   late final createPdfUsecase = ref.read(createPdfUseCaseProvider);
   final user = Supabase.instance.client.auth.currentUser;
 
   Future<void> loadSavedCards() async {
-    final cards = await repository.getSavedCards();
+    final cards = await repository.getLocalUserCards();
     setState(() {
       savedCards = cards;
+      print(savedCards.toString());
+      for(final card in savedCards) {
+        print("nom : ${card.name}");
+        print("folder : ${card.folderPath}");
+      }
     });
   }
 
@@ -41,16 +46,17 @@ class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
     try {
       List<String> pictures = await CunningDocumentScanner.getPictures() ?? [];
       if(pictures.isEmpty) return null;
-      final pdfFile = await createPdfUsecase.call(pictures);
+      
+      // conversion des chemins en Files
+      List<File> imageFiles = pictures.map((path) => File(path)).toList();
+      // final pdfFile = await createPdfUsecase.call(pictures);
       final renamedFile = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => RenameCardScreen(pdfFile: pdfFile)));
+          MaterialPageRoute(builder: (context) => RenameCardScreen(imageFiles: imageFiles,)));
 
       if (renamedFile != null) {
         await loadSavedCards();
       }
-
-      return renamedFile;
     } catch (e) {
       logger.e(e);
       return null;
@@ -83,12 +89,15 @@ class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
             child: ListView.builder(
               itemCount: savedCards.length,
               itemBuilder: (context, index) {
-                final file = savedCards[index];
+                final card = savedCards[index];
+
                 return ListTile(
-                  title: Text(file.path.split('/').last.split('.').first),
-                  leading: Icon(Icons.picture_as_pdf),
-                  onTap: () {
-                    // Ouvrir le PDF avec ton lecteur favori ou un package
+                  title: Text(card.name),
+                  leading: Icon(Icons.card_membership),
+                  onTap: () async {
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CardDetailsScreen(card: card,)));
                   },
                 );
               },

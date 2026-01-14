@@ -1,6 +1,7 @@
-import 'package:Leodys/features/map/presentation/screen/map_screen.dart';
-import 'package:Leodys/utils/internet_util.dart';
-import 'package:Leodys/utils/platform_util.dart';
+import 'package:leodys/features/map/presentation/screen/map_screen.dart';
+import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
+import 'package:leodys/utils/internet_util.dart';
+import 'package:leodys/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -167,6 +168,14 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pushNamed(context, MapScreen.route);
               },
             ),
+          ListTile(
+            leading: const Icon(Icons.card_membership),
+            title: const Text("Cartes de fidélité"),
+            onTap: () async {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, DisplayCardsScreen.route);
+            },
+          )
         ],
       ),
     );

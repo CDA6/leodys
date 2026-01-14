@@ -1,20 +1,21 @@
 import 'dart:io';
-import 'package:leodys/src/features/cards/data/cards_remote_datasource.dart';
+import 'package:leodys/features/cards/data/datasources/cards_local_datasource.dart';
+import 'package:leodys/features/cards/data/datasources/cards_remote_datasource.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../domain/card_model.dart';
+
 class CardsRepository {
   final CardsRemoteDatasource remote;
-  CardsRepository(this.remote);
+  final CardsLocalDatasource local;
+  CardsRepository(this.remote, this.local);
 
-  Future<List<File>> getSavedCards() async {
-    final Directory output = await getApplicationDocumentsDirectory();
-    final files = output.listSync();
-    final pdfFiles = files.whereType<File>().where((f) => f.path.endsWith('.pdf')).toList();
-    return pdfFiles;
+  Future<List<CardModel>> getLocalUserCards() async {
+    return await local.getLocalUserCards();
   }
 
-  Future<File> createPdfFromImages(List<String> imagesPaths) async {
+  Future<File> createPdfFromImages(List<String> imagesPaths, String name) async {
     final pdf = pw.Document();
     for (var path in imagesPaths) {
       final image = pw.MemoryImage(File(path).readAsBytesSync());
@@ -24,7 +25,7 @@ class CardsRepository {
     final Directory output = await getApplicationDocumentsDirectory();
     final now = DateTime.now();
     final pathFile =
-        "${output.path}/pdf-${now.day}-${now.month}-${now.year}-${now.hour}-${now.minute}-${now.second}.pdf";
+        "${output.path}/$name.pdf";
     final file = File(pathFile);
     await file.writeAsBytes(await pdf.save());
     return file;
@@ -34,7 +35,15 @@ class CardsRepository {
     await remote.uploadPdf(file: file, userId: userId, fileName: name);
   }
 
-  Future<List<String>> getCards(String userId) async {
+  Future<void> deleteCard(CardModel card) async {
+    await local.deleteCard(card);
+  }
+
+  Future<List<CardModel>> getRemoteUserCards(String userId) async {
     return await remote.listUserCards(userId);
+  }
+
+  Future<CardModel> saveNewCard(List<File> images, String cardName) async {
+    return await local.saveScannedImages(images: images, cardName: cardName);
   }
 }
