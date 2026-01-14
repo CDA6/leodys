@@ -2,6 +2,7 @@ import 'package:leodys/features/authentication/data/datasources/auth_supabase_da
 import 'package:leodys/features/authentication/data/models/user_model.dart';
 import 'package:leodys/features/authentication/domain/entities/user.dart';
 import 'package:leodys/features/authentication/domain/repositories/auth_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
   final AuthSupabaseDatasource _supabaseDatasource = AuthSupabaseDatasource();
@@ -12,26 +13,14 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<User> signIn(String email, String password) async {
-    final response = await _supabaseDatasource.signIn(email, password);
-    final supabaseUser = response.user;
+  Future<AuthResponse> signIn(String email, String password) async {
+    return await _supabaseDatasource.signIn(email, password);
 
-    if (supabaseUser == null) {
-      throw Exception("Utilisateur non trouvé");
-    }
-
-    return UserModel.fromSupabase(supabaseUser);
   }
 
   @override
-  Future<User> signUp(String email, String password) async {
-    final response = await _supabaseDatasource.signUp(email, password);
-    final supabaseUser = response.user;
+  Future<AuthResponse> signUp(String email, String password) async {
+    return await _supabaseDatasource.signUp(email, password);
 
-    if (supabaseUser == null) {
-      throw Exception("Utilisateur non trouvé");
-    }
-
-    return UserModel.fromSupabase(supabaseUser);
   }
 }
