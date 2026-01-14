@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../common_widgets/voice_text_field.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/voice_controller.dart';
 import '../../domain/entities/referent_entity.dart';
 
 class EmailComposePage extends StatefulWidget {
-  final Referent referent;
+  final ReferentEntity referent;
   final NotificationController controller;
 
   const EmailComposePage({required this.referent, required this.controller, super.key});
@@ -37,18 +38,10 @@ class _EmailComposePageState extends State<EmailComposePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            VoiceTextField(
               controller: _bodyController,
-              maxLines: 10,
-              decoration: InputDecoration(
-                hintText: "Écrivez votre message ou utilisez le micro...",
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(_voiceController.isListening ? Icons.mic : Icons.mic_none),
-                  color: _voiceController.isListening ? Colors.red : Colors.blue,
-                  onPressed: _speechEnabled ? _toggleListening : null,
-                ),
-              ),
+              label: "Votre message",
+              maxLines: 8,
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
