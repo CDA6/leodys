@@ -7,10 +7,10 @@ class NotificationController {
   NotificationController(this.repository);
   Future<List<MessageEntity>> fetchHistory() => repository.getMessageHistory();
 
-  Future<List<Referent>> fetchReferents() => repository.getReferents();
+  Future<List<ReferentEntity>> fetchReferents() => repository.getReferents();
 
   Future<void> addReferent(String name, String email, String category) {
-    final newRef = Referent(
+    final newRef = ReferentEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       email: email,
@@ -22,7 +22,7 @@ class NotificationController {
 
   Future<void> removeReferent(String id) => repository.deleteReferent(id);
 
-  Future<void> notify(Referent referent) {
+  Future<void> notify(ReferentEntity referent) {
     return repository.sendEmailToReferent(
       referent: referent,
       subject: "Alerte de suivi Leodys",
@@ -30,7 +30,7 @@ class NotificationController {
     );
   }
 
-  Future<void> sendMessage({required Referent referent, required String subject, required String body}) async {
+  Future<void> sendMessage({required ReferentEntity referent, required String subject, required String body}) async {
     // 1. Envoi réel
     await repository.sendEmailToReferent(referent: referent, subject: subject, body: body);
 
