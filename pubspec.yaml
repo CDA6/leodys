@@ -48,6 +48,25 @@ dependencies:
   supabase_flutter: ^2.12.0
   provider: ^6.1.5+1
   flutter_riverpod: ^3.1.0
+  cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.2
+  internet_connection_checker: ^3.0.1
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+  logger: ^2.6.2
+  image_picker: ^1.2.1
+  cunning_document_scanner: ^1.4.0
+  pdf: ^3.11.3
+  flutter_pdfview: ^1.4.3
+  path_provider: ^2.1.5
+  share_plus: ^12.0.1
+  supabase_flutter: ^2.12.0
+  shared_preferences: ^2.5.4
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  mobile_scanner: ^7.1.4
+  syncfusion_flutter_datagrid: ^32.1.22
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:
