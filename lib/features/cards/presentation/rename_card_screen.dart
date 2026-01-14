@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leodys/src/features/cards/providers.dart';
+import 'package:leodys/features/cards/providers.dart';
 
 class RenameCardScreen extends ConsumerStatefulWidget{
-  final File pdfFile;
-  // final Future<void> Function(File file, String name) onSave;
+  final List<File> imageFiles;
+  late final File? pdfFile;
 
-  const RenameCardScreen({
+  RenameCardScreen({
     super.key,
-    required this.pdfFile,
+    required this.imageFiles,
   });
 
   @override
@@ -21,9 +21,16 @@ class _RenameCardState extends ConsumerState<RenameCardScreen> {
   final TextEditingController _controller = TextEditingController();
   String? error;
   late final uploadCardUsecase = ref.read(uploadCardUseCaseProvider);
+  late final createPdfUsecase = ref.read(createPdfUseCaseProvider);
+  late final saveNewCardUsecase = ref.read(saveNewCardUseCaseProvider);
 
-  Future<void> onSave(File pdfFile, String name) async {
-    uploadCardUsecase.call(pdfFile, "c8395dd8-0c84-4af7-8e62-305407658d5f", name);
+
+  Future<void> onSave(List<File> imageFiles, String name) async {
+    // widget.pdfFile = await createPdfUsecase.call(widget.pictures, name);
+    // if(widget.pdfFile != null) {
+    //   uploadCardUsecase.call(widget.pdfFile!, "c8395dd8-0c84-4af7-8e62-305407658d5f", name);
+    // }
+    saveNewCardUsecase.call(imageFiles, name);
   }
 
   void _save() async {
@@ -37,9 +44,9 @@ class _RenameCardState extends ConsumerState<RenameCardScreen> {
 
     setState(() => error = null);
 
-    await onSave(widget.pdfFile, newName);
+    await onSave(widget.imageFiles, newName);
 
-    Navigator.pop(context, widget.pdfFile);
+    Navigator.pop(context);
   }
   @override
   Widget build(BuildContext context) {

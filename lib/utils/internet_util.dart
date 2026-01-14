@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:Leodys/utils/app_logger.dart';
+import 'package:leodys/utils/app_logger.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class InternetUtil

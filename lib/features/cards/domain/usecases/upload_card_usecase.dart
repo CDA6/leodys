@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:leodys/src/features/cards/data/cards_repository.dart';
+import 'package:leodys/features/cards/data/cards_repository.dart';
 
 class UploadCardUsecase {
   final CardsRepository repository;
