@@ -52,6 +52,8 @@ dependencies:
   mobile_scanner: ^7.1.4
   syncfusion_flutter_datagrid: ^32.1.22
   geolocator: ^14.0.2
+  local_auth: ^2.3.0
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
