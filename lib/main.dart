@@ -3,36 +3,41 @@ import 'package:Leodys/features/map/data/repositories/location_repository_impl.d
 import 'package:Leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:Leodys/utils/internet_util.dart';
 import 'package:flutter/material.dart';
+import 'package:leodys/constants/auth_constants.dart';
+import 'package:leodys/features/authentication/presentation/pages/auth/home_page.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'features/map/domain/useCases/watch_user_location_usecase.dart';
-import 'features/map/presentation/screen/map_screen.dart';
-import 'nav_widget.dart';
+import 'features/authentication/domain/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  
   //Init our internet listener and current status
   await InternetUtil.init();
 
-  // Initialisation de Supabase avec l'URL du projet et la clé anonyme
+
   await Supabase.initialize(
-    url: 'https://vkhlvzfvmzqcmrkxxaaf.supabase.co', // ⚠️ Remplacez par votre URL
-    anonKey: 'sb_publishable_mRFGHPKaqF6sAoLeWKHmYw_R-xMnVCX', // ⚠️ Remplacez par votre API Key
+    url: AuthConstants.projectUrl,
+    anonKey: AuthConstants.apiKey,
   );
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Leodys',
-      home: const HomePage(),
-      debugShowCheckedModeBanner: false,
+    return ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: MaterialApp(
+        title: 'Leodys',
+        home: const HomePage(),
+         debugShowCheckedModeBanner: false,
       routes: {
         HomePage.route: (context) => const HomePage(),
         MapScreen.route: (context) {
@@ -45,6 +50,8 @@ class MyApp extends StatelessWidget {
         },
       },
       //initialRoute: LoginPage.route,
+        
+      ),
     );
   }
 }
