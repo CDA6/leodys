@@ -1,5 +1,5 @@
-name: leodys
-description: "A new Flutter project."
+name: Leodys
+description: "Leodys pour les dys !"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -34,7 +34,24 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.2
+  internet_connection_checker: ^3.0.1
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+  logger: ^2.6.2
+  image_picker: ^1.2.1
+  cunning_document_scanner: ^1.4.0
+  pdf: ^3.11.3
+  flutter_pdfview: ^1.4.3
+  path_provider: ^2.1.5
+  share_plus: ^12.0.1
   supabase_flutter: ^2.12.0
+  shared_preferences: ^2.5.4
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  mobile_scanner: ^7.1.4
+  syncfusion_flutter_datagrid: ^32.1.22
+  geolocator: ^14.0.2
   local_auth: ^2.3.0
   provider: ^6.1.5+1
 
@@ -48,6 +65,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
