@@ -1,6 +1,6 @@
-import 'package:Leodys/features/map/data/dataSources/geolocator_datasource.dart';
-import 'package:Leodys/features/map/domain/entities/geo_position.dart';
-import 'package:Leodys/features/map/domain/repositories/location_repository.dart';
+import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
+import 'package:leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/domain/repositories/location_repository.dart';
 
 class LocationRepositoryImpl implements ILocationRepository
 {
