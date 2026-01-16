@@ -1,7 +1,7 @@
-import 'package:Leodys/features/map/domain/entities/geo_position.dart';
-import 'package:Leodys/features/map/presentation/viewModel/map_view_model.dart';
-import 'package:Leodys/features/map/presentation/widgets/gps_dialog.dart';
-import 'package:Leodys/features/map/presentation/widgets/map_widget.dart';
+import 'package:leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
+import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
+import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
