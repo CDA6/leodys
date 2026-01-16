@@ -3,6 +3,7 @@ import 'package:leodys/common_widgets/appbar/global_appbar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+  static const String route = '/';
 
   @override
   Widget build(BuildContext context) {

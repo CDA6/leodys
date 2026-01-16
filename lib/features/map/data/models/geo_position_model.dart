@@ -1,4 +1,4 @@
-import 'package:Leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/domain/entities/geo_position.dart';
 
 class GeoPositionModel
 {
