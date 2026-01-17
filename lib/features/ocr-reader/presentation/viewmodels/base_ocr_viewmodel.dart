@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leodys/common/domain/usecase.dart';
-import '../../domain/entities/ocr_result.dart';
+import 'package:leodys/common/utils/app_logger.dart';
+import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 
 abstract class BaseOcrViewModel extends ChangeNotifier {
   final UseCase<OcrResult, File> recognizeTextUseCase;
@@ -33,6 +34,8 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
 
   Future<void> _pickImage(ImageSource source) async {
     try {
+      AppLogger().debug('[ViewModel] Sélection image source: $source');
+
       final pickedFile = await ImagePicker().pickImage(
         source: source,
         imageQuality: 85,
@@ -44,10 +47,12 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
         _selectedImage = File(pickedFile.path);
         _ocrResult = null;
         _errorMessage = null;
+        AppLogger().info('Image sélectionnée: ${pickedFile.path}');
         notifyListeners();
       }
     } catch (e) {
       _errorMessage = 'Erreur lors de la sélection de l\'image: $e';
+      AppLogger().error('Erreur sélection image: $e');
       notifyListeners();
     }
   }
@@ -65,11 +70,12 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
           (failure) {
         _errorMessage = failure.message;
         _ocrResult = null;
-        print('❌ Erreur: ${failure.message}');
+        AppLogger().error("Erreur: ${failure.message}");
       },
           (ocrResult) {
         _ocrResult = ocrResult;
         _errorMessage = null;
+        AppLogger().info('Succès: ${ocrResult.text.length} caractères');
       },
     );
 

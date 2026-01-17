@@ -2,69 +2,76 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:path_provider/path_provider.dart';
-import '../models/ocr_result_model.dart';
 
-abstract class MLKitDataSource {
+import 'package:leodys/common/errors/failures.dart';
+import 'package:leodys/common/utils/app_logger.dart';
+import 'package:leodys/features/ocr-reader/data/models/ocr_result_model.dart';
+import 'package:leodys/common/domain/datasource.dart';
+
+abstract interface class MLKitDataSource with DataSource<OcrResultModel> {
   Future<OcrResultModel> recognizeText(File imageFile);
 }
 
-class MLKitDataSourceImpl implements MLKitDataSource {
-  final TextRecognizer _textRecognizer;
-
-  MLKitDataSourceImpl() : _textRecognizer = TextRecognizer(
-    script: TextRecognitionScript.latin,
-  );
-
+class MLKitDataSourceImpl with DataSource<OcrResultModel> implements MLKitDataSource {
   @override
-  Future<OcrResultModel> recognizeText(File imageFile) async {
-    try {
-      final processedImage = await _ImageProcessor.preprocess(imageFile);
-      final inputImage = InputImage.fromFile(processedImage);
+  Future<OcrResultModel> recognizeText(File imageFile) {
+    return execute('recognizeText', (file) async {
+      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
 
-      final recognizedText = await _textRecognizer.processImage(inputImage);
+      try {
+        final processedImage = await _ImageProcessor.preprocess(file);
+        final inputImage = InputImage.fromFile(processedImage);
+        final recognizedText = await textRecognizer.processImage(inputImage);
 
-      print('=== ML Kit - Résultats ===');
-      print('Blocs détectés : ${recognizedText.blocks.length}');
+        AppLogger().info('ML Kit - ${recognizedText.blocks.length} blocs détectés');
 
-      return OcrResultModel.fromText(recognizedText.text);
-    } catch (e) {
-      throw Exception('Erreur ML Kit: $e');
-    }
-  }
-
-  void dispose() {
-    _textRecognizer.close();
+        return OcrResultModel.fromText(recognizedText.text);
+      } finally {
+        textRecognizer.close();
+      }
+    }, imageFile);
   }
 }
 
 class _ImageProcessor {
   /// Prétraite l'image pour faciliter l'analyse de ML Kit
   static Future<File> preprocess(File imageFile) async {
-    final bytes = await imageFile.readAsBytes();
-    final image = img.decodeImage(bytes);
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final image = img.decodeImage(bytes);
 
-    if (image == null) {
-      throw Exception('Impossible de décoder l\'image');
+      if (image == null) {
+        throw ImageProcessingFailure('Impossible de décoder l\'image');
+      }
+
+      final originalWidth = image.width;
+      final originalHeight = image.height;
+
+      // Redimensionnement si nécessaire
+      img.Image processedImage = image;
+      if (image.width > 2048) {
+        processedImage = img.copyResize(image, width: 2048);
+        AppLogger().trace('Redimensionnement: ${originalWidth}x${originalHeight} → ${processedImage.width}x${processedImage.height}');
+      }
+
+      // Prétraitement (grayscale, contraste, luminosité)
+      processedImage = img.grayscale(processedImage);
+      processedImage = img.adjustColor(processedImage, contrast: 1.3);
+      processedImage = img.adjustColor(processedImage, brightness: 1.1);
+
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(
+        '${tempDir.path}/processed_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      await tempFile.writeAsBytes(img.encodeJpg(processedImage, quality: 95));
+
+      AppLogger().info('Image prétraitée pour ML Kit');
+
+      return tempFile;
+    } on ImageProcessingFailure {
+      rethrow;
+    } catch (e) {
+      throw ImageProcessingFailure('Erreur lors du prétraitement de l\'image: $e');
     }
-
-    img.Image processedImage = image;
-
-    if (image.width > 2048) {
-      processedImage = img.copyResize(image, width: 2048);
-    }
-
-    processedImage = img.grayscale(processedImage);
-    processedImage = img.adjustColor(processedImage, contrast: 1.3);
-    processedImage = img.adjustColor(processedImage, brightness: 1.1);
-
-    final tempDir = await getTemporaryDirectory();
-    final tempFile = File(
-      '${tempDir.path}/processed_${DateTime
-          .now()
-          .millisecondsSinceEpoch}.jpg',
-    );
-    await tempFile.writeAsBytes(img.encodeJpg(processedImage, quality: 95));
-
-    return tempFile;
   }
 }
