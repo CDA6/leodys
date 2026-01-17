@@ -39,6 +39,7 @@ dependencies:
   mailer: ^6.6.0
   speech_to_text: ^7.3.0
   flutter_tts: ^4.2.5
+  speech_to_text_windows: 1.0.0+beta.8
   manual_speech_to_text: ^1.0.4
   uuid: ^4.5.2
   intl: ^0.20.2

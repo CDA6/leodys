@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../common/widget/voice_text_field.dart';
+import '../../../notification/notification_injection.dart';
 import '../controllers/notification_controller.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/referent_entity.dart';
@@ -19,7 +20,7 @@ class _NotificationPageState extends State<NotificationPage> {
   final VoiceController _voiceController = VoiceController();
   bool _speechEnabled = false;
 
-  final controller = NotificationController(NotificationRepositoryImpl());
+  final controller = sl<NotificationController>();
   final List<String> categories = ['Mon Référent', 'CAP Emploi', 'AGEFIPH'];
 
   @override
