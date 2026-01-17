@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/ocr_type_card.dart';
+import 'package:leodys/features/ocr-reader/presentation/widgets/ocr_type_card.dart';
 import 'printed_text_reader_screen.dart';
 import 'handwritten_text_reader_screen.dart';
 
