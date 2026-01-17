@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'notification_page.dart';
 import 'email_history_page.dart';
 import '../controllers/notification_controller.dart';
-import '../../data/repositories/notification_repository_impl.dart';
+import '../../../notification/notification_injection.dart';
 
 class NotificationDashboard extends StatelessWidget {
   const NotificationDashboard({super.key});
+  static const route = '/messagerie';
 
   @override
   Widget build(BuildContext context) {
-    // Injection du controller (Singleton ou instance partagée recommandée en prod)
-    final controller = NotificationController(NotificationRepositoryImpl());
+
+    final controller = sl<NotificationController>();
 
     return Scaffold(
       appBar: AppBar(title: const Text("Ma Messagerie")),
