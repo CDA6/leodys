@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../features/notification/presentation/controllers/tts_controller.dart';
+import '../../features/notification/presentation/controllers/tts_controller.dart';
 
 class TtsReaderWidget extends StatefulWidget {
   final String text;
