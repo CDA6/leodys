@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import '../../../../common/errors/failures.dart';
 import '../../domain/entities/ocr_result.dart';
 import '../../domain/repositories/ocr_repository.dart';
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/connectivity_checker.dart';
+import '../../../../common/utils/connectivity_checker.dart';
 import '../datasources/mlkit_ocr_datasource.dart';
 import '../datasources/ocrspace_ocr_datasource.dart';
 

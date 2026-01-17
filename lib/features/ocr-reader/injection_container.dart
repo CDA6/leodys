@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
-import 'package:leodys/core/utils/usecase.dart';
+import 'package:leodys/common/domain/usecase.dart';
 import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/base_ocr_viewmodel.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
