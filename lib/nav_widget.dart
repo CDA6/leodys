@@ -1,7 +1,7 @@
 import 'package:leodys/features/map/presentation/screen/map_screen.dart';
 import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
-import 'package:leodys/utils/internet_util.dart';
-import 'package:leodys/utils/platform_util.dart';
+import 'package:leodys/common/utils/internet_util.dart';
+import 'package:leodys/common/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
