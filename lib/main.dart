@@ -3,7 +3,7 @@ import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_t
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'utils/internet_util.dart';
+import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
 
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
@@ -15,7 +15,7 @@ import 'features/map/data/repositories/location_repository_impl.dart';
 import 'features/map/presentation/viewModel/map_view_model.dart';
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
-import 'features/authentication/presentation/pages/auth/home_page.dart';
+import 'common/pages/home_page.dart';
 import 'features/authentication/domain/services/auth_service.dart';
 
 void main() async {

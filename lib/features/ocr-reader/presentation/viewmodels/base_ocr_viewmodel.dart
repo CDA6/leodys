@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:leodys/core/utils/usecase.dart';
+import 'package:leodys/common/domain/usecase.dart';
 import '../../domain/entities/ocr_result.dart';
 
 abstract class BaseOcrViewModel extends ChangeNotifier {
