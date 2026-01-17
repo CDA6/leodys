@@ -1,4 +1,4 @@
-import 'package:leodys/utils/app_logger.dart';
+import 'package:leodys/common/utils/app_logger.dart';
 import 'package:geolocator/geolocator.dart';
 
 class GeolocatorDatasource {

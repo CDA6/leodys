@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/common_widgets/appbar/global_appbar.dart';
+
+import '../../features/map/presentation/screen/map_screen.dart';
+import '../../features/ocr-reader/presentation/screens/ocr_type_selection.dart';
+import '../widget/feature_item.dart';
+import '../widget/global_appbar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -25,11 +29,32 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 16),
               const Text(
                 'Cette application est accessible sans connexion.\n'
-                'Cliquez sur "Se connecter" dans la barre du haut pour vous authentifier.',
+                    'Cliquez sur "Se connecter" dans la barre du haut pour vous authentifier.',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  children: [
+                    FeatureItem(
+                      icon: Icons.map,
+                      label: 'Carte',
+                      onTap: () {
+                        Navigator.pushNamed(context, MapScreen.route);
+                      },
+                    ),
+                    FeatureItem(
+                      icon: Icons.camera_alt,
+                      label: 'OCR Reader',
+                      onTap: () {
+                        Navigator.pushNamed(context, OcrTypeSelectionScreen.route);
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
