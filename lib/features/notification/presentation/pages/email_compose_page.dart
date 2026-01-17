@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../common_widgets/voice_text_field.dart';
+import '../../../../common/widget/voice_text_field.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/voice_controller.dart';
 import '../../domain/entities/referent_entity.dart';
