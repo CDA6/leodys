@@ -1,6 +1,6 @@
 import '../utils/app_logger.dart';
 
-mixin class DataSource<T> {
+mixin class DataSourceMixin<T> {
   String get _sourceName => runtimeType.toString();
 
   /// Exécute une opération de datasource avec logging automatique.
@@ -14,8 +14,8 @@ mixin class DataSource<T> {
   /// Retourne le résultat ou relance les exceptions.
   Future<T> execute<P extends Object>(
       String methodName,
-      Future<T> Function(P) method,
-      P params)
+      P params,
+      Future<T> Function(P) method)
   async {
     AppLogger().trace('[$_sourceName.$methodName] Entrée - params: $params');
 

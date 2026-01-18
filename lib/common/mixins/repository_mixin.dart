@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../errors/failures.dart';
 import '../utils/app_logger.dart';
 
-mixin Repository {
+mixin RepositoryMixin {
   String get _repositoryName => runtimeType.toString();
 
   /// Exécute une opération de repository avec logging automatique.

@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../errors/failures.dart';
 import '../utils/app_logger.dart';
 
-abstract class UseCase<Type, Params> {
+mixin UseCaseMixin<Type, Params> {
 
   /// Exécute le use case avec logging automatique.
   ///

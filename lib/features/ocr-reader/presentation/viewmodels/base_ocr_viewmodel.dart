@@ -1,12 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:leodys/common/domain/usecase.dart';
+import 'package:leodys/common/mixins/usecase_mixin.dart';
 import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 
 abstract class BaseOcrViewModel extends ChangeNotifier {
-  final UseCase<OcrResult, File> recognizeTextUseCase;
+  final UseCaseMixin<OcrResult, File> recognizeTextUseCase;
 
   File? _selectedImage;
   OcrResult? _ocrResult;
@@ -64,22 +65,29 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final result = await recognizeTextUseCase(_selectedImage!);
+    try {
+      final result = await recognizeTextUseCase(_selectedImage!).timeout(const Duration(seconds: 15));
 
-    result.fold(
-          (failure) {
-        _errorMessage = failure.message;
-        _ocrResult = null;
-        AppLogger().error("Erreur: ${failure.message}");
-      },
-          (ocrResult) {
-        _ocrResult = ocrResult;
-        _errorMessage = null;
-        AppLogger().info('Succès: ${ocrResult.text.length} caractères');
-      },
-    );
+      result.fold(
+        (failure) {
+          _errorMessage = failure.message;
+          AppLogger().error("OCR Error: ${failure.message}");
+        },
+        (ocrResult) {
+          _ocrResult = ocrResult;
+          AppLogger().info("OCR Success: ${ocrResult.text.length} caractères");
+        },
+      );
 
-    _isProcessing = false;
-    notifyListeners();
+    } on TimeoutException {
+      _errorMessage = 'Timeout: L\'analyse prend trop de temps. Vérifiez votre connexion.';
+      AppLogger().error("OCR Timeout");
+    } on Exception catch (e) {
+      _errorMessage = 'Erreur inattendue: ${e.toString()}';
+      AppLogger().error("OCR Exception: ${e.toString()}", e);
+    } finally {
+      _isProcessing = false;
+      notifyListeners();
+    }
   }
 }
