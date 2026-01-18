@@ -16,6 +16,7 @@ import 'constants/auth_constants.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
@@ -46,11 +47,10 @@ void main() async {
   await Hive.initFlutter();
 
   // 1. Initialisation des services de base
-  // double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
-  // await DatabaseService.init();
+  await DatabaseService.init();
   await InternetUtil.init();
 
-
+  // double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -65,14 +65,12 @@ void main() async {
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
   await cards.init();
+  await voice_clock.init();
 
-  runApp(
-    MyApp()
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   @override
