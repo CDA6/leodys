@@ -19,17 +19,20 @@ class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
   StreamSubscription<String>? _speechSub;
   String? _noteId;
   bool _isNew = true;
+  bool _noteLoaded = false;
   String _textBeforeListening = '';
   int _cursorPositionBeforeListening = 0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_noteLoaded) return;
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is String) {
       _noteId = args;
       _isNew = false;
       _loadNoteData();
+      _noteLoaded = true;
     }
   }
 
