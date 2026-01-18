@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../common/utils/connectivity_checker.dart';
 import '../../../../common/widget/voice_text_field.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/voice_controller.dart';
@@ -48,13 +49,19 @@ class _EmailComposePageState extends State<EmailComposePage> {
               icon: const Icon(Icons.send),
               label: const Text("Envoyer Directement"),
               onPressed: () async {
-                await widget.controller.sendMessage( // Utilisation de la nouvelle méthode orchestrée
-                  referent: widget.referent,
-                  subject: "Alerte Leodys",
-                  body: _bodyController.text,
-                );
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email envoyé et archivé !")));
+                final hasNet = await ConnectivityChecker.hasInternetConnection();
+                if (!hasNet) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Échec : Aucune connexion internet disponible."))
+                  );
+                }
+                  await widget.controller.sendMessage(
+                    referent: widget.referent,
+                    subject: "Alerte Leodys",
+                    body: _bodyController.text,
+                  );
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email envoyé et archivé !")));
               },
             )
           ],

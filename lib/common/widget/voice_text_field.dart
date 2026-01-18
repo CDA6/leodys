@@ -49,20 +49,28 @@ class _VoiceTextFieldState extends State<VoiceTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      validator: widget.validator,
-      keyboardType: widget.keyboardType,
-      maxLines: widget.maxLines,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        suffixIcon: _speechEnabled
-            ? IconButton(
-          icon: Icon(_voiceController.isListening ? Icons.mic : Icons.mic_none),
-          color: _voiceController.isListening ? Colors.red : Colors.blue,
-          onPressed: _toggleListening,
-        )
-            : null,
+    return Semantics(
+      textField: true,
+      label: widget.label,
+      child: TextFormField(
+        controller: widget.controller,
+        validator: widget.validator,
+        keyboardType: widget.keyboardType,
+        maxLines: widget.maxLines,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          suffixIcon: _speechEnabled
+              ? IconButton(
+                  icon: Icon(
+                    _voiceController.isListening ? Icons.mic : Icons.mic_none,
+                  ),
+                  color: _voiceController.isListening
+                      ? Colors.red
+                      : Colors.blue,
+                  onPressed: _toggleListening,
+                )
+              : null,
+        ),
       ),
     );
   }

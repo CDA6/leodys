@@ -40,12 +40,22 @@ class _TtsReaderWidgetState extends State<TtsReaderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(_isSpeaking ? Icons.stop_circle : Icons.play_circle_fill),
-      color: widget.iconColor ?? Colors.blue,
-      iconSize: 32,
-      onPressed: _toggleSpeech,
-      tooltip: "Lire le message",
+    // On définit l'action en fonction de l'état actuel
+    final actionLabel = _isSpeaking ? "Arrêter la lecture" : "Lire le message";
+
+    return Semantics(
+      button: true,
+      textField: false,
+      label: actionLabel,
+      enabled: true,
+      child: IconButton(
+        icon: Icon(_isSpeaking ? Icons.stop_circle : Icons.play_circle_fill),
+        color: widget.iconColor ?? Colors.blue,
+        iconSize: 32,
+        onPressed: _toggleSpeech,
+        // Le tooltip visuel peut rester simple, ou suivre la même logique
+        tooltip: actionLabel,
+      ),
     );
   }
 }

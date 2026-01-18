@@ -31,7 +31,10 @@ class EmailHistoryPage extends StatelessWidget {
                 subtitle: Text("${msg.subject}\n${DateFormat('dd/MM/yyyy HH:mm').format(msg.sentAt)}"),
                 isThreeLine: true,
                 onTap: () {
-                  HistoryDetailDialog( message: msg);
+                  showDialog(
+                    context: context,
+                    builder: (context) => HistoryDetailDialog(message: msg),
+                  );
                 },
               );
             },
