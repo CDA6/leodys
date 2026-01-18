@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
-import '../../features/notification/presentation/controllers/voice_controller.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';// Import du sl
+import '../../features/vocal_notes/data/services/speech_service.dart';
+import '../../features/vocal_notes/injection_container.dart';
 
 class VoiceTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -22,33 +24,88 @@ class VoiceTextField extends StatefulWidget {
 }
 
 class _VoiceTextFieldState extends State<VoiceTextField> {
-  final VoiceController _voiceController = VoiceController();
-  bool _speechEnabled = false;
+  final SpeechService _speechService = sl<SpeechService>();
+
+  StreamSubscription<bool>? _listeningSubscription;
+  StreamSubscription<String>? _textSubscription;
+
+  bool _isListening = false;
+  String _textBeforeSession = ""; // Pour concaténer au lieu d'écraser
 
   @override
   void initState() {
     super.initState();
-    _initVoice();
+    // Initialisation du service si nécessaire (au cas où)
+    _initService();
+
+    // 1. Écouter l'état du micro (ON/OFF)
+    _listeningSubscription = _speechService.listening.listen((isListening) {
+      if (mounted) {
+        setState(() {
+          _isListening = isListening;
+
+          // Si on commence à écouter, on sauvegarde le texte actuel
+          if (isListening) {
+            _textBeforeSession = widget.controller.text;
+          }
+        });
+      }
+    });
+
+    // 2. Écouter le texte qui arrive
+    _textSubscription = _speechService.speechText.listen((recognizedText) {
+      if (mounted && _isListening) {
+        // Logique de concaténation : Ancien texte + Espace + Nouveau texte
+        final prefix = _textBeforeSession.trim();
+        final newPart = recognizedText.trim();
+
+        if (prefix.isEmpty) {
+          widget.controller.text = newPart;
+        } else {
+          widget.controller.text = "$prefix $newPart";
+        }
+
+        // Placer le curseur à la fin
+        widget.controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: widget.controller.text.length),
+        );
+      }
+    });
   }
 
-  void _initVoice() async {
-    _speechEnabled = await _voiceController.initSpeech();
-    if (mounted) setState(() {});
+  Future<void> _initService() async {
+    // On s'assure que le service est prêt (demande de permissions, etc.)
+    try {
+      await _speechService.init();
+      if (mounted) setState(() {}); // Rafraichir pour afficher l'icône si besoin
+    } catch (e) {
+      debugPrint("Erreur init SpeechService: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _listeningSubscription?.cancel();
+    _textSubscription?.cancel();
+    // On ne dispose PAS le service ici car il est global !
+    super.dispose();
   }
 
   void _toggleListening() {
-    if (_voiceController.isListening) {
-      _voiceController.stopListening();
+    // Si le service n'est pas prêt, on tente de l'initialiser ou on ne fait rien
+    if (!_speechService.isInitialized) {
+      _initService().then((_) => _speechService.toggleListening());
     } else {
-      _voiceController.startListening((text) {
-        setState(() => widget.controller.text = text);
-      });
+      _speechService.toggleListening();
     }
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    // On affiche le micro seulement si le service a pu s'initialiser
+    // ou si on veut permettre à l'utilisateur de tenter l'init au clic
+    final bool canShowMic = true;
+
     return Semantics(
       textField: true,
       label: widget.label,
@@ -59,16 +116,14 @@ class _VoiceTextFieldState extends State<VoiceTextField> {
         maxLines: widget.maxLines,
         decoration: InputDecoration(
           labelText: widget.label,
-          suffixIcon: _speechEnabled
+          suffixIcon: canShowMic
               ? IconButton(
-                  icon: Icon(
-                    _voiceController.isListening ? Icons.mic : Icons.mic_none,
-                  ),
-                  color: _voiceController.isListening
-                      ? Colors.red
-                      : Colors.blue,
-                  onPressed: _toggleListening,
-                )
+            icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
+            // Rouge si écoute, Bleu sinon
+            color: _isListening ? Colors.red : Colors.blue,
+            onPressed: _toggleListening,
+            tooltip: _isListening ? "Arrêter la dictée" : "Dicter le texte",
+          )
               : null,
         ),
       ),
