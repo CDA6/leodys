@@ -5,8 +5,8 @@ import '../../domain/entities/referent_entity.dart';
 class NotificationController {
   final NotificationRepository repository;
   NotificationController(this.repository);
-  Future<List<MessageEntity>> fetchHistory() => repository.getMessageHistory();
 
+  Future<List<MessageEntity>> fetchHistory() => repository.getMessageHistory();
   Future<List<ReferentEntity>> fetchReferents() => repository.getReferents();
 
   Future<void> addReferent(String name, String email, String category) {
