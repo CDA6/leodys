@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
+import 'package:leodys/src/features/audio_reader/injection.dart';
 import 'package:leodys/src/features/audio_reader/presentation/controllers/reader_controller.dart';
 import '../controllers/document_controller.dart';
 import '../widgets/document_tile.dart';
 
 class DocumentsScreen extends StatefulWidget {
-  final DocumentController documentController;
-  final ReaderController readerController;
 
   static const route = '/documents';
 
   const DocumentsScreen({
     super.key,
-    required this.documentController,
-    required this.readerController,
   });
 
   @override
@@ -22,28 +19,41 @@ class DocumentsScreen extends StatefulWidget {
 
 class _DocumentsScreenState extends State<DocumentsScreen> {
 
+  late final DocumentController documentController;
+  late final ReaderController readerController;
+
   @override
   void initState() {
     super.initState();
+    readerController = createReaderController();
+    documentController = createDocumentController();
 
-    widget.documentController.addListener(_onControllerChanged);
-    widget.documentController.getAllDocuments();
+    readerController.addListener(_onControllerChanged);
+    documentController.addListener(_onControllerChanged);
+    documentController.getAllDocuments();
   }
 
+
+  /// Méthode appelée lorsque l’état d’un contrôleur change.
+  /// Elle force la reconstruction de l’interface.
   void _onControllerChanged() {
     setState(() {});
   }
 
   @override
   void dispose() {
-    widget.documentController.removeListener(_onControllerChanged);
+    readerController.removeListener(_onControllerChanged);
+    documentController.removeListener(_onControllerChanged);
+
+    readerController.dispose();
+    documentController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = widget.documentController;
-    final readerController = widget.readerController;
+    final controller = documentController;
+    final readController = readerController;
 
     return Scaffold(
       appBar: AppBar(
@@ -60,8 +70,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           return DocumentTile(
             document: document,
             onRead: () {
-              readerController.loadDocument(document);
-              readerController.readText(
+              readController.loadDocument(document);
+              readController.readText(
                 ReaderConfig.defaultConfig,
               );
             },

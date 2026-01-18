@@ -59,6 +59,7 @@ class ReaderController extends ChangeNotifier {
   }
 
   ///Création titre pour le doucment de texte
+  ///first récupere le 1er élément de la liste.
   String _generateTitle(String text){
     final line = text.split('\n').first.trim();
     if (line.length > 20){

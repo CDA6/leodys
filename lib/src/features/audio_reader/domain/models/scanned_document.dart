@@ -1,9 +1,6 @@
-
-
-/*
-Modele représentant un document structuré en pages, chaque page contenant des blocs de texte.
-L'objectif est de permettre une lecture progressive et controlée
- */
+/// Modele représentant un document structuré en pages,
+/// chaque page contenant des blocs de texte.
+/// L'objectif est de permettre une lecture progressive et controlée
 class ScannedDocument {
 
   final List<ScannedPage> pages; // Liste des pages

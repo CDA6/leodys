@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-
+/// Classe représentant un modèle de document
+/// Cette classe sera util pour instancier un objet document
 class Document {
   final String idText;
   final String title;

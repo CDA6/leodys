@@ -1,5 +1,6 @@
 import '../models/document.dart';
 
+/// DocumentRepository une une classe abstraite qui joue le role d'interface métier.
 abstract class DocumentRepository {
 
   ///Enregistrement d'un document

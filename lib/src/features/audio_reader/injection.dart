@@ -4,7 +4,6 @@ import 'package:leodys/src/features/audio_reader/data/repositories/reading_progr
 import 'package:leodys/src/features/audio_reader/data/repositories/tts_repository_impl.dart';
 import 'package:leodys/src/features/audio_reader/data/services/ocr_service_impl.dart';
 import 'package:leodys/src/features/audio_reader/data/services/tts_service_imp.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/reading_progress_repository.dart';
 import 'package:leodys/src/features/audio_reader/domain/usecases/document_usecase.dart';
 import 'package:leodys/src/features/audio_reader/domain/usecases/read_text_usecase.dart';
 import 'package:leodys/src/features/audio_reader/domain/usecases/reading_progress_usecase.dart';

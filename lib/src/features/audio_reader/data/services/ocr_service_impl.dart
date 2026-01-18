@@ -4,9 +4,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 
 class OcrServiceImpl {
 
-  /*
-  Analyse l'image et retourne le texte reconnu
-   */
+/// Analyse l'image et retourne le texte reconnu
   Future<String> recognizeText(String imagePath) async {
 
     // Récuperere l'image depuis le chemin.

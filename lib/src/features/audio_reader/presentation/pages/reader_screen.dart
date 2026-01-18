@@ -10,7 +10,10 @@ import 'package:leodys/src/features/audio_reader/presentation/controllers/scan_a
 import 'package:leodys/src/features/audio_reader/presentation/widgets/audio_controls.dart';
 import 'package:leodys/src/features/audio_reader/presentation/widgets/scan_button.dart';
 import 'package:leodys/src/features/audio_reader/presentation/widgets/text_preview.dart';
-
+/// Classe UI qui représente l'écran qui permet de réaliser le scan du
+/// document et la lecture de ce dernier
+/// Elle prend en charge également l'initiation des contrôleurs, la synchronistion
+/// entre la loqigue métier et l'interface.
 class ReaderScreen extends StatefulWidget {
   const ReaderScreen({super.key});
 
@@ -20,15 +23,21 @@ class ReaderScreen extends StatefulWidget {
   State<ReaderScreen> createState() => _ReaderScreenState();
 }
 
+
 class _ReaderScreenState extends State<ReaderScreen> {
+  /// initiation des contrôleurs
   late final ReaderController readerController;
   late final ScanAndReadTextController scanAndReadController;
   late final ReadingProgressController readingProgressController;
 
+  ///Configuration de lecture avec des parametres par défaut
   final ReaderConfig defaultConfig = ReaderConfig.defaultConfig;
+  /// Index des pages et des blocs de textes
   int currentPageIndex = 0;
   int currentBlocIndex = 0;
 
+  /// Méthode de gestion de vie de l'écran
+  /// Initialisation des controleurs
   @override
   void initState() {
     super.initState();
@@ -36,13 +45,25 @@ class _ReaderScreenState extends State<ReaderScreen> {
     scanAndReadController = createScanAndReadController();
     readingProgressController = createReadingProgressController();
 
-    readerController.addListener(() => setState(() {}));
-    scanAndReadController.addListener(() => setState(() {}));
-    readingProgressController.addListener(() => setState(() {}));
+    /// Ecoute le changement d'état des controleurs
+    /// si changement, interface reconstruit avec setState()
+    readerController.addListener(_onControllerChanged);
+    scanAndReadController.addListener(_onControllerChanged);
+    readingProgressController.addListener(_onControllerChanged);
   }
 
+  void _onControllerChanged() {
+    setState(() {});
+  }
+
+  /// Nettoyage et libération des ressources
   @override
   void dispose() {
+
+    readerController.removeListener(_onControllerChanged);
+    scanAndReadController.removeListener(_onControllerChanged);
+    readingProgressController.removeListener(_onControllerChanged);
+
     readerController.dispose();
     scanAndReadController.dispose();
     readingProgressController.dispose();
@@ -154,19 +175,26 @@ class _ReaderScreenState extends State<ReaderScreen> {
     );
   }
 
+  /// Ouvre la caméra pour prendre une photo
+  /// La photo est enregistrée localement sur l'appareil
   Future<void> scanWithCamera() async {
+
+    // Instancier ImagePicker
     final picker = ImagePicker();
+    // XFile est un objet représentant un fichier. Il contient la taille le nom et le chemin du fichier
     final XFile? image = await picker.pickImage(
       source: ImageSource.camera,
       imageQuality: 85,
     );
 
+    // cas d'annulation de l'utilisateur
     if (image == null) {
       return;
     }
 
+    // Récuperer le chemin de la photo
     final imagePath = image.path;
-
+    // Appel du controller pour lancer le scan OCR avec le parametre : le chemin de l'image
     readerController.scanDocument(imagePath);
   }
 }

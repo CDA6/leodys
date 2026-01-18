@@ -11,17 +11,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  final readerController = createReaderController();
-  final documentController = createDocumentController();
-  runApp(MyApp( readerController: readerController,
-    documentController: documentController,));
+  runApp(MyApp());
 
 }
 
 class MyApp extends StatelessWidget {
-  final DocumentController documentController;
-  final ReaderController readerController;
-  const MyApp({super.key, required this.documentController, required this.readerController});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +26,7 @@ class MyApp extends StatelessWidget {
       initialRoute: ReaderScreen.route,
       routes: {
         ReaderScreen.route: (context) => const ReaderScreen(),
-        DocumentsScreen.route: (context) => DocumentsScreen(documentController: documentController, readerController: readerController,),
+        DocumentsScreen.route: (context) => DocumentsScreen(),
       }
     );
   }
