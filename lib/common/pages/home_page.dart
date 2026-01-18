@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../features/map/presentation/screen/map_screen.dart';
 import '../../features/ocr-reader/presentation/screens/ocr_type_selection.dart';
+import '../../features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import '../widget/feature_item.dart';
 import '../widget/global_appbar.dart';
 
@@ -50,6 +51,13 @@ class HomePage extends StatelessWidget {
                       label: 'OCR Reader',
                       onTap: () {
                         Navigator.pushNamed(context, OcrTypeSelectionScreen.route);
+                      },
+                    ),
+                    FeatureItem(
+                      icon: Icons.mic,
+                      label: 'Notes vocales',
+                      onTap: () {
+                        Navigator.pushNamed(context, VocalNotesListScreen.route);
                       },
                     ),
                   ],
