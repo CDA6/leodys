@@ -111,6 +111,18 @@ class SpeechService {
   void startListening() {
     _ensureInitialized();
     if (!_isListening) {
+      // Réenregistrer les callbacks avant de démarrer l'écoute
+      _sttController!.listen(
+        onListeningStateChanged: (ManualSttState state) {
+          _isListening = state == ManualSttState.listening;
+          _listeningController.add(_isListening);
+        },
+        onListeningTextChanged: (String text) {
+          if (text.isNotEmpty) {
+            _speechTextController.add(text);
+          }
+        },
+      );
       _sttController!.startStt();
     }
   }
