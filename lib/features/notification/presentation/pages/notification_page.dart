@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../common/widget/voice_text_field.dart';
 import '../../../notification/notification_injection.dart';
 import '../controllers/notification_controller.dart';
-import '../../data/repositories/notification_repository_impl.dart';
+import '../widgets/referent_list_tile.dart';
+import '../widgets/add_referent_dialog.dart';
 import '../../domain/entities/referent_entity.dart';
 import '../controllers/voice_controller.dart';
 import 'email_compose_page.dart';
@@ -39,7 +40,16 @@ class _NotificationPageState extends State<NotificationPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle, size: 30),
-            onPressed: _showAddDialog,
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => AddReferentDialog(
+                categories: categories,
+                onAdd: (name, email, cat) async {
+                  await controller.addReferent(name, email, cat);
+                  _refresh();
+                },
+              ),
+            ),
           )
         ],
       ),
@@ -60,17 +70,12 @@ class _NotificationPageState extends State<NotificationPage> {
               return ExpansionTile(
                 initiallyExpanded: true,
                 title: Text(cat, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                children: refsInCategory.map((ref) => ListTile(
-                  title: Text(ref.name, style: const TextStyle(fontWeight: FontWeight.w500)),
-                  subtitle: Text(ref.email),
-                  leading: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    onPressed: () async {
-                      await controller.removeReferent(ref.id);
-                      _refresh(); // Rafraîchit l'UI après suppression
-                    },
-                  ),
-                  trailing: const Icon(Icons.send, color: Colors.blue),
+                children: refsInCategory.map((ref) => ReferentListTile(
+                  referent: ref,
+                  onDelete: () async {
+                    await controller.removeReferent(ref.id);
+                    _refresh();
+                  },
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
