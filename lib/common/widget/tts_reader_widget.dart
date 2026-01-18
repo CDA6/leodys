@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../features/notification/presentation/controllers/tts_controller.dart';
+import '../../features/vocal_notes/injection_container.dart';
+import '../../features/vocal_notes/data/services/speech_service.dart'; // Importez votre service
 
 class TtsReaderWidget extends StatefulWidget {
   final String text;
@@ -16,44 +18,53 @@ class TtsReaderWidget extends StatefulWidget {
 }
 
 class _TtsReaderWidgetState extends State<TtsReaderWidget> {
-  final TtsController _ttsController = TtsController();
+  // On récupère l'instance du service
+  final SpeechService _speechService = sl<SpeechService>();
+
+  // Abonnement pour écouter les changements d'état
+  StreamSubscription<bool>? _speakingSubscription;
   bool _isSpeaking = false;
 
   @override
+  void initState() {
+    super.initState();
+    _isSpeaking = _speechService.isSpeaking;
+
+    // On écoute le stream : dès que le service dit "je parle" ou "j'ai fini",
+    // on met à jour l'interface.
+    _speakingSubscription = _speechService.speaking.listen((isSpeaking) {
+      if (mounted) {
+        setState(() {
+          _isSpeaking = isSpeaking;
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
-    _ttsController.stop();
+    // Très important : on annule l'abonnement pour éviter les fuites de mémoire
+    _speakingSubscription?.cancel();
     super.dispose();
   }
 
-  void _toggleSpeech() async {
-    if (_isSpeaking) {
-      await _ttsController.stop();
-      setState(() => _isSpeaking = false);
-    } else {
-      setState(() => _isSpeaking = true);
-      await _ttsController.speak(widget.text);
-      // On réinitialise l'icône une fois la lecture potentiellement terminée
-      // Note: Flutter_tts a des callbacks pour plus de précision (onCompletion)
-      setState(() => _isSpeaking = false);
-    }
+  void _onTap() {
+    // On délègue toute la logique au service
+    _speechService.toggleSpeaking(widget.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    // On définit l'action en fonction de l'état actuel
     final actionLabel = _isSpeaking ? "Arrêter la lecture" : "Lire le message";
 
     return Semantics(
       button: true,
-      textField: false,
       label: actionLabel,
-      enabled: true,
       child: IconButton(
         icon: Icon(_isSpeaking ? Icons.stop_circle : Icons.play_circle_fill),
         color: widget.iconColor ?? Colors.blue,
         iconSize: 32,
-        onPressed: _toggleSpeech,
-        // Le tooltip visuel peut rester simple, ou suivre la même logique
+        onPressed: _onTap,
         tooltip: actionLabel,
       ),
     );
