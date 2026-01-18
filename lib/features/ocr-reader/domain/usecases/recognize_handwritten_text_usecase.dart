@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 
-import 'package:leodys/common/domain/usecase.dart';
+import 'package:leodys/common/mixins/usecase_mixin.dart';
 import 'package:leodys/common/errors/failures.dart';
 import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 import 'package:leodys/features/ocr-reader/domain/repositories/ocr_repository.dart';
 
-class RecognizeHandwrittenTextUseCase extends UseCase<OcrResult, File> {
+class RecognizeHandwrittenTextUseCase with UseCaseMixin<OcrResult, File> {
   final OcrRepository repository;
 
   RecognizeHandwrittenTextUseCase(this.repository);

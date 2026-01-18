@@ -30,11 +30,7 @@ class AnalyzeButton extends StatelessWidget{
           ),
         )
             : const Icon(Icons.play_arrow),
-        label: Text(
-          !canAnalyze && !isProcessing
-              ? 'Veuillez sélectionner une image'
-              : isProcessing ? processingText : 'Analyser le texte',
-        ),
+        label: Text('Analyser le texte'),
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 56),
           backgroundColor: Colors.blue,

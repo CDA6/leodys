@@ -5,6 +5,7 @@ import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_t
 import 'package:leodys/features/ocr-reader/presentation/widgets/analyze_button.dart';
 import 'package:leodys/features/ocr-reader/presentation/widgets/build_error_message.dart';
 import 'package:leodys/features/ocr-reader/presentation/widgets/image_picker_section.dart';
+import '../../../../common/widget/connection_warning.dart';
 import 'ocr_result_screen.dart';
 
 class HandwrittenTextReaderScreen extends StatelessWidget {
@@ -71,6 +72,11 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
                     onPressed: viewModel.analyzeImage,
                     processingText: 'Analyse en cours...'
                 ),
+
+                if (!viewModel.hasConnection) ...[
+                  const SizedBox(height: 20),
+                  ConnectionWarning('Aucune connexion Internet.'),
+                ],
 
                 // Messages d'erreur
                 if (viewModel.errorMessage != null) ...[

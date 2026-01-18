@@ -6,16 +6,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:leodys/common/errors/failures.dart';
 import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/ocr-reader/data/models/ocr_result_model.dart';
-import 'package:leodys/common/domain/datasource.dart';
+import 'package:leodys/common/mixins/datasource_mixin.dart';
 
-abstract interface class MLKitDataSource with DataSource<OcrResultModel> {
+abstract interface class MLKitDataSource {
   Future<OcrResultModel> recognizeText(File imageFile);
 }
 
-class MLKitDataSourceImpl with DataSource<OcrResultModel> implements MLKitDataSource {
+class MLKitDataSourceImpl with DataSourceMixin<OcrResultModel> implements MLKitDataSource {
   @override
   Future<OcrResultModel> recognizeText(File imageFile) {
-    return execute('recognizeText', (file) async {
+    return execute('recognizeText', imageFile, (file) async {
       final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
 
       try {
@@ -29,7 +29,7 @@ class MLKitDataSourceImpl with DataSource<OcrResultModel> implements MLKitDataSo
       } finally {
         textRecognizer.close();
       }
-    }, imageFile);
+    });
   }
 }
 

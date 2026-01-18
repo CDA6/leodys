@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:leodys/common/utils/internet_util.dart';
-import 'package:leodys/common/domain/repository.dart';
+import 'package:leodys/common/mixins/repository_mixin.dart';
 import 'package:leodys/common/errors/failures.dart';
 import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 import 'package:leodys/features/ocr-reader/domain/repositories/ocr_repository.dart';
 import 'package:leodys/features/ocr-reader/data/datasources/mlkit_ocr_datasource.dart';
 import 'package:leodys/features/ocr-reader/data/datasources/ocrspace_ocr_datasource.dart';
 
-class OcrRepositoryImpl with Repository implements OcrRepository {
+class OcrRepositoryImpl with RepositoryMixin implements OcrRepository {
   final MLKitDataSource mlKitDataSource;
   final OCRSpaceDataSource ocrSpaceDataSource;
 

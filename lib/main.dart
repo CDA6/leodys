@@ -3,12 +3,13 @@ import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_t
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'common/pages/home_page.dart';
+import 'common/pages/home/presentation/screens/home_page.dart';
 import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
 
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
-import 'features/ocr-reader/presentation/screens/ocr_type_selection.dart';
+import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 
 import 'features/map/data/dataSources/geolocator_datasource.dart';
@@ -66,7 +67,8 @@ class MyApp extends StatelessWidget {
 
             return MapScreen(viewModel: viewModel);
           },
-          OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
+          PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
+          HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
         },
       ),
     );
