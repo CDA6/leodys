@@ -7,10 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   file_selector_windows
   geolocator_windows
-<<<<<<< HEAD
-=======
   local_auth_windows
->>>>>>> 838101d1dce04ab532bacf70d3ac51b01f197529
   permission_handler_windows
   share_plus
   url_launcher_windows

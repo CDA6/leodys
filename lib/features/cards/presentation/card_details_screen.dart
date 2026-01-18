@@ -21,7 +21,47 @@ class CardDetailsScreen extends ConsumerStatefulWidget{
 }
 
 class _CardDetailsScreenState extends ConsumerState<CardDetailsScreen> {
-  late final repository = ref.read(cardsRepositoryProvider);
+  late final deleteCardUseCase = ref.read(deleteCardUseCaseProvider);
+  bool _isFront = true;
+
+  Widget _buildCardImage() {
+    final front = widget.card?.rectoPath;
+    final back = widget.card?.versoPath;
+
+    // chemin actuel selon le cote de la carte
+    String? currentPath = _isFront ? front : back;
+
+    // affichage d'un message si pas d'image
+    if (currentPath == null || currentPath.trim().isEmpty) {
+      return const Text("Image indisponible");
+    }
+
+    return GestureDetector(
+      onTap: () {
+        // on flip la carte seulement si le verso existe
+        if (_isFront && back != null && back.trim().isNotEmpty) {
+          setState(() {
+            _isFront = false;
+          });
+        } else if (!_isFront) {
+          // Toujours revenir au recto
+          setState(() {
+            _isFront = true;
+          });
+        }
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.file(
+          File(currentPath),
+          width: 260,
+          height: 260,
+          fit: BoxFit.fitWidth,
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +79,19 @@ class _CardDetailsScreenState extends ConsumerState<CardDetailsScreen> {
       body: Center(
         child: Column(
           children: [
+            _buildCardImage(),
+
+            const SizedBox(height: 20),
+
+            Text(
+              _isFront ? "Recto" : "Verso",
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+
+            const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () async {
-                await repository.deleteCard(widget.card!);
+                await deleteCardUseCase.call(widget.card!);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, DisplayCardsScreen.route);
               },

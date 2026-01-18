@@ -25,19 +25,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await InternetUtil.init();
-  await Supabase.initialize(url: "https://ccaqaarhhdpqjxcotuxc.supabase.co", anonKey: "sb_publishable_eK9_jwNygwwJQZbp9LAjSw_ej_N--f7");
-  runApp(const ProviderScope(
-    child: MyApp(),
-  ));
+
 
   await Supabase.initialize(
     url: AuthConstants.projectUrl,
     anonKey: AuthConstants.apiKey,
   );
 
+  final client = Supabase.instance.client;
+  await client.auth.signInWithPassword(email: 'coleenconte@icloud.com', password: '780Asq35.');
+
   await ocr_reader.init();
 
-  runApp(MyApp());
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -73,6 +75,7 @@ class MyApp extends StatelessWidget {
             return MapScreen(viewModel: viewModel);
           },
           OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
+          DisplayCardsScreen.route: (context) => const DisplayCardsScreen()
         },
       ),
     );
