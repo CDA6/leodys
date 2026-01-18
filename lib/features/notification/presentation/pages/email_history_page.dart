@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../../common/widget/tts_reader_widget.dart';
 import '../controllers/notification_controller.dart';
 import '../../domain/entities/message_entity.dart';
+import '../widgets/history_detail_dialog.dart';
 
 class EmailHistoryPage extends StatelessWidget {
   final NotificationController controller;
@@ -30,36 +31,7 @@ class EmailHistoryPage extends StatelessWidget {
                 subtitle: Text("${msg.subject}\n${DateFormat('dd/MM/yyyy HH:mm').format(msg.sentAt)}"),
                 isThreeLine: true,
                 onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: Text(msg.subject)),
-                          // AJOUT DU WIDGET ICI pour lire le contenu
-                          TtsReaderWidget(text: "Sujet : ${msg.subject}. Message : ${msg.body}"),
-                        ],
-                      ),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("À : ${msg.referentName}", style: TextStyle(fontWeight: FontWeight.bold)),
-                            const Divider(),
-                            Text(msg.body),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text("Fermer")
-                        )
-                      ],
-                    ),
-                  );
+                  HistoryDetailDialog( message: msg);
                 },
               );
             },
