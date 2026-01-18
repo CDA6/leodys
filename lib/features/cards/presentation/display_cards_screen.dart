@@ -9,6 +9,7 @@ import 'package:leodys/features/cards/providers.dart';
 import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../common/pages/home_page.dart';
 import '../domain/card_model.dart';
 
 class DisplayCardsScreen extends ConsumerStatefulWidget {
@@ -26,19 +27,13 @@ class DisplayCardsScreen extends ConsumerStatefulWidget {
 class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
   List<CardModel> savedCards = [];
   Logger logger = Logger();
-  late final repository = ref.read(cardsRepositoryProvider);
-  late final createPdfUsecase = ref.read(createPdfUseCaseProvider);
+  late final getLocalCards = ref.read(getLocalUserCardsUseCaseProvider);
   final user = Supabase.instance.client.auth.currentUser;
 
   Future<void> loadSavedCards() async {
-    final cards = await repository.getLocalUserCards();
+    final cards = await getLocalCards.call();
     setState(() {
       savedCards = cards;
-      print(savedCards.toString());
-      for(final card in savedCards) {
-        print("nom : ${card.name}");
-        print("folder : ${card.folderPath}");
-      }
     });
   }
 
@@ -77,7 +72,7 @@ class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, HomePage.route);
           },
           icon: const Icon(Icons.arrow_back),
         ),

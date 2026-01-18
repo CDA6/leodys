@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
 
 import '../../features/map/presentation/screen/map_screen.dart';
 import '../../features/ocr-reader/presentation/screens/ocr_type_selection.dart';
@@ -50,6 +51,13 @@ class HomePage extends StatelessWidget {
                       label: 'OCR Reader',
                       onTap: () {
                         Navigator.pushNamed(context, OcrTypeSelectionScreen.route);
+                      },
+                    ),
+                    FeatureItem(
+                      icon: Icons.credit_card,
+                      label: 'Cartes de fidélité',
+                      onTap: () {
+                        Navigator.pushNamed(context, DisplayCardsScreen.route);
                       },
                     ),
                   ],
