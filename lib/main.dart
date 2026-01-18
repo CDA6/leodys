@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/ocr-reader/presentation/screens/ocr_type_selection.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'common/services/database_service.dart';
@@ -36,6 +37,7 @@ void main() async {
   );
 
   await ocr_reader.init();
+  await messagerie.init();
 
   runApp(MyApp());
 }
