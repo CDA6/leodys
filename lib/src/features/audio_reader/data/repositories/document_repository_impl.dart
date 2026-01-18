@@ -2,11 +2,12 @@ import 'package:hive/hive.dart';
 import 'package:leodys/src/features/audio_reader/domain/models/document.dart';
 import 'package:leodys/src/features/audio_reader/domain/repositories/document_repository.dart';
 
+/// Gestion de la sauvegarde des textes extraits à partir des photos
 class DocumentRepositoryImpl implements DocumentRepository {
 
   static const String _boxName = 'document_box';
 
-
+ /// Suppression d'un document
   @override
   Future<void> deleteDocument(String id) async {
     final box = await Hive.openBox(_boxName);
@@ -14,6 +15,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   }
 
+  /// Récuperer un document à partir de son id
   @override
   Future<Document?> getById(String id) async {
     final box = await Hive.openBox(_boxName);
@@ -32,6 +34,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   }
 
+  /// Récuperer une liste de documents enregistrés
   @override
   Future<List<Document>> getAllDocuments() async {
     final box = await Hive.openBox(_boxName);
@@ -59,6 +62,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
     return documents;
   }
 
+  /// Sauvegarder un document
   @override
   Future<void> saveDocument(Document document) async {
     final box = await Hive.openBox(_boxName);
@@ -67,6 +71,8 @@ class DocumentRepositoryImpl implements DocumentRepository {
       'title': document.title,
       'content': document.content,
       'createAt': document.createAt.toIso8601String(),
+      // toIso8601String() est un affichage normalisé de la date
+      // préconiser pour les sauvegardes dans Hive
     });
   }
 

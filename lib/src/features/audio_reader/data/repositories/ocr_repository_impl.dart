@@ -3,12 +3,16 @@
 import 'package:leodys/src/features/audio_reader/data/services/ocr_service_impl.dart';
 import 'package:leodys/src/features/audio_reader/domain/repositories/ocr_repository.dart';
 
+/// Implémentation du repository de OCR
+/// Relie le Domain (contrat OcrRepository) et le service technique de
+/// reconnaissance de texte (OcrServiceImpl)
 class OcrRepositoryImpl implements OcrRepository{
-
+  // Appel le service Google ML Kit
   final OcrServiceImpl ocrServiceImpl;
-
+  // Injection du service OCR via le constructeur
   OcrRepositoryImpl (this.ocrServiceImpl);
 
+  /// Lance la reconnaissance de texte à partir d'une photo
   @override
   Future<String> extractTextFromImage(String imagePath) async {
 

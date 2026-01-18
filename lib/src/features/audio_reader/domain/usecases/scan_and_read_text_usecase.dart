@@ -4,11 +4,9 @@ import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dar
 import 'package:leodys/src/features/audio_reader/domain/repositories/ocr_repository.dart';
 import 'package:leodys/src/features/audio_reader/domain/repositories/tts_repository.dart';
 
-/*
-Cas d'usage :
-L'utilisateur scan un document, le systeme traite le document et transforme en texte.
-Le systeme lance la lecrture audio
- */
+/// Cas d'usage :
+/// L'utilisateur scan un document, le systeme traite le document et transforme en texte.
+/// Le systeme lance la lecrture audio
 class ScanAndReadTextUsecase {
 
   final OcrRepository ocrRepository;
@@ -16,10 +14,8 @@ class ScanAndReadTextUsecase {
 
   ScanAndReadTextUsecase(this.ocrRepository, this.ttsRepository);
 
-  /*
-  Lancer le Scan du document. Vérifier le traitement de l'image->texte
-  Lancer la lecture audio
-   */
+///   Lancer le Scan du document. Vérifier le traitement de l'image->texte
+///   Lancer la lecture audio
   Future<void> execute (String imagePath, ReaderConfig config) async {
 
     final text = await ocrRepository.extractTextFromImage(imagePath);
