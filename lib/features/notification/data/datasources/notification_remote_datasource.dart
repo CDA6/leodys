@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../../constants/mail_constants.dart';
 import '../../domain/entities/referent_entity.dart';
 
 abstract class NotificationRemoteDataSource {
@@ -7,8 +8,10 @@ abstract class NotificationRemoteDataSource {
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
-  static const String _apiKey = 'TA_CLE_BREVO';
-  static const String _apiUrl = 'https://api.brevo.com/v3/smtp/email';
+  static final String _apiKey = MailConstants.apiKeyBrevo;
+  static final String _apiUrl = MailConstants.apiUrlBrevo;
+  static final String _sender = MailConstants.sender;
+
 
   @override
   Future<void> sendEmail({required ReferentEntity referent, required String subject, required String body}) async {
@@ -16,7 +19,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       Uri.parse(_apiUrl),
       headers: {'api-key': _apiKey, 'Content-Type': 'application/json'},
       body: jsonEncode({
-        'sender': {'name': 'Leodys App', 'email': 'johngreta904@gmail.com'},
+        'sender': {'name': 'Leodys App', 'email': _sender},
         'to': [{'email': referent.email, 'name': referent.name}],
         'subject': subject,
         'textContent': body,

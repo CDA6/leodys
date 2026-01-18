@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -29,6 +30,11 @@ import 'features/authentication/domain/services/auth_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load(fileName: ".env");
+
+
+  // 1. Initialisation des services de base
+  await DatabaseService.init();
   await InternetUtil.init();
 
   await Supabase.initialize(
@@ -75,6 +81,7 @@ class MyApp extends StatelessWidget {
             return MapScreen(viewModel: viewModel);
           },
           OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
+          NotificationDashboard.route: (context) => const NotificationDashboard(),
         },
       ),
     );
