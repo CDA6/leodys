@@ -13,6 +13,7 @@ import 'features/ocr-reader/presentation/screens/ocr_type_selection.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'common/services/database_service.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
+
 import 'features/map/data/dataSources/geolocator_datasource.dart';
 import 'features/map/data/repositories/location_repository_impl.dart';
 import 'features/map/presentation/viewModel/map_view_model.dart';
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Leodys',
         debugShowCheckedModeBanner: false,
         initialRoute: HomePage.route,
