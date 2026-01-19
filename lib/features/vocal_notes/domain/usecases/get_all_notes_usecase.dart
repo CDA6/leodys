@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:leodys/common/domain/usecase.dart';
 import 'package:leodys/common/errors/failures.dart';
 import 'package:leodys/features/vocal_notes/domain/entities/vocal_note_entity.dart';
 import 'package:leodys/features/vocal_notes/domain/repositories/vocal_note_repository.dart';
@@ -9,7 +8,7 @@ import 'package:leodys/features/vocal_notes/domain/repositories/vocal_note_repos
 class NoParams {}
 
 /// Cas d'utilisation pour récupérer toutes les notes vocales.
-class GetAllNotesUseCase implements UseCase<List<VocalNoteEntity>, NoParams> {
+class GetAllNotesUseCase {
   final VocalNoteRepository repository;
 
   GetAllNotesUseCase(this.repository);

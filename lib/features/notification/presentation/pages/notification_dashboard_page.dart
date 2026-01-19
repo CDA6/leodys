@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../common/utils/connectivity_checker.dart';
+import 'package:leodys/common/utils/internet_util.dart';
 import 'notification_page.dart';
 import 'email_history_page.dart';
 import '../controllers/notification_controller.dart';
@@ -24,7 +24,7 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
   }
 
   Future<void> _checkConnection() async {
-    final connected = await ConnectivityChecker.hasInternetConnection();
+    final connected = InternetUtil.isConnected;
     if (mounted) setState(() => _isConnected = connected);
   }
 
