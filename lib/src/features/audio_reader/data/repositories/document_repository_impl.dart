@@ -41,15 +41,6 @@ class DocumentRepositoryImpl implements DocumentRepository {
     final List<Document> documents = [];
     for (final key in box.keys){
       final data = box.get(key);
-
-      // if (data == null ||
-      //     data['idText'] == null ||
-      //     data['title'] == null ||
-      //     data['content'] == null ||
-      //     data['createAt'] == null) {
-      //   continue;
-      // }
-
       documents.add(
         Document(
           idText: data['idText'],

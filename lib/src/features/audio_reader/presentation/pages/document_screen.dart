@@ -6,19 +6,15 @@ import '../controllers/document_controller.dart';
 import '../widgets/document_tile.dart';
 
 class DocumentsScreen extends StatefulWidget {
-
   static const route = '/documents';
 
-  const DocumentsScreen({
-    super.key,
-  });
+  const DocumentsScreen({super.key});
 
   @override
   State<DocumentsScreen> createState() => _DocumentsScreenState();
 }
 
 class _DocumentsScreenState extends State<DocumentsScreen> {
-
   late final DocumentController documentController;
   late final ReaderController readerController;
 
@@ -28,23 +24,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     readerController = createReaderController();
     documentController = createDocumentController();
 
-    readerController.addListener(_onControllerChanged);
-    documentController.addListener(_onControllerChanged);
     documentController.getAllDocuments();
-  }
-
-
-  /// Méthode appelée lorsque l’état d’un contrôleur change.
-  /// Elle force la reconstruction de l’interface.
-  void _onControllerChanged() {
-    setState(() {});
   }
 
   @override
   void dispose() {
-    readerController.removeListener(_onControllerChanged);
-    documentController.removeListener(_onControllerChanged);
-
     readerController.dispose();
     documentController.dispose();
     super.dispose();
@@ -52,35 +36,40 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = documentController;
-    final readController = readerController;
+    return AnimatedBuilder(
+      animation: documentController,
+      builder: (context, _) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Mes documents'),
+          ),
+          body: documentController.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : documentController.documents.isEmpty
+              ? const Center(child: Text('Aucun document enregistré'))
+              : ListView.builder(
+            itemCount: documentController.documents.length,
+            itemBuilder: (context, index) {
+              final document =
+              documentController.documents[index];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mes documents'),
-      ),
-      body: controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : controller.documents.isEmpty
-          ? const Center(child: Text('Aucun document enregistré'))
-          : ListView.builder(
-        itemCount: controller.documents.length,
-        itemBuilder: (context, index) {
-          final document = controller.documents[index];
-          return DocumentTile(
-            document: document,
-            onRead: () {
-              readController.loadDocument(document);
-              readController.readText(
-                ReaderConfig.defaultConfig,
+              return DocumentTile(
+                document: document,
+                onRead: () {
+                  readerController.loadDocument(document);
+                  readerController.readText(
+                    ReaderConfig.defaultConfig,
+                  );
+                },
+                onDelete: () {
+                  documentController
+                      .deleteDocument(document.idText);
+                },
               );
             },
-            onDelete: () {
-              controller.deleteDocument(document.idText);
-            },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
