@@ -6,7 +6,7 @@ import '../notification/presentation/controllers/tts_controller.dart';
 
 final sl = GetIt.instance;
 
-void init() {
+Future<void> init() async {
   sl.registerLazySingleton<IClockRepository>(() => ClockRepositoryImpl());
   sl.registerFactory(() => VoiceClockViewModel(sl(), TtsController()));
 }
