@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/reading_progress.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/reading_progress_usecase.dart';
+import '../../domain/models/reading_progress.dart';
+import '../../domain/usecases/reading_progress_usecase.dart';
 
 ///Classe controller de la fonctionnalité de lecture audio avec gestion
 /// de la pause, de la reprise et de la sauvegarde de la progression.

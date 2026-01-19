@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/document_usecase.dart';
-
 import '../../domain/models/document.dart';
+import '../../domain/usecases/document_usecase.dart';
 
 /// Controller responsable de la gestion de l'état des documents scannés.
 /// Cette classe fait le lien entre la couche présentation et domain(usecase).

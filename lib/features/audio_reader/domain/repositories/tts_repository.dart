@@ -1,5 +1,4 @@
-
-import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
+import '../models/reader_config.dart';
 
 /// Classe abstraite ttsRepository qui représente une interface.
 /// Elle définit les contrats que les classes de la couche data devront implémenter

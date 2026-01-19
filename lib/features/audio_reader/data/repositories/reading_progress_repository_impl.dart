@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/reading_progress.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/reading_progress_repository.dart';
+import '../../domain/models/reading_progress.dart';
+import '../../domain/repositories/reading_progress_repository.dart';
 
 /// Gestion de la sauvegarde locale de la progression de lecture avec Hive
 class ReadingProgressRepositoryImpl implements ReadingProgressRepository {

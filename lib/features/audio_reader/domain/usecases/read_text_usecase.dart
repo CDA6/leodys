@@ -1,5 +1,6 @@
-import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/tts_repository.dart';
+
+import '../models/reader_config.dart';
+import '../repositories/tts_repository.dart';
 
 /// Cas d'usage:
 /// L'utilisateur souhaite lancer une lecture audio d'un document déjà scanné

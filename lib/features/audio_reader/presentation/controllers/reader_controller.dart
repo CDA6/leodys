@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/document_usecase.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/read_text_usecase.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/scan_document_usecase.dart';
 import '../../domain/models/document.dart';
+import '../../domain/models/reader_config.dart';
+import '../../domain/usecases/document_usecase.dart';
+import '../../domain/usecases/read_text_usecase.dart';
+import '../../domain/usecases/scan_document_usecase.dart';
 
 ///Classe controller de la fonctionnalité lecture audio.
 ///Il étend la classe ChangeNotifier
