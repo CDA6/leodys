@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/document.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/document_repository.dart';
+import '../../domain/models/document.dart';
+import '../../domain/repositories/document_repository.dart';
 
 /// Gestion de la sauvegarde des textes extraits à partir des photos
 class DocumentRepositoryImpl implements DocumentRepository {

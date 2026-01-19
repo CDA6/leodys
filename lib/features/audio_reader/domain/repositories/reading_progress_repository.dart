@@ -1,4 +1,4 @@
-import 'package:leodys/src/features/audio_reader/domain/models/reading_progress.dart';
+import '../models/reading_progress.dart';
 
 /// Gestion des la progression de la lecture
 abstract class ReadingProgressRepository {

@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/reading_progress.dart';
-import 'package:leodys/src/features/audio_reader/injection.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/reader_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/reading_progess_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/scan_and_read_text_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/widgets/audio_controls.dart';
-import 'package:leodys/src/features/audio_reader/presentation/widgets/scan_button.dart';
-import 'package:leodys/src/features/audio_reader/presentation/widgets/text_preview.dart';
+import '../../domain/models/reader_config.dart';
+import '../../domain/models/reading_progress.dart';
+import '../../injection.dart';
+import '../controllers/reader_controller.dart';
+import '../controllers/reading_progess_controller.dart';
+import '../controllers/scan_and_read_text_controller.dart';
+import '../widgets/audio_controls.dart';
+import '../widgets/scan_button.dart';
+import '../widgets/text_preview.dart';
+
 /// Classe UI qui représente l'écran qui permet de réaliser le scan du
 /// document et la lecture de ce dernier
 /// Elle prend en charge également l'initiation des contrôleurs, la synchronistion

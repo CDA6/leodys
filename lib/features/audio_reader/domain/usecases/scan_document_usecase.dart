@@ -1,6 +1,4 @@
-
-
-import 'package:leodys/src/features/audio_reader/domain/repositories/ocr_repository.dart';
+import '../repositories/ocr_repository.dart';
 
 /// Cas d'usage:
 /// Scan un document et retourne un texte
