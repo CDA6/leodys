@@ -6,7 +6,6 @@ import 'package:leodys/src/features/audio_reader/domain/models/reading_progress.
 import 'package:leodys/src/features/audio_reader/injection.dart';
 import 'package:leodys/src/features/audio_reader/presentation/controllers/reader_controller.dart';
 import 'package:leodys/src/features/audio_reader/presentation/controllers/reading_progess_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/scan_and_read_text_controller.dart';
 import 'package:leodys/src/features/audio_reader/presentation/widgets/audio_controls.dart';
 import 'package:leodys/src/features/audio_reader/presentation/widgets/scan_button.dart';
 import 'package:leodys/src/features/audio_reader/presentation/widgets/text_preview.dart';
