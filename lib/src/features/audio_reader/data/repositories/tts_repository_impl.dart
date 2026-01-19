@@ -1,4 +1,4 @@
-import 'package:leodys/src/features/audio_reader/data/services/tts_service_imp.dart';
+import 'package:leodys/src/features/audio_reader/data/services/tts_service.dart';
 import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
 
 import '../../domain/repositories/tts_repository.dart';
@@ -8,7 +8,7 @@ import '../../domain/repositories/tts_repository.dart';
 /// synthese vocal (TtsServiceImpl)
 class TtsRepositoryImpl implements TtsRepository {
   // Appel le plugin flutter_tts
-  final TtsServiceImpl _ttsService;
+  final TtsService _ttsService;
 
   // Injection de service TTS via le constructeur
   TtsRepositoryImpl(this._ttsService);
