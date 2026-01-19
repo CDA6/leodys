@@ -1,18 +1,20 @@
-import 'package:leodys/src/features/audio_reader/data/repositories/document_repository_impl.dart';
-import 'package:leodys/src/features/audio_reader/data/repositories/ocr_repository_impl.dart';
-import 'package:leodys/src/features/audio_reader/data/repositories/reading_progress_repository_impl.dart';
-import 'package:leodys/src/features/audio_reader/data/repositories/tts_repository_impl.dart';
-import 'package:leodys/src/features/audio_reader/data/services/ocr_service_impl.dart';
-import 'package:leodys/src/features/audio_reader/data/services/tts_service_imp.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/document_usecase.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/read_text_usecase.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/reading_progress_usecase.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/scan_and_read_text_usecase.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/scan_document_usecase.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/document_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/reader_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/reading_progess_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/scan_and_read_text_controller.dart';
+
+import 'package:leodys/features/audio_reader/presentation/controllers/document_controller.dart';
+import 'package:leodys/features/audio_reader/presentation/controllers/reader_controller.dart';
+import 'package:leodys/features/audio_reader/presentation/controllers/reading_progess_controller.dart';
+import 'package:leodys/features/audio_reader/presentation/controllers/scan_and_read_text_controller.dart';
+
+import 'data/repositories/ocr_repository_impl.dart';
+import 'data/repositories/document_repository_impl.dart';
+import 'data/repositories/reading_progress_repository_impl.dart';
+import 'data/repositories/tts_repository_impl.dart';
+import 'data/services/ocr_service_impl.dart';
+import 'data/services/tts_service_imp.dart';
+import 'domain/usecases/document_usecase.dart';
+import 'domain/usecases/read_text_usecase.dart';
+import 'domain/usecases/reading_progress_usecase.dart';
+import 'domain/usecases/scan_and_read_text_usecase.dart';
+import 'domain/usecases/scan_document_usecase.dart';
 
 ReaderController createReaderController() {
   final ocrService = OcrServiceImpl();

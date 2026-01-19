@@ -1,8 +1,6 @@
-
-
-import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/ocr_repository.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/tts_repository.dart';
+import '../repositories/ocr_repository.dart';
+import '../models/reader_config.dart';
+import '../repositories/tts_repository.dart';
 
 /// Cas d'usage :
 /// L'utilisateur scan un document, le systeme traite le document et transforme en texte.
