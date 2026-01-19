@@ -16,6 +16,8 @@ import 'constants/auth_constants.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
+import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
 import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
@@ -44,7 +46,6 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  await Hive.initFlutter();
 
   // 1. Initialisation des services de base
   await DatabaseService.init();
@@ -87,7 +88,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
+        // --- AJOUTEZ CETTE LIGNE ICI ---
+        ChangeNotifierProvider(
+            create: (_) =>voice_clock.sl<VoiceClockViewModel>() // Ou voice_clock.sl<VoiceClockViewModel>()
+        ),
       ],
+
       child: MaterialApp(
         navigatorKey: navigatorKey,
         title: 'Leodys',
@@ -110,6 +116,8 @@ class MyApp extends StatelessWidget {
           VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
           VocalNoteEditorScreen.route: (context) =>
               const VocalNoteEditorScreen(),
+          VoiceClockScreen.route: (context) =>
+          const VoiceClockScreen(),
           ReaderScreen.route: (context) => const ReaderScreen(),
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
