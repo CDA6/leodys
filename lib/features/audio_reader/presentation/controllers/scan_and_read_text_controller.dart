@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:leodys/src/features/audio_reader/domain/usecases/scan_and_read_text_usecase.dart';
 import '../../domain/models/reader_config.dart';
+import '../../domain/usecases/scan_and_read_text_usecase.dart';
 
 ///Classe controller de la fonctionnalité scan et lecture audio.
 ///Il étend la classe changeNotifier

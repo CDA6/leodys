@@ -1,5 +1,5 @@
-import 'package:leodys/src/features/audio_reader/domain/models/reading_progress.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/reading_progress_repository.dart';
+import '../models/reading_progress.dart';
+import '../repositories/reading_progress_repository.dart';
 
 class ReadingProgressUsecase {
 

@@ -1,7 +1,6 @@
 
-
-import 'package:leodys/src/features/audio_reader/data/services/ocr_service_impl.dart';
-import 'package:leodys/src/features/audio_reader/domain/repositories/ocr_repository.dart';
+import '../../domain/repositories/ocr_repository.dart';
+import '../services/ocr_service_impl.dart';
 
 /// Implémentation du repository de OCR
 /// Relie le Domain (contrat OcrRepository) et le service technique de

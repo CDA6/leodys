@@ -9,6 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/pages/home/presentation/screens/home_page.dart';
 import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
+import 'features/audio_reader/presentation/pages/document_screen.dart';
+import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
@@ -19,11 +21,6 @@ import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:leodys/src/features/audio_reader/injection.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/document_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/reader_controller.dart';
-import 'package:leodys/src/features/audio_reader/presentation/pages/document_screen.dart';
-import 'package:leodys/src/features/audio_reader/presentation/pages/reader_screen.dart';
 
 import 'features/map/data/dataSources/geolocator_datasource.dart';
 import 'features/map/data/repositories/location_repository_impl.dart';

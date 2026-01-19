@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/src/features/audio_reader/domain/models/reader_config.dart';
-import 'package:leodys/src/features/audio_reader/injection.dart';
-import 'package:leodys/src/features/audio_reader/presentation/controllers/reader_controller.dart';
+import '../../domain/models/reader_config.dart';
+import '../../injection.dart';
 import '../controllers/document_controller.dart';
+import '../controllers/reader_controller.dart';
 import '../widgets/document_tile.dart';
 
 class DocumentsScreen extends StatefulWidget {

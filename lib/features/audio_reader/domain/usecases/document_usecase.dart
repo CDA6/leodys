@@ -1,6 +1,5 @@
-import 'package:leodys/src/features/audio_reader/domain/repositories/document_repository.dart';
-
 import '../models/document.dart';
+import '../repositories/document_repository.dart';
 
 /// Cas d'utilisation pour la gestion métier des documents scannés
 class DocumentUsecase {
