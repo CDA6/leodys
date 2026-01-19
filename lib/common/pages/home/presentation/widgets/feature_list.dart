@@ -62,6 +62,26 @@ class FeatureList extends StatelessWidget {
       color: Colors.blue,
       description: 'Visualiser et naviguer sur la carte',
     ),
+    AppFeature(
+      name: 'Messagerie',
+      icon: Icons.message,
+      route: '/messagerie',
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Envoyer des notifications par mail',
+    ),
+    AppFeature(
+      name: 'Horloge',
+      icon: Icons.access_time,
+      route: '/voice-clock',
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: "Ecouter l'heure",
+    ),
 
     AppFeature(
       name: 'Lecteur d\'écran',
