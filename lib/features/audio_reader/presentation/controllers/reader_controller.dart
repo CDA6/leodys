@@ -46,7 +46,7 @@ class ReaderController extends ChangeNotifier {
 
     if (text.trim().isNotEmpty) {
       final document = Document(
-        idText: DateTime.now().millisecondsSinceEpoch.toString(),
+        idText: DateTime.now().millisecondsSinceEpoch.toString(), //l’identifiant est basé sur le nombre de millisecondes écoulées depuis le 1er janvier 1970.
         title: _generateTitle(text),
         content: text,
         createAt: DateTime.now(),
