@@ -98,6 +98,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     Navigator.pushNamed(context, '/documents');
                   },
                 ),
+                ListTile(
+                  leading: const Icon(Icons.exit_to_app),
+                  title: const Text('Accueil'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/');
+                  },
+                ),
               ],
             ),
           ),
