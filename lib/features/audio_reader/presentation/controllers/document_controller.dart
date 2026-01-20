@@ -29,18 +29,12 @@ class DocumentController extends ChangeNotifier {
 
   /// Sauvegarder un document scanné
   Future<void> saveDocument(Document document) async {
-    isLoading = true;
-    notifyListeners();
-
     await documentUsecase.saveDocument(document); // enregistrement
     await getAllDocuments(); // Mettre à jour la liste
   }
 
   /// Supprimer un document
   Future<void> deleteDocument(String id) async {
-    isLoading = true;
-    notifyListeners();
-
     await documentUsecase.deleteDocument(id); // Suppression
     await getAllDocuments(); // Mettre à jour la liste
   }
@@ -50,8 +44,10 @@ class DocumentController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    selectedDocument = await documentUsecase.getById(id);
+    final document = await documentUsecase.getById(id);
+    selectedDocument = document;
     isLoading = false;
     notifyListeners();
+    return selectedDocument;
   }
 }
