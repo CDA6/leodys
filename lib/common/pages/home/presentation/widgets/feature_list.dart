@@ -71,6 +71,17 @@ class FeatureList extends StatelessWidget {
       color: Colors.blue,
       description: 'TODO',
     ),
+
+    AppFeature(
+      name: 'Lecteur de plaque d\'immatriculation',
+      icon: Icons.directions_car_rounded,
+      route: ReaderScreen.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: false,
+      color: Colors.blue,
+      description: 'TODO',
+    ),
   ];
 
   @override
