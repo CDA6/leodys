@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leodys/features/cards/providers.dart';
 
 import '../domain/usecases/save_new_card_usecase.dart';
 
-class RenameCardScreen extends ConsumerStatefulWidget{
+class RenameCardScreen extends StatefulWidget{
   final List<File> imageFiles;
   late final File? pdfFile;
 
@@ -16,10 +15,10 @@ class RenameCardScreen extends ConsumerStatefulWidget{
   });
 
   @override
-  ConsumerState<RenameCardScreen> createState() => _RenameCardState();
+  State<RenameCardScreen> createState() => _RenameCardState();
 }
 
-class _RenameCardState extends ConsumerState<RenameCardScreen> {
+class _RenameCardState extends State<RenameCardScreen> {
   final TextEditingController _controller = TextEditingController();
   String? error;
 
@@ -50,7 +49,7 @@ class _RenameCardState extends ConsumerState<RenameCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final saveNewCardUsecase = ref.read(saveNewCardUseCaseProvider);
+    final saveNewCardUsecase = getIt<SaveNewCardUsecase>();
 
     return Scaffold(
       appBar: AppBar(title: const Text("Nommer la carte")),
