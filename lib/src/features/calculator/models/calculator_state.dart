@@ -1,5 +1,6 @@
 /// Modèle représentant l'état complet de la calculatrice
 /// Contient toutes les données nécessaires pour l'affichage et les calculs
+/// Note: L'historique est géré séparément par HiveService
 class CalculatorState {
   /// Texte actuellement affiché à l'écran
   final String display;
@@ -10,9 +11,6 @@ class CalculatorState {
   /// Expression en cours de construction (ex: "6+")
   final String expression;
 
-  /// Historique des calculs effectués (anciennes entrées en haut, nouvelles en bas)
-  final List<String> history;
-
   /// État d'erreur
   final bool hasError;
 
@@ -20,7 +18,6 @@ class CalculatorState {
     this.display = '0',
     this.current = '',
     this.expression = '',
-    this.history = const [],
     this.hasError = false,
   });
 
@@ -29,14 +26,12 @@ class CalculatorState {
     String? display,
     String? current,
     String? expression,
-    List<String>? history,
     bool? hasError,
   }) {
     return CalculatorState(
       display: display ?? this.display,
       current: current ?? this.current,
       expression: expression ?? this.expression,
-      history: history ?? this.history,
       hasError: hasError ?? this.hasError,
     );
   }

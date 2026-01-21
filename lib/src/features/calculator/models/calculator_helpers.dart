@@ -21,7 +21,7 @@ class CalculatorHelpers {
     return '10^$posFromRight';
   }
 
-  /// Noms des places décimales
+  /// Noms des décimales
   static String decimalPlaceName(int decPos) {
     const names = ['dixième', 'centième', 'millième', '10^-4', '10^-5', '10^-6'];
     if (decPos - 1 < names.length) return names[decPos - 1];
