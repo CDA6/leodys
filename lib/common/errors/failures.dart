@@ -37,3 +37,7 @@ class OCRFailure extends Failure {
 class ImageProcessingFailure extends Failure {
   const ImageProcessingFailure(super.message);
 }
+
+class CacheFailure extends Failure {
+  const CacheFailure(super.message);
+}

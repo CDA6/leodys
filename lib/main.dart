@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:leodys/common/widget/global_overlay.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/pages/home/presentation/screens/home_page.dart';
 import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
+import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
@@ -21,6 +23,9 @@ import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'features/accessibility/accessibility_injection.dart' as accessibility;
+import 'features/accessibility/presentation/screens/settings_screen.dart';
 
 import 'features/map/data/dataSources/geolocator_datasource.dart';
 import 'features/map/data/repositories/location_repository_impl.dart';
@@ -54,6 +59,7 @@ void main() async {
     anonKey: AuthConstants.apiKey,
   );
 
+  await accessibility.init();
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
@@ -78,12 +84,20 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => accessibility.sl<SettingsViewModel>()..init(),
+        ),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
         title: 'Leodys',
         debugShowCheckedModeBanner: false,
         initialRoute: HomePage.route,
+        builder: (context, child) {
+          return GlobalOverlay(
+            child: child ?? const SizedBox(),
+          );
+        },
         routes: {
           HomePage.route: (context) => const HomePage(),
           MapScreen.route: (context) {
@@ -94,6 +108,7 @@ class MyApp extends StatelessWidget {
 
             return MapScreen(viewModel: viewModel);
           },
+          SettingsScreen.route: (context) => const SettingsScreen(),
           PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
           HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
           NotificationDashboard.route: (context) =>
