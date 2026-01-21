@@ -1,50 +1,76 @@
+import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:leodys/features/cards/data/cards_repository.dart';
+import 'package:leodys/features/cards/data/datasources/local/cards_local_datasource.dart';
 import 'package:leodys/features/cards/data/datasources/remote/cards_remote_datasource.dart';
 import 'package:leodys/features/cards/data/sync/cards_sync_manager.dart';
 import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/get_local_user_cards_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/save_new_card_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/upload_card_usecase.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'data/cards_repository.dart';
-import 'data/datasources/local/cards_local_datasource.dart';
+final getIt = GetIt.instance;
 
-final supabaseClientProvider = Provider<SupabaseClient>((ref) {
-  return Supabase.instance.client;
-});
+Future<void> init() async {
+  // supabase
+  getIt.registerLazySingleton<SupabaseClient>(
+        () => Supabase.instance.client,
+  );
 
-final cardsRemoteDatasourceProvider = Provider<CardsRemoteDatasource>((ref) {
-  final supabase = ref.read(supabaseClientProvider);
-  return CardsRemoteDatasource(supabase: supabase);
-});
+  // remote datasource
+  getIt.registerLazySingleton<CardsRemoteDatasource>(
+        () => CardsRemoteDatasource(
+      supabase: getIt<SupabaseClient>(),
+    ),
+  );
 
-final cardsLocalDatasourceProvider = Provider<CardsLocalDatasource>((ref) {
-  return CardsLocalDatasource();
-});
+  // local datasource
+  getIt.registerLazySingleton<CardsLocalDatasource>(
+        () => CardsLocalDatasource(),
+  );
 
-final cardsRepositoryProvider = Provider<CardsRepository>((ref) {
-  final remoteDatasource = ref.read(cardsRemoteDatasourceProvider);
-  final localDatasource = ref.read(cardsLocalDatasourceProvider);
-  return CardsRepository(remoteDatasource, localDatasource);
-});
+  // repository
+  getIt.registerLazySingleton<CardsRepository>(
+        () => CardsRepository(
+      getIt<CardsRemoteDatasource>(),
+      getIt<CardsLocalDatasource>(),
+    ),
+  );
 
-final uploadCardUseCaseProvider = Provider<UploadCardUsecase>((ref) {
-  return UploadCardUsecase(ref.read(cardsRepositoryProvider));
-});
+  // sync manager
+  getIt.registerLazySingleton<CardSyncManager>(
+        () => CardSyncManager(
+      local: getIt<CardsLocalDatasource>(),
+      remote: getIt<CardsRemoteDatasource>(),
+    ),
+  );
 
-final cardSyncManagerProvider = Provider<CardSyncManager>((ref) {
-  return CardSyncManager(local: ref.read(cardsLocalDatasourceProvider), remote: ref.read(cardsRemoteDatasourceProvider));
-});
+  // use cases
+  getIt.registerLazySingleton<UploadCardUsecase>(
+        () => UploadCardUsecase(
+      getIt<CardsRepository>(),
+    ),
+  );
 
-final saveNewCardUseCaseProvider = Provider<SaveNewCardUsecase>((ref) {
-  return SaveNewCardUsecase(ref.read(cardsRepositoryProvider), ref.read(cardSyncManagerProvider));
-});
+  getIt.registerLazySingleton<SaveNewCardUsecase>(
+        () => SaveNewCardUsecase(
+      getIt<CardsRepository>(),
+      getIt<CardSyncManager>(),
+    ),
+  );
 
-final getLocalUserCardsUseCaseProvider = Provider<GetLocalUserCardsUsecase>((ref) {
-  return GetLocalUserCardsUsecase(ref.read(cardsRepositoryProvider), ref.read(cardSyncManagerProvider));
-});
+  getIt.registerLazySingleton<GetLocalUserCardsUsecase>(
+        () => GetLocalUserCardsUsecase(
+      getIt<CardsRepository>(),
+      getIt<CardSyncManager>(),
+    ),
+  );
 
-final deleteCardUseCaseProvider = Provider<DeleteCardUsecase>((ref) {
-  return DeleteCardUsecase(ref.read(cardsRepositoryProvider), ref.read(cardSyncManagerProvider));
-});
+  getIt.registerLazySingleton<DeleteCardUsecase>(
+        () => DeleteCardUsecase(
+      getIt<CardsRepository>(),
+      getIt<CardSyncManager>(),
+    ),
+  );
+}

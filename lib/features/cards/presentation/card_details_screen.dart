@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
 import 'package:leodys/features/cards/providers.dart';
 
 import '../domain/card_model.dart';
 
-class CardDetailsScreen extends ConsumerStatefulWidget{
+class CardDetailsScreen extends StatefulWidget{
   static const route = "/card_details";
   final CardModel? card;
 
@@ -17,11 +17,11 @@ class CardDetailsScreen extends ConsumerStatefulWidget{
   });
 
   @override
-  ConsumerState<CardDetailsScreen> createState() => _CardDetailsScreenState();
+  State<CardDetailsScreen> createState() => _CardDetailsScreenState();
 }
 
-class _CardDetailsScreenState extends ConsumerState<CardDetailsScreen> {
-  late final deleteCardUseCase = ref.read(deleteCardUseCaseProvider);
+class _CardDetailsScreenState extends State<CardDetailsScreen> {
+  late final deleteCardUseCase = getIt<DeleteCardUsecase>();
   bool _isFront = true;
 
   Widget _buildCardImage() {

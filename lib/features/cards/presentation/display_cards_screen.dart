@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leodys/features/cards/domain/usecases/get_local_user_cards_usecase.dart';
 import 'package:leodys/features/cards/presentation/card_details_screen.dart';
 import 'package:leodys/features/cards/presentation/rename_card_screen.dart';
 import 'package:leodys/features/cards/providers.dart';
 import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../common/pages/home_page.dart';
+import '../../../common/pages/home/presentation/screens/home_page.dart';
 import '../domain/card_model.dart';
 
-class DisplayCardsScreen extends ConsumerStatefulWidget {
+class DisplayCardsScreen extends StatefulWidget {
   static const String route = '/cards';
 
   const DisplayCardsScreen({
@@ -20,14 +20,14 @@ class DisplayCardsScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<DisplayCardsScreen> createState() => _DisplayCardsScreenState();
+  State<DisplayCardsScreen> createState() => _DisplayCardsScreenState();
 
 }
 
-class _DisplayCardsScreenState extends ConsumerState<DisplayCardsScreen> {
+class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
   List<CardModel> savedCards = [];
   Logger logger = Logger();
-  late final getLocalCards = ref.read(getLocalUserCardsUseCaseProvider);
+  late final getLocalCards = getIt<GetLocalUserCardsUsecase>();
   final user = Supabase.instance.client.auth.currentUser;
 
   Future<void> loadSavedCards() async {
