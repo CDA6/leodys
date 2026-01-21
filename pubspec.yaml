@@ -9,9 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   flutter_riverpod: ^3.1.0
   cupertino_icons: ^1.0.8 #https://pub.dev/packages/cupertino_icons
   provider: ^6.1.5+1 #https://pub.dev/packages/provider
@@ -40,12 +37,26 @@ dependencies:
   syncfusion_flutter_datagrid: ^32.1.22
   geolocator: ^14.0.2
   local_auth: ^2.3.0
-  uuid: ^4.4.2
+  mailer: ^6.6.0
+  speech_to_text: ^7.3.0
+  flutter_tts: ^4.2.5
+  flutter_dotenv: ^6.0.0
+  speech_to_text_windows: ^1.0.1-beta.16
+  manual_speech_to_text: ^1.0.4
+  uuid: ^4.5.2
+  intl: ^0.20.2
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.13
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/logo.jpeg
+    - .env
