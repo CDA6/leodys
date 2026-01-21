@@ -27,12 +27,12 @@ class NotificationLocalDataSourceImpl implements NotificationLocalDataSource {
   /// Injection des 6 référents de base
   Future<void> _seedInitialData() async {
     final List<ReferentEntity> initialData = [
-      const ReferentEntity(id: '1', name: 'Jean Dupont', email: 'laubert.yoann@gmail.com', role: 'Tuteur', category: 'Mon Référent'),
-      const ReferentEntity(id: '2', name: 'Alice Martin', email: 'a.martin@greta.fr', role: 'Conseillère', category: 'Mon Référent'),
-      const ReferentEntity(id: '3', name: 'Paul Bernard', email: 'p.bernard@capemploi.fr', role: 'Expert', category: 'CAP Emploi'),
-      const ReferentEntity(id: '4', name: 'Lucie Clerc', email: 'l.clerc@capemploi.fr', role: 'Chargée de mission', category: 'CAP Emploi'),
-      const ReferentEntity(id: '5', name: 'Marc Durand', email: 'm.durand@agefiph.fr', role: 'Délégué', category: 'AGEFIPH'),
-      const ReferentEntity(id: '6', name: 'Sophie Petit', email: 's.petit@agefiph.fr', role: 'Référente', category: 'AGEFIPH'),
+      const ReferentEntity(id: '1', name: 'Jean John', email: 'laubert.yoann@gmail.com', role: 'Tuteur', category: 'Mon Référent'),
+      const ReferentEntity(id: '2', name: 'Pascal Lamy', email: 'pascal.lamy5@ac-rennes.fr', role: 'Conseillère', category: 'Mon Référent'),
+      const ReferentEntity(id: '3', name: 'Paul Mccartney', email: 'p.bernard@capemploi.fr', role: 'Expert', category: 'CAP Emploi'),
+      const ReferentEntity(id: '4', name: 'Laure Manaudou', email: 'l.clerc@capemploi.fr', role: 'Chargée de mission', category: 'CAP Emploi'),
+      const ReferentEntity(id: '5', name: 'Karl Marx', email: 'm.durand@agefiph.fr', role: 'Délégué', category: 'AGEFIPH'),
+      const ReferentEntity(id: '6', name: 'Brad Pitt', email: 's.petit@agefiph.fr', role: 'Référente', category: 'AGEFIPH'),
     ];
 
     for (var ref in initialData) {
