@@ -9,6 +9,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/vehicle_recognition/presentation/pages/historicals_scan.dart';
+import 'package:leodys/features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -110,7 +112,7 @@ void main() async {
   await cards.init();
   await pose_detection.init();
   await voice_clock.init();
-  
+
   runApp(MyApp(themeManager: themeManager));
 }
 
@@ -210,6 +212,19 @@ class MyApp extends StatelessWidget {
                 const DisplayCardsScreen(),
             },
           );
+            return MapScreen(viewModel: viewModel);
+          },
+          PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
+          HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
+          NotificationDashboard.route: (context) =>
+              const NotificationDashboard(),
+          VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
+          VocalNoteEditorScreen.route: (context) =>
+              const VocalNoteEditorScreen(),
+          ReaderScreen.route: (context) => const ReaderScreen(),
+          DocumentsScreen.route: (context) => const DocumentsScreen(),
+          ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
+          HistoricalsScan.route: (context) => const HistoricalsScan(),
         },
       ),
     );

@@ -9,6 +9,7 @@ import 'package:leodys/features/notification/presentation/pages/notification_das
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
@@ -95,7 +96,7 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      description: 'TODO',
+      description: 'Lecture vocal d\'un texte scanné à partir d\'une photo',
     ),
 
     AppFeature(
