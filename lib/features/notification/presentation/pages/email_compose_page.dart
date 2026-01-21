@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/internet_util.dart';
 import '../../../../common/widget/voice_text_field.dart';
 import '../controllers/notification_controller.dart';
-import '../controllers/voice_controller.dart';
 import '../../domain/entities/referent_entity.dart';
 
 class EmailComposePage extends StatefulWidget {
@@ -17,7 +16,7 @@ class EmailComposePage extends StatefulWidget {
 
 class _EmailComposePageState extends State<EmailComposePage> {
   final TextEditingController _bodyController = TextEditingController();
-  final VoiceController _voiceController = VoiceController();
+
   bool _speechEnabled = false;
 
   @override
@@ -27,7 +26,6 @@ class _EmailComposePageState extends State<EmailComposePage> {
   }
 
   void _initVoice() async {
-    _speechEnabled = await _voiceController.initSpeech();
     setState(() {});
   }
 
@@ -52,16 +50,18 @@ class _EmailComposePageState extends State<EmailComposePage> {
                 final hasNet = InternetUtil.isConnected;
                 if (!hasNet) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Échec : Aucune connexion internet disponible."))
+                      const SnackBar(content: Text(
+                          "Échec : Aucune connexion internet disponible."))
                   );
                 }
-                  await widget.controller.sendMessage(
-                    referent: widget.referent,
-                    subject: "Alerte Leodys",
-                    body: _bodyController.text,
-                  );
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email envoyé et archivé !")));
+                await widget.controller.sendMessage(
+                  referent: widget.referent,
+                  subject: "Alerte Leodys",
+                  body: _bodyController.text,
+                );
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Email envoyé et archivé !")));
               },
             )
           ],
@@ -70,14 +70,4 @@ class _EmailComposePageState extends State<EmailComposePage> {
     );
   }
 
-  void _toggleListening() {
-    if (_voiceController.isListening) {
-      _voiceController.stopListening();
-    } else {
-      _voiceController.startListening((text) {
-        setState(() => _bodyController.text = text);
-      });
-    }
-    setState(() {});
-  }
 }
