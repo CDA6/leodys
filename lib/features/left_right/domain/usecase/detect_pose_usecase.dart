@@ -12,7 +12,6 @@ class DetectPoseUseCase {
     // 1. Récupération des points via le repository
     List<BodyPoint> points = await repository.detectPose(image, sensorOrientation: sensorOrientation);
 
-    // 2. Logique métier : Nettoyage des poignets superposés
     return _filterImpossibleWrists(points);
   }
 
