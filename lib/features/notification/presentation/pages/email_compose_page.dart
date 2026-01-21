@@ -17,8 +17,6 @@ class EmailComposePage extends StatefulWidget {
 class _EmailComposePageState extends State<EmailComposePage> {
   final TextEditingController _bodyController = TextEditingController();
 
-  bool _speechEnabled = false;
-
   @override
   void initState() {
     super.initState();
