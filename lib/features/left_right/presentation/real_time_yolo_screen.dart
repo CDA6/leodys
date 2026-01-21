@@ -1,11 +1,14 @@
 import 'dart:io';
-import 'package:Leodys/src/features/left_right/presentation/pose_viewmodel.dart';
+import 'package:Leodys/features/left_right/presentation/pose_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 
 import 'skeleton_painter.dart';
 
 class RealTimeYoloScreen extends StatefulWidget {
+  static const String route = '/left_right';
+
   final PoseViewModel viewModel;
 
   const RealTimeYoloScreen({super.key, required this.viewModel});
@@ -19,7 +22,7 @@ class _RealTimeYoloScreenState extends State<RealTimeYoloScreen> {
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
   bool _isFrontCamera = true;
-  int _camSensorOrientation = 0; // Info cruciale pour le fix arrière
+  int _camSensorOrientation = 0;
   int _frameCounter = 0;
 
   @override
@@ -29,7 +32,11 @@ class _RealTimeYoloScreenState extends State<RealTimeYoloScreen> {
   }
 
   Future<void> _initCamera() async {
+
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
     _cameras = await availableCameras();
+
     if (_cameras.isNotEmpty) {
       int index = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.front);
       if (index == -1) index = 0;
@@ -87,6 +94,12 @@ class _RealTimeYoloScreenState extends State<RealTimeYoloScreen> {
   @override
   void dispose() {
     _controller?.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     super.dispose();
   }
 
