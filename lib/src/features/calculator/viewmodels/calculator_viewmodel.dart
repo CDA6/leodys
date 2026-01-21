@@ -2,17 +2,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/calculator_state.dart';
 import '../views/calculator_history.dart';
+import '../repositories/hive_service.dart';
 
 /// ViewModel de la calculatrice - Gère toute la logique métier
-/// Utilise ChangeNotifier pour notifier les vues des changements d'état
 class CalculatorViewModel extends ChangeNotifier {
-  /// État courant de la calculatrice
+  // État courant de la calculatrice
   CalculatorState _state = CalculatorState.initial;
 
-  /// Limite du nombre d'entrées dans l'historique
-  static const int _historyLimit = 1000;
+  // Service Hive pour l'historique
+  final _historyService = HiveService();
 
-  /// Getter pour l'état
+  // Getter pour l'état
   CalculatorState get state => _state;
 
   /// Met à jour l'état et notifie les listeners
@@ -85,6 +85,12 @@ class CalculatorViewModel extends ChangeNotifier {
     );
   }
 
+  /// Récupère l'historique depuis HiveService
+  List<String> getHistory() {
+    return _historyService.getEntries();
+  }
+
+  /// Gere l'appui sur le bouton =
   /// Calcule et affiche le résultat
   void onEqualsPressed() {
     String fullExpr = _state.expression + _state.current;
@@ -96,20 +102,14 @@ class CalculatorViewModel extends ChangeNotifier {
     // Évaluer l'expression
     final result = _evaluateExpression(fullExpr);
 
-    // Ajouter à l'historique
-    List<String> newHistory = List.from(_state.history);
-    // Ajouter le résultat à l'historique
-    newHistory.add('$fullExpr = ${_formatResult(result)}');
-    if (newHistory.length > _historyLimit) {
-      newHistory.removeLast(); // .removeAt(0);
-    }
+    // Ajouter à l'historique dans Hive
+    _historyService.saveEntry('$fullExpr = ${_formatResult(result)}');
 
     // Mettre à jour l'état
     _updateState(_state.copyWith(
       display: result.isNaN ? 'Erreur' : _formatResult(result),
       current: '',
       expression: '',
-      history: newHistory,
       hasError: result.isNaN,
     ));
   }

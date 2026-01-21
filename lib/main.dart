@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 import 'src/features/calculator/calculator.dart';
 
-void main() {
+void main() async{
   // Pour cacher la barre de statut et la barre de navigation
   WidgetsFlutterBinding.ensureInitialized();
+
+  // initialisation hive (temporaire)
+  await Hive.initFlutter();
 
   // Cache status + navigation bar
   SystemChrome.setEnabledSystemUIMode(

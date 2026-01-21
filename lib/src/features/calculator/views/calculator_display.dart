@@ -3,15 +3,13 @@ import '../models/calculator_helpers.dart';
 import 'calculator_widgets.dart';
 
 /// Widget d'affichage de la calculatrice
-/// Contient l'historique, l'affichage des chiffres, le texte en français et les points
+/// Contient l'affichage des chiffres, le texte en français et les points
 class CalculatorDisplay extends StatelessWidget {
   final String display;
-  final List<String> history;
 
   const CalculatorDisplay({
     Key? key,
     required this.display,
-    required this.history,
   }) : super(key: key);
 
   @override
@@ -24,23 +22,7 @@ class CalculatorDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Historique todo deplacer vers le bouton historique
-          // if (history.isNotEmpty)
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.end,
-            //   children: history
-            //       .map((e) => Text(
-            //               e,
-            //               style: const TextStyle(
-            //                 color: Colors.white54,
-            //                 fontSize: 18,
-            //               ),
-            //             ),
-            //           )
-            //       .toList(),
-            // ),
-
-          // Affichage en colonnes
+        // Affichage en colonnes
           FittedBox( /// Permet de réduire l'affichage automatiquement si trop grand
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

@@ -8,7 +8,8 @@ class HistoryDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final history = viewModel.state.history;
+    // Récupérer l'historique depuis HiveService via le ViewModel
+    final history = viewModel.getHistory();
 
     return AlertDialog(
       title: const Text('Historique des calculs'),
@@ -25,6 +26,7 @@ class HistoryDialog extends StatelessWidget {
                 shrinkWrap: true,
                 itemCount: history.length,
                 itemBuilder: (BuildContext context, int index) {
+                  // Afficher dans l'ordre inverse (derniers calculs en haut)
                   final reversedIndex = history.length - 1 - index;
                   return ListTile(
                     title: Text(
