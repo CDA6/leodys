@@ -1,19 +1,25 @@
+import 'package:Leodys/src/features/left_right/data/datasource/pose_datasource.dart';
+import 'package:Leodys/src/features/left_right/presentation/pose_viewmodel.dart';
+import 'package:Leodys/src/features/left_right/presentation/real_time_yolo_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'nav_widget.dart';
+import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'injection_factory.dart' as di;
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // Initialisation de Supabase avec l'URL du projet et la clé anonyme
-  await Supabase.initialize(
-    url: 'https://vkhlvzfvmzqcmrkxxaaf.supabase.co', // ⚠️ Remplacez par votre URL
-    anonKey: 'sb_publishable_mRFGHPKaqF6sAoLeWKHmYw_R-xMnVCX', // ⚠️ Remplacez par votre API Key
-  );
+  await Permission.camera.request();
 
-  runApp(const MyApp());
+  await di.init();
+  await di.sl<PoseDataSource>().loadModel();
+
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,15 +27,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Leodys',
-      home: const HomePage(),
-      debugShowCheckedModeBanner: false,
-      routes: {
-        HomePage.route: (context) => const HomePage(),
-
-      },
-      //initialRoute: LoginPage.route,
+    return RealTimeYoloScreen(
+        viewModel: di.sl<PoseViewModel>()
     );
   }
 }
