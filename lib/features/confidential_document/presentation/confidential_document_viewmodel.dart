@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:leodys/features/confidential_document/domain/KeyStorageService.dart';
 import 'package:leodys/features/confidential_document/domain/encryption_service.dart';
 import 'package:leodys/features/confidential_document/domain/entity/decryption_result.dart';
 import 'package:leodys/features/confidential_document/domain/entity/picture_download.dart';
@@ -22,6 +23,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier {
   final EncryptionService _encryptionService = EncryptionService();
   final EncryptionSession session = EncryptionSession();
   final AuthRepository _authRepo = AuthRepository();
+  final KeyStorageService _keyStorageService = KeyStorageService();
 
   //============
   // Variables
@@ -49,34 +51,10 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier {
     final AuthRepository authRepo = AuthRepository();
     await authRepo.login();
     emailUser = _saveDoc.returnUser();
-    await getStorageKey();
+    await _keyStorageService.loadKey();
     isLoading = false;
     notifyListeners(); // On prévient l'UI que c'est bon
   }
-
-  //Recupération de la clé à initialisation
-  Future<void> getStorageKey() async {
-    if (!kIsWeb) {
-      // On est sur Mobile : on tente de lire la clé stockée
-      String? savedKeyBase64 = await _storage.read(key: 'user_key');
-
-      if (savedKeyBase64 != null) {
-        try {
-          // On reconstruit la clé à partir du stockage
-          final bytes = base64Decode(savedKeyBase64);
-          final key = SecretKey(bytes);
-          session.setKey(key);
-          notifyListeners();
-
-          print("Clé mobile récupérée et reconstruite avec succès");
-        } catch (e) {
-          print("Erreur lors de la reconstruction de la clé : $e");
-        }
-      }
-    }
-    // Sur Web, on ne fait rien, _isLocked reste true par défaut
-  }
-
 
 
   /// search a picture in personal files
@@ -94,6 +72,9 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier {
       print('Erreur au chargement de l\'image: $e');
     }
   }
+
+  //TODO take picture
+
 
   Future<void> cancelImageFile() async {
     imageFile = null;
@@ -122,7 +103,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier {
       titleError = "Le coffre est verrouillé. Entrez votre mot de passe.";
       notifyListeners();
     }
-
+//TODO récupérer le resultat de l'enregistrement pour faire une petite snack bar
   }
 
     Future<void> getAllPicture() async {
@@ -153,10 +134,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier {
       // Générer la clé une seule fois
       final key = await _encryptionService.getEncryptionKey(password, userUid);
       session.setKey(key);
-      if(!kIsWeb){
-        final keyBytes = await key.extractBytes();
-        await _storage.write(key: 'user_key', value: base64Encode(keyBytes));
-      }
+      await _keyStorageService.saveKey(key);
       return true;
     } catch (e) {
       return false;
