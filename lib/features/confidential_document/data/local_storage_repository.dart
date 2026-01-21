@@ -37,6 +37,8 @@ class LocalStorageRepository {
       return listFile;
  }
 
-  Future<void> deleteDocument(String title) async {}
+  Future<void> deleteDocument(String title) async {
+
+  }
 
 }

@@ -1,11 +1,8 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:cryptography/src/cryptography/secret_key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:leodys/common/mixins/connectivity_mixin.dart';
 import 'package:leodys/features/confidential_document/domain/KeyStorageService.dart';
 import 'package:leodys/features/confidential_document/domain/encryption_service.dart';
 import 'package:leodys/features/confidential_document/domain/entity/decryption_result.dart';
@@ -15,7 +12,7 @@ import '../data/auth_repository.dart';
 import '../domain/encrypted_session.dart';
 import '../domain/save_document_usecase.dart';
 
-class ConfidentialDocumentViewmodel extends ChangeNotifier {
+class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixin {
   //connection Supabase
 
   //usecase
@@ -112,7 +109,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier {
       print("Lancement recherche image dans viewmodel");
       if (!session.isLocked) {
         print("session déverouiller lancement recherche");
-        DecryptionResult? result = await _saveDoc.getAllImages();
+        DecryptionResult? result = await _saveDoc.getAllImages(checkConnection());
         if(result != null) {
           pictures = result.pictures;
           errorCount = result.errorCount;

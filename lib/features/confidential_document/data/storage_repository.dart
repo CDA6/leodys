@@ -5,13 +5,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class RemoteStorageRepository {
   final _client = Supabase.instance.client;
   late final _userId = _client.auth.currentUser?.id;
+  final String _folder = 'Confidential_document';
 
   Future<void> uploadDocument(Uint8List bytes, String title) async {
 
     if (_userId == null) throw Exception("Non connecté");
     final String filePath = '$_userId/$title.enc';
     await _client.storage
-        .from('Confidential_document') // Le nom du bucket créé manuellement
+        .from(_folder) // Le nom du bucket créé manuellement
         .uploadBinary(
       filePath,
       bytes,
@@ -28,7 +29,7 @@ class RemoteStorageRepository {
     print("Tentative de téléchargement : $filePath");
     try {
       final response = await _client.storage
-          .from('Confidential_document')
+          .from(_folder)
           .download(filePath);
 
       // VÉRIFICATION 1 : La taille
@@ -66,7 +67,7 @@ class RemoteStorageRepository {
    try {
      final List<FileObject> objects = await _client
          .storage
-         .from("Confidential_document")
+         .from(_folder)
          .list(path: bucketName!);
      print("Nombre d'objets récupérés dans Supabase : ${objects.length}");
      for (FileObject o in objects) {
@@ -80,4 +81,18 @@ class RemoteStorageRepository {
  }
 
   //TODO supprimer un fichier
+Future<void> deleteImage(List<String> titles, {String? bucketName}) async {
+  bucketName ??= _userId;
+  final List<String> listFilePath = titles.map((title) {
+    return title.endsWith('.enc') ? '$_userId/$title' : '$_userId/$title.enc';
+  }).toList();
+  try{
+    final List<FileObject> objects = await _client
+        .storage
+        .from(_folder)
+        .remove(listFilePath);
+  }catch(e){
+    print("erreur suppression : $e");
+  }
+}
 }
