@@ -4,6 +4,7 @@ import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.da
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
@@ -69,7 +70,17 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       color: Colors.blue,
-      description: 'TODO',
+      description: 'Lecture vocal d\'un texte scanné à partir d\'une photo',
+    ),
+
+    AppFeature(
+        name: 'Reconnaissance d\'immatriculation',
+        icon: Icons.directions_car,
+        route: ScanImmatriculationScreen.route,
+        requiresInternet: true,
+        requiresAuth: false,
+        color : Colors.blue,
+        description: 'Afficher les informations d\'un véhicule à partir d\'une plaque d\'immatriculation',
     ),
   ];
 
