@@ -1,4 +1,3 @@
-import '../entities/message_entity.dart';
 import '../repositories/notification_repository.dart';
 
 /// synchroniser l'historique des messages entre le stockage local et distant.

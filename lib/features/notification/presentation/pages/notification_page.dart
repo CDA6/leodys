@@ -16,9 +16,6 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
 
-  final TextEditingController _bodyController = TextEditingController();
-  bool _speechEnabled = false;
-
   final controller = sl<NotificationController>();
   final List<String> categories = ['Mon Référent', 'CAP Emploi', 'AGEFIPH'];
 
