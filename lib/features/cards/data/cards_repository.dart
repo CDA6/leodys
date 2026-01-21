@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:leodys/features/cards/data/datasources/local/cards_local_datasource.dart';
 import 'package:leodys/features/cards/data/datasources/remote/cards_remote_datasource.dart';
+import 'package:leodys/features/cards/domain/card_update_model.dart';
 
 import '../domain/card_model.dart';
 
@@ -31,5 +32,9 @@ class CardsRepository {
 
   Future<void> markLocalCardAsSynced(String cardId) async {
     await local.markAsSynced(cardId);
+  }
+
+  Future<CardModel> updateCard(CardUpdateModel update) async {
+    return await local.updateCard(update);
   }
 }

@@ -103,7 +103,8 @@ class CardsRemoteDatasource {
     // upload des images dan sle bucket
     final images = <String, String>{
       'recto': card.rectoPath,
-      'verso': ?card.versoPath,
+      if (card.versoPath != null && card.versoPath!.isNotEmpty)
+        'verso': card.versoPath!,
     };
 
     for (final entry in images.entries) {
@@ -114,6 +115,9 @@ class CardsRemoteDatasource {
       if (!file.existsSync()) continue;
 
       final storagePath = 'user_$userId/${card.id}/${entry.key}.jpg';
+      print("storage path : $storagePath");
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) throw Exception("Utilisateur non connecté !");
 
       try {
         await supabase.storage

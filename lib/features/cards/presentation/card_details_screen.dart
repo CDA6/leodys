@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
+import 'package:leodys/features/cards/presentation/edit_card_screen.dart';
 import 'package:leodys/features/cards/providers.dart';
 
 import '../domain/card_model.dart';
@@ -27,6 +28,8 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
   Widget _buildCardImage() {
     final front = widget.card?.rectoPath;
     final back = widget.card?.versoPath;
+
+    print("back : $back");
 
     // chemin actuel selon le cote de la carte
     String? currentPath = _isFront ? front : back;
@@ -102,6 +105,28 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton.icon(
+              onPressed: () async {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditCardScreen(card: widget.card!)));
+              },
+              icon: const Icon(Icons.update),
+              label: const Text(
+                'Modifier la carte',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow.shade500,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 shape: RoundedRectangleBorder(
