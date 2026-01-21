@@ -1,14 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../domain/models/document.dart';
+import '../../domain/models/plate_scan.dart';
 
-class DocumentTile extends StatelessWidget {
-  final Document document;
+class PlateTile extends StatelessWidget {
+  final PlateScan plateScan;
   final VoidCallback onRead;
   final VoidCallback onDelete;
 
-  const DocumentTile({super.key,
-    required this.document,
+  const PlateTile({super.key,
+    required this.plateScan,
     required this.onRead,
     required this.onDelete,
   });
@@ -17,11 +18,7 @@ class DocumentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        title: Text(document.title),
-        subtitle: Text(
-          document.createAt.toLocal().toString(),
-          style: const TextStyle(fontSize: 12),
-        ),
+        title: Text(plateScan.plate),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

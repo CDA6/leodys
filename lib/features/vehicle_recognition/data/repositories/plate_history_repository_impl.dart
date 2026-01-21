@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:leodys/features/vehicle_recognition/domain/models/plate_scan.dart';
 import 'package:leodys/features/vehicle_recognition/domain/repositories/plate_history_repository.dart';
 
+/// gestion de la sauvegarde des scans
 class PlateHistoryRepositoryImpl implements PlateHistoryRepository {
 
   static const String _boxName = 'plate_box';
