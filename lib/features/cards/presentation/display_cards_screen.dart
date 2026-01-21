@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:leodys/features/cards/domain/usecases/get_local_user_cards_usecase.dart';
 import 'package:leodys/features/cards/presentation/card_details_screen.dart';
@@ -11,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/pages/home/presentation/screens/home_page.dart';
 import '../domain/card_model.dart';
+import '../services/scan_service.dart';
 
 class DisplayCardsScreen extends StatefulWidget {
   static const String route = '/cards';
@@ -29,6 +29,7 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
   Logger logger = Logger();
   late final getLocalCards = getIt<GetLocalUserCardsUsecase>();
   final user = Supabase.instance.client.auth.currentUser;
+  final scanService = getIt<ScanService>();
 
   Future<void> loadSavedCards() async {
     final cards = await getLocalCards.call();
@@ -39,12 +40,8 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
 
   Future<File?> startScan(BuildContext context) async {
     try {
-      List<String> pictures = await CunningDocumentScanner.getPictures() ?? [];
-      if(pictures.isEmpty) return null;
-      
       // conversion des chemins en Files
-      List<File> imageFiles = pictures.map((path) => File(path)).toList();
-      // final pdfFile = await createPdfUsecase.call(pictures);
+      List<File> imageFiles = await scanService.scanMultipleDocuments();
       final renamedFile = await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => RenameCardScreen(imageFiles: imageFiles,)));
@@ -52,6 +49,8 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
       if (renamedFile != null) {
         await loadSavedCards();
       }
+
+      return renamedFile;
     } catch (e) {
       logger.e(e);
       return null;

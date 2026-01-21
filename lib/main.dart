@@ -1,4 +1,3 @@
-import 'package:leodys/features/cards/presentation/card_details_screen.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -47,17 +46,20 @@ void main() async {
   await Hive.initFlutter();
 
   // 1. Initialisation des services de base
-  await DatabaseService.init();
+  // double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
+  // await DatabaseService.init();
   await InternetUtil.init();
 
+
   await Supabase.initialize(
-    url: AuthConstants.projectUrl,
-    anonKey: AuthConstants.apiKey,
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
+
   // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
-  final client = Supabase.instance.client;
-  await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
+  // final client = Supabase.instance.client;
+  // await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
 
   await ocr_reader.init();
   await messagerie.init();

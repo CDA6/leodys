@@ -27,7 +27,7 @@ class HomeViewModel extends ChangeNotifier with ConnectivityMixin {
     _isCheckingConnectivity = false;
 
     // TODO: Vérifier l'authentification
-    _isAuthenticated = false;
+    _isAuthenticated = true;
     notifyListeners();
   }
 
