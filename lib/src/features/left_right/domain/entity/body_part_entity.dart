@@ -1,22 +1,17 @@
-enum Side { left, right, unknown }
+enum BodySide { left, right, center }
 
-class BodyPart {
-  final String label;
+class BodyPoint {
   final double x;
-  final Side side;
+  final double y;
+  final String label;
+  final BodySide side;
   final double confidence;
 
-  BodyPart({
-    required this.label,
+  BodyPoint({
     required this.x,
+    required this.y,
+    required this.label,
     required this.side,
-    required this.confidence
+    this.confidence = 0.0,
   });
-
-  BodyPart copyWith({Side? side}) => BodyPart(
-    label: label,
-    x: x,
-    side: side ?? this.side,
-    confidence: confidence,
-  );
 }

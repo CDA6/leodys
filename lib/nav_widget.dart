@@ -146,6 +146,13 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           ListTile(
+            title: const Text('Orientation'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/orientation");
+            },
+          ),
+          ListTile(
             title: const Text('Déconnexion'),
             onTap: () async{
               //await _authService.logout();
