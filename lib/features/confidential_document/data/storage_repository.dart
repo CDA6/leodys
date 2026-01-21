@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class StorageRepository {
+class RemoteStorageRepository {
   final _client = Supabase.instance.client;
   late final _userId = _client.auth.currentUser?.id;
 
   Future<void> uploadDocument(Uint8List bytes, String title) async {
 
     if (_userId == null) throw Exception("Non connecté");
-    final String filePath = '$_userId/$title.jpg';
+    final String filePath = '$_userId/$title.enc';
     await _client.storage
         .from('Confidential_document') // Le nom du bucket créé manuellement
         .uploadBinary(
@@ -78,7 +78,6 @@ class StorageRepository {
      return [];
    }
  }
-  //TODO modification d'un fichier
 
   //TODO supprimer un fichier
 }
