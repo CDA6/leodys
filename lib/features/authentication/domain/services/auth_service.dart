@@ -9,7 +9,7 @@ class AuthService extends ChangeNotifier {
   final BiometricRepository _biometricRepository = BiometricRepositoryImpl();
   final AuthRepository _authRepository = AuthRepositoryImpl();
 
-  bool _isLoggedOut = false;
+  bool _isLoggedOut = true;
 
   bool get isAuthenticated => !_isLoggedOut;
 

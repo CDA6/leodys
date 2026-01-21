@@ -2,25 +2,29 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
+import 'package:leodys/common/mixins/datasource_mixin.dart';
 import 'package:path_provider/path_provider.dart';
-import '../models/ocr_result_model.dart';
+
+import 'package:leodys/common/errors/failures.dart';
+import 'package:leodys/common/utils/app_logger.dart';
+import 'package:leodys/features/ocr-reader/data/models/ocr_result_model.dart';
 
 abstract class OCRSpaceDataSource {
   Future<OcrResultModel> recognizeText(File imageFile);
 }
 
-class OCRSpaceDataSourceImpl implements OCRSpaceDataSource {
+class OCRSpaceDataSourceImpl with DataSourceMixin<OcrResultModel> implements OCRSpaceDataSource {
   static const String _apiKey = 'K88946411988957';
   static const String _baseUrl = 'https://api.ocr.space/parse/image';
 
   @override
-  Future<OcrResultModel> recognizeText(File imageFile) async {
-    try {
-      final compressedImage = await _ImageProcessor.compress(imageFile);
+  Future<OcrResultModel> recognizeText(File imageFile) {
+    return execute('recognizeText', imageFile, (file) async {
+      final compressedImage = await _ImageProcessor.compress(file);
       final bytes = await compressedImage.readAsBytes();
       final base64Image = base64Encode(bytes);
 
-      print('📤 Envoi de l\'image à OCR.space...');
+      AppLogger().info('Envoi de l\'image à OCR.space...');
 
       final response = await http.post(
         Uri.parse(_baseUrl),
@@ -36,14 +40,14 @@ class OCRSpaceDataSourceImpl implements OCRSpaceDataSource {
       ).timeout(const Duration(seconds: 30));
 
       if (response.statusCode != 200) {
-        throw Exception('Erreur HTTP ${response.statusCode}');
+        throw NetworkFailure('Erreur HTTP ${response.statusCode}');
       }
 
       final data = json.decode(response.body);
 
       if (data['IsErroredOnProcessing'] == true) {
         final errorMessage = data['ErrorMessage']?.join(', ') ?? 'Erreur inconnue';
-        throw Exception(errorMessage);
+        throw OCRFailure(errorMessage);
       }
 
       final parsedResults = data['ParsedResults'] as List?;
@@ -53,52 +57,55 @@ class OCRSpaceDataSourceImpl implements OCRSpaceDataSource {
 
       final extractedText = parsedResults[0]['ParsedText'] ?? '';
 
-      print('=== OCR.space - Résultats ===');
-      print('Texte : $extractedText');
+      AppLogger().info('OCR.space - ${extractedText.length} caractères extraits');
 
       return OcrResultModel.fromText(extractedText);
-    } catch (e) {
-      throw Exception('Erreur OCR.space: $e');
-    }
+    });
   }
 }
 
 class _ImageProcessor {
   /// Compresse l'image pour respecter la limite de 1 MB
   static Future<File> compress(File imageFile) async {
-    final bytes = await imageFile.readAsBytes();
-    var image = img.decodeImage(bytes);
+    try {
+      final bytes = await imageFile.readAsBytes();
+      var image = img.decodeImage(bytes);
 
-    if (image == null) {
-      throw Exception('Impossible de décoder l\'image');
-    }
-
-    if (image.width > 1920) {
-      image = img.copyResize(image, width: 1920);
-    }
-
-    final tempDir = await getTemporaryDirectory();
-    final tempFile = File(
-      '${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg',
-    );
-
-    int quality = 85;
-    List<int> compressedBytes;
-
-    do {
-      compressedBytes = img.encodeJpg(image, quality: quality);
-      if (compressedBytes.length > 1024 * 1024 && quality > 30) {
-        quality -= 10;
-      } else {
-        break;
+      if (image == null) {
+        throw ImageProcessingFailure('Impossible de décoder l\'image');
       }
-    } while (quality > 30);
 
-    await tempFile.writeAsBytes(compressedBytes);
+      if (image.width > 1920) {
+        image = img.copyResize(image, width: 1920);
+      }
 
-    final fileSizeKB = compressedBytes.length / 1024;
-    print('📦 Image compressée: ${fileSizeKB.toStringAsFixed(1)} KB (qualité: $quality)');
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(
+        '${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
 
-    return tempFile;
+      int quality = 85;
+      List<int> compressedBytes;
+
+      do {
+        compressedBytes = img.encodeJpg(image, quality: quality);
+        if (compressedBytes.length > 1024 * 1024 && quality > 30) {
+          quality -= 10;
+        } else {
+          break;
+        }
+      } while (quality > 30);
+
+      await tempFile.writeAsBytes(compressedBytes);
+
+      final fileSizeKB = compressedBytes.length / 1024;
+      AppLogger().info('Image compressée: ${fileSizeKB.toStringAsFixed(1)} KB (qualité: $quality)');
+
+      return tempFile;
+    } on ImageProcessingFailure {
+      rethrow;
+    } catch (e) {
+      throw ImageProcessingFailure('Erreur lors du traitement de l\'image: $e');
+    }
   }
 }
