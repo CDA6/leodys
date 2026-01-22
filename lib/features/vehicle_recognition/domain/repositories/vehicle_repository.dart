@@ -1,11 +1,15 @@
 
+import 'dart:io';
+
+import 'package:leodys/features/vehicle_recognition/domain/models/vehicle_info.dart';
+
 /// Classe abstraite de la couche domaine
 /// Déterminer les contrats métiers
 /// Son objectif est l'identification d'un véhicule à
-/// partir d'une plaque déjà reconnu
+/// partir d'une image
 abstract class VehicleRepository {
 
   /// Identifier un véhicule à partir d'une plaque
-  Future<String?> identifyVehicle(String plate);
+  Future<VehicleInfo?> identifyVehicle(File image);
 
 }
