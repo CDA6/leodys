@@ -1,5 +1,6 @@
-import 'package:Leodys/features/left_right/presentation/pose_viewmodel.dart';
+
 import 'package:get_it/get_it.dart';
+import 'package:leodys/features/left_right/presentation/pose_viewmodel.dart';
 
 
 import 'data/datasource/pose_datasource.dart';
