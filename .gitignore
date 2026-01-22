@@ -61,3 +61,5 @@ app.*.map.json
 
 # Temporary/Editor files
 *.swo
+
+/assets
