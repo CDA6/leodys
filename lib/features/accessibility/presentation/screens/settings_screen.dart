@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/font_size_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/intro_card.dart';
+import 'package:leodys/features/accessibility/presentation/widgets/letter_spacing_card.dart';
+import 'package:leodys/features/accessibility/presentation/widgets/line_height_card.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/settings_viewmodel.dart';
 import '../widgets/font_family_card.dart';
@@ -75,9 +77,17 @@ class SettingsScreen extends StatelessWidget {
               // Section Espacement
               SectionTitle(icon : Icons.format_line_spacing, title: 'Espacement'),
               const SizedBox(height: 8),
-              _buildLetterSpacingCard(context, viewModel, settings),
+              LetterSpacingCard(
+                  letterSpacing: settings.letterSpacing,
+                  minLetterSpacing: SettingsViewModel.minLetterSpacing,
+                  maxLetterSpacing: SettingsViewModel.maxLetterSpacing,
+                  onLetterSpacingChanged: viewModel.updateLetterSpacing),
               const SizedBox(height: 12),
-              _buildLineHeightCard(context, viewModel, settings),
+              LineHeightCard(
+                  lineHeight: settings.lineHeight,
+                  minLineHeight: SettingsViewModel.minLineHeight,
+                  maxLineHeight: SettingsViewModel.maxLineHeight,
+                  onUpdateLineHeight: viewModel.updateLineHeight),
               const SizedBox(height: 24),
 
               // Section Thème
@@ -94,120 +104,6 @@ class SettingsScreen extends StatelessWidget {
             ],
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildLetterSpacingCard(
-      BuildContext context,
-      SettingsViewModel viewModel,
-      settings,
-      )
-  {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Espacement des lettres',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  '${settings.letterSpacing.toStringAsFixed(1)} px',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Recommandé pour la dyslexie',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Slider(
-              value: settings.letterSpacing,
-              min: SettingsViewModel.minLetterSpacing,
-              max: SettingsViewModel.maxLetterSpacing,
-              divisions: 10,
-              label: settings.letterSpacing.toStringAsFixed(1),
-              onChanged: (value) {
-                viewModel.updateLetterSpacing(value);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLineHeightCard(
-      BuildContext context,
-      SettingsViewModel viewModel,
-      settings,
-      )
-  {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Hauteur de ligne',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  '${settings.lineHeight.toStringAsFixed(1)}x',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Améliore la lisibilité',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Slider(
-              value: settings.lineHeight,
-              min: SettingsViewModel.minLineHeight,
-              max: SettingsViewModel.maxLineHeight,
-              divisions: 15,
-              label: settings.lineHeight.toStringAsFixed(1),
-              onChanged: (value) {
-                viewModel.updateLineHeight(value);
-              },
-            ),
-          ],
-        ),
       ),
     );
   }
