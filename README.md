@@ -6,7 +6,7 @@
 ## **📜 Contexte et Objectifs**
 ### **Contexte**
 Les troubles de l’apprentissage (dyslexie, dyscalculie, dyspraxie, TDAH, etc.) rendent difficile l’utilisation des méthodes traditionnelles.  
-**DysAssist** propose des outils personnalisés pour **faciliter l’autonomie, la confiance et l’inclusion** des utilisateurs.
+**Leodys** propose des outils personnalisés pour **faciliter l’autonomie, la confiance et l’inclusion** des utilisateurs.
 
 ### **Objectifs**
 ✅ **Support pédagogique adapté** : Outils pour lire, écrire, calculer et organiser.  

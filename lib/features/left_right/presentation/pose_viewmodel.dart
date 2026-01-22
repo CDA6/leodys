@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 
 import '../domain/entity/body_part_entity.dart';
 import '../domain/usecase/detect_pose_usecase.dart';

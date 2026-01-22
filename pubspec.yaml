@@ -1,7 +1,6 @@
-name: Leodys
+name: leodys
 description: "Leodys pour les dys !"
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -10,21 +9,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # --- Tes dépendances existantes ---
+  cupertino_icons: ^1.0.8 #https://pub.dev/packages/cupertino_icons
+  provider: ^6.1.5+1 #https://pub.dev/packages/provider
+  image_picker: ^1.2.1 #https://pub.dev/packages/image_picker
+  google_mlkit_text_recognition: ^0.15.0 #https://pub.dev/packages/google_mlkit_text_recognition
+  path_provider: ^2.1.5 #https://pub.dev/packages/path_provider
+  image: ^4.5.0 #https://pub.dev/packages/image
+  http: ^1.6.0 #https://pub.dev/packages/http
+  connectivity_plus: ^6.1.5 #https://pub.dev/packages/connectivity_plus
+  get_it: ^9.2.0 #https://pub.dev/packages/get_it
+  dartz: ^0.10.1 #https://pub.dev/packages/dartz
   camera: ^0.11.0
-  provider: ^6.1.1
-  cupertino_icons: ^1.0.8
   url_launcher: ^6.3.2
   internet_connection_checker: ^3.0.1
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
   logger: ^2.6.2
-  image_picker: ^1.2.1
-  cunning_document_scanner: ^1.4.0
   pdf: ^3.11.3
   flutter_pdfview: ^1.4.3
-  path_provider: ^2.1.5
   share_plus: ^12.0.1
   supabase_flutter: ^2.12.0
   shared_preferences: ^2.5.4
@@ -32,12 +34,18 @@ dependencies:
   hive_flutter: ^1.1.0
   mobile_scanner: ^7.1.4
   syncfusion_flutter_datagrid: ^32.1.22
-  get_it: ^7.6.0
-
-  # --- AJOUTS OBLIGATOIRES POUR LE CODE POSE ---
+  geolocator: ^14.0.2
+  local_auth: ^2.3.0
+  mailer: ^6.6.0
+  speech_to_text: ^7.3.0
+  flutter_tts: ^4.2.5
+  flutter_dotenv: ^6.0.0
+  speech_to_text_windows: ^1.0.1-beta.16
+  manual_speech_to_text: ^1.0.4
+  uuid: ^4.5.2
+  intl: ^0.20.2
   tflite_flutter: ^0.11.0
-  # Mise à jour de la version pour compatibilité avec cunning_document_scanner
-  permission_handler: ^12.0.1
+  permission_handler: ^11.4.0
 
 dev_dependencies:
   flutter_test:
