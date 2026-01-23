@@ -9,7 +9,6 @@ import 'package:leodys/features/accessibility/presentation/widgets/font_family_c
 import 'package:leodys/features/accessibility/presentation/widgets/section_title.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/settings_viewmodel.dart';
-import '../widgets/preview_text_widget.dart';
 
 
 class SettingsScreen extends StatelessWidget {
@@ -47,11 +46,6 @@ class SettingsScreen extends StatelessWidget {
 
           return Column(
             children: [
-              // ==========================================
-              // ZONE DE PRÉVISUALISATION FIXÉE EN HAUT
-              // ==========================================
-              const PreviewTextWidget(),
-
               // ==========================================
               // CONTENU SCROLLABLE
               // ==========================================

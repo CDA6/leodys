@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/pages/home/presentation/screens/home_page.dart';
+import 'common/theme/app_theme_manager.dart';
 import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
 import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
@@ -38,7 +39,6 @@ import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart'
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 
-
 /// Global navigator key pour accéder au context depuis les services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -59,21 +59,31 @@ void main() async {
     anonKey: AuthConstants.apiKey,
   );
 
-  await accessibility.init();
+  //ThemeManager
+  final themeManager = AppThemeManager();
+
+  //Features
+  await accessibility.init(themeManager);
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
 
-  runApp(MyApp());
+  runApp(MyApp(themeManager: themeManager));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppThemeManager themeManager;
+
+  const MyApp({
+    super.key,
+    required this.themeManager,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: themeManager),
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(
           create: (_) => ocr_reader.sl<PrintedTextViewModel>(),
@@ -84,40 +94,54 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
+        // IMPORTANT: Initialiser le SettingsViewModel ici
         ChangeNotifierProvider(
-          create: (_) => accessibility.sl<SettingsViewModel>()..init(),
+          create: (_) {
+            final viewModel = accessibility.sl<SettingsViewModel>();
+            // Initialiser de manière asynchrone
+            Future.microtask(() => viewModel.init());
+            return viewModel;
+          },
         ),
       ],
-      child: MaterialApp(
-        navigatorKey: navigatorKey,
-        title: 'Leodys',
-        debugShowCheckedModeBanner: false,
-        initialRoute: HomePage.route,
-        builder: (context, child) {
-          return GlobalOverlay(
-            child: child ?? const SizedBox(),
-          );
-        },
-        routes: {
-          HomePage.route: (context) => const HomePage(),
-          MapScreen.route: (context) {
-            final dataSource = GeolocatorDatasource();
-            final repository = LocationRepositoryImpl(dataSource);
-            final useCase = WatchUserLocationUseCase(repository);
-            final viewModel = MapViewModel(useCase);
-
-            return MapScreen(viewModel: viewModel);
-          },
-          SettingsScreen.route: (context) => const SettingsScreen(),
-          PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
-          HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
-          NotificationDashboard.route: (context) =>
+      child: Consumer<AppThemeManager>(
+        builder: (context, themeManager, _) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            title: 'Leodys',
+            debugShowCheckedModeBanner: false,
+            // CLEF: Utiliser le thème du manager
+            theme: themeManager.currentTheme,
+            initialRoute: HomePage.route,
+            builder: (context, child) {
+              return GlobalOverlay(
+                child: child ?? const SizedBox(),
+              );
+            },
+            routes: {
+              HomePage.route: (context) => const HomePage(),
+              MapScreen.route: (context) {
+                final dataSource = GeolocatorDatasource();
+                final repository = LocationRepositoryImpl(dataSource);
+                final useCase = WatchUserLocationUseCase(repository);
+                final viewModel = MapViewModel(useCase);
+                return MapScreen(viewModel: viewModel);
+              },
+              SettingsScreen.route: (context) => const SettingsScreen(),
+              PrintedTextReaderScreen.route: (context) =>
+              const PrintedTextReaderScreen(),
+              HandwrittenTextReaderScreen.route: (context) =>
+              const HandwrittenTextReaderScreen(),
+              NotificationDashboard.route: (context) =>
               const NotificationDashboard(),
-          VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
-          VocalNoteEditorScreen.route: (context) =>
+              VocalNotesListScreen.route: (context) =>
+              const VocalNotesListScreen(),
+              VocalNoteEditorScreen.route: (context) =>
               const VocalNoteEditorScreen(),
-          ReaderScreen.route: (context) => const ReaderScreen(),
-          DocumentsScreen.route: (context) => const DocumentsScreen(),
+              ReaderScreen.route: (context) => const ReaderScreen(),
+              DocumentsScreen.route: (context) => const DocumentsScreen(),
+            },
+          );
         },
       ),
     );
