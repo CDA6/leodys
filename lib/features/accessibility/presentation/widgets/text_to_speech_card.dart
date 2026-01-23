@@ -25,7 +25,6 @@ class TextToSpeechCard extends StatelessWidget {
         onChanged: (value) {
           toggleTextToSpeech(value);
         },
-        secondary: const Icon(Icons.record_voice_over),
       ),
     );
   }

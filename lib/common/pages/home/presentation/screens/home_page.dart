@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/common/widget/connection_warning.dart';
 import 'package:leodys/common/widget/global_appbar.dart';
+import 'package:leodys/features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/home_viewmodel.dart';
 import '../widgets/feature_list.dart';
@@ -37,7 +38,7 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // En-tête de bienvenue
-                    _buildWelcomeSection(viewModel),
+                    _buildWelcomeSection(context, viewModel),
                     const SizedBox(height: 24),
 
                     // Avertissement si pas de connexion
@@ -58,12 +59,20 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeSection(HomeViewModel viewModel) {
+
+  Widget _buildWelcomeSection(BuildContext context, HomeViewModel viewModel) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        // Utilise les couleurs du thème au lieu de bleu fixe
         gradient: LinearGradient(
-          colors: [Colors.blue.shade400, Colors.blue.shade600],
+          colors: [
+            colorScheme.primary,
+            colorScheme.primaryContainer,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -72,12 +81,11 @@ class HomePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Bienvenue',
-            style: TextStyle(
-              fontSize: 24,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
             ),
           ),
           const SizedBox(height: 8),
@@ -85,13 +93,13 @@ class HomePage extends StatelessWidget {
             viewModel.isAuthenticated
                 ? 'Toutes vos fonctionnalités à portée de main !'
                 : 'Connectez-vous pour accéder à toutes les fonctionnalités',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.white70,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onPrimaryContainer,
             ),
           ),
         ],
       ),
     );
   }
+
 }

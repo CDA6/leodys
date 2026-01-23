@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/no_params.dart';
 
 import '../../../../common/mixins/usecase_mixin.dart';
+import '../../../../common/theme/app_theme_manager.dart';
+import '../../../../common/theme/theme_provider.dart';
 import '../../domain/entities/settings.dart';
 
-class SettingsViewModel extends ChangeNotifier {
+class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
   final UseCaseMixin<Settings, NoParams> getSettingsUseCase;
   final UseCaseMixin<void, Settings> updateSettingsUseCase;
   final UseCaseMixin<void, NoParams> resetSettingsUseCase;
@@ -60,11 +62,17 @@ class SettingsViewModel extends ChangeNotifier {
     ),
   ];
 
+  final AppThemeManager? _themeManager;
+
   SettingsViewModel({
     required this.getSettingsUseCase,
     required this.updateSettingsUseCase,
     required this.resetSettingsUseCase,
-  });
+    AppThemeManager? themeManager,
+  }) : _themeManager = themeManager {
+    // S'enregistrer comme provider de thème
+    _themeManager?.registerThemeProvider(this);
+  }
 
   Future<void> init() async {
     _isLoading = true;
@@ -265,12 +273,38 @@ class SettingsViewModel extends ChangeNotifier {
 
   TextTheme _getScaledTextTheme(TextTheme base) {
     final factor = _settings.fontSize / defaultFontSize;
-    return base.apply(
+
+    // CORRECTION: Ne pas utiliser apply() car certains styles n'ont pas de fontSize
+    // Au lieu de cela, créer un nouveau TextTheme avec les styles modifiés
+    return TextTheme(
+      displayLarge: _applyTextStyle(base.displayLarge, factor),
+      displayMedium: _applyTextStyle(base.displayMedium, factor),
+      displaySmall: _applyTextStyle(base.displaySmall, factor),
+      headlineLarge: _applyTextStyle(base.headlineLarge, factor),
+      headlineMedium: _applyTextStyle(base.headlineMedium, factor),
+      headlineSmall: _applyTextStyle(base.headlineSmall, factor),
+      titleLarge: _applyTextStyle(base.titleLarge, factor),
+      titleMedium: _applyTextStyle(base.titleMedium, factor),
+      titleSmall: _applyTextStyle(base.titleSmall, factor),
+      bodyLarge: _applyTextStyle(base.bodyLarge, factor),
+      bodyMedium: _applyTextStyle(base.bodyMedium, factor),
+      bodySmall: _applyTextStyle(base.bodySmall, factor),
+      labelLarge: _applyTextStyle(base.labelLarge, factor),
+      labelMedium: _applyTextStyle(base.labelMedium, factor),
+      labelSmall: _applyTextStyle(base.labelSmall, factor),
+    );
+  }
+
+  TextStyle? _applyTextStyle(TextStyle? style, double fontSizeFactor) {
+    if (style == null) return null;
+
+    return style.copyWith(
       fontFamily: _settings.fontFamily,
-      fontSizeFactor: factor,
-      letterSpacingFactor: 1.0,
-      letterSpacingDelta: _settings.letterSpacing,
-      heightFactor: _settings.lineHeight / 1.5,
+      fontSize: (style.fontSize ?? defaultFontSize) * fontSizeFactor,
+      letterSpacing: (style.letterSpacing ?? 0.0) + _settings.letterSpacing,
+      height: style.height != null
+          ? style.height! * (_settings.lineHeight / 1.5)
+          : _settings.lineHeight,
     );
   }
 
@@ -306,6 +340,18 @@ class SettingsViewModel extends ChangeNotifier {
     }
 
     return theme.copyWith(colorScheme: adjustedColorScheme);
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    // Notifier aussi le theme manager
+    _themeManager?.onSettingsChanged();
+  }
+
+  @override
+  ThemeData getTheme() {
+    return getThemeData();
   }
 }
 
