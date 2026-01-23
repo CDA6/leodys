@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../features/vocal_notes/injection_container.dart';
-import '../../features/vocal_notes/data/services/speech_service.dart'; // Importez votre service
+import '../../features/vocal_notes/data/services/speech_service.dart';
 
 class TtsReaderWidget extends StatefulWidget {
   final String text;
@@ -21,6 +21,7 @@ class _TtsReaderWidgetState extends State<TtsReaderWidget> {
   // On récupère l'instance du service
   final SpeechService _speechService = sl<SpeechService>();
 
+
   // Abonnement pour écouter les changements d'état
   StreamSubscription<bool>? _speakingSubscription;
   bool _isSpeaking = false;
@@ -28,6 +29,7 @@ class _TtsReaderWidgetState extends State<TtsReaderWidget> {
   @override
   void initState() {
     super.initState();
+    _speechService.init();
     _isSpeaking = _speechService.isSpeaking;
 
     // On écoute le stream : dès que le service dit "je parle" ou "j'ai fini",
