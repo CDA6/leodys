@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/internet_util.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:provider/provider.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
@@ -66,6 +67,16 @@ class FeatureList extends StatelessWidget {
       icon: Icons.speaker,
       route: ReaderScreen.route,
       requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'TODO',
+    ),
+    AppFeature(
+      name: 'Messagerie',
+      icon: Icons.message,
+      route: NotificationDashboard.route,
+      requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
       color: Colors.blue,
