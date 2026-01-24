@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/calculator_state.dart';
 import '../views/calculator_history.dart';
@@ -114,7 +113,7 @@ class CalculatorViewModel extends ChangeNotifier {
     ));
   }
 
-  /// Réinitialise la calculatrice (conserve l'historique)
+  /// Réinitialise la calculatrice
   void onClearPressed() {
     _updateState(_state.copyWith(
       display: '0',
@@ -212,5 +211,10 @@ class CalculatorViewModel extends ChangeNotifier {
       return v.toInt().toString();
     }
     return v.toString();
+  }
+
+  /// Efface l'historique des calculs
+  void clearHistory() {
+    _historyService.clearHistory();
   }
 }

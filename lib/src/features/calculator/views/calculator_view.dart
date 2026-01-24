@@ -62,8 +62,11 @@ class _CalculatorContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           // Zone d'affichage (écran de la calculatrice)
-          Expanded(
-            flex: 2,
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: 80,
+              maxHeight: 300,
+            ),
             child: CalculatorDisplay(
               display: state.display,
             ),
@@ -71,7 +74,6 @@ class _CalculatorContent extends StatelessWidget {
 
           // Pavé de boutons
           Expanded(
-            flex: 5,
             child: CalculatorKeypad(
               onNumberPressed: viewModel.onNumberPressed,
               onOperatorPressed: viewModel.onOperatorPressed,

@@ -16,33 +16,44 @@ class CalculatorDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      height: 200,
       color: Colors.black,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-        // Affichage en colonnes
-          FittedBox( /// Permet de réduire l'affichage automatiquement si trop grand
+          // Affichage en colonnes
+          FittedBox(
+            /// Permet de réduire l'affichage automatiquement si trop grand
+            fit: BoxFit.scaleDown,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: _buildDigitColumns(display),
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // Ligne en toutes lettres
+          // Ligne en toutes lettres avec coloration
           Align(
             alignment: Alignment.centerRight,
-            child: Text(
-              CalculatorHelpers.numberToWordsFromDisplay(display),
-              style: const TextStyle(color: Colors.white70, fontSize: 20),
+            child: RichText(
               textAlign: TextAlign.right,
+              text: TextSpan(
+                style: const TextStyle(fontSize: 18),
+                children: CalculatorHelpers.numberToWordsSegments(display)
+                    .map((segment) => TextSpan(
+                          text: segment.text,
+                          style: TextStyle(color: segment.color),
+                        ))
+                    .toList(),
+              ),
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
           // Ligne de points (quantité)
           Align(
@@ -53,11 +64,12 @@ class CalculatorDisplay extends StatelessWidget {
               runSpacing: 4,
               children: _buildQuantityDots(display)
                   .map((dot) => FittedBox(
-                          fit: BoxFit.contain, // .scaleDown,
-                          child: Text(
+                        fit: BoxFit.contain,
+                        child: Text(
                           dot,
-                          style: const TextStyle(color: Colors.white70, fontSize: 20),
-                          ),
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 18),
+                        ),
                       ))
                   .toList(),
             ),
@@ -69,6 +81,7 @@ class CalculatorDisplay extends StatelessWidget {
 
   /// Construit les colonnes de chiffres avec espacement
   List<Widget> _buildDigitColumns(String display) {
+    // Si on a une erreur
     if (display == 'Erreur') {
       return [
         Container(
@@ -82,6 +95,7 @@ class CalculatorDisplay extends StatelessWidget {
       ];
     }
 
+    // Si l'affichage est vide
     if (display.isEmpty) return [];
 
     // Tokeniser en nombres et opérateurs
@@ -113,6 +127,7 @@ class CalculatorDisplay extends StatelessWidget {
         cols.add(OperatorBlock(
           operator: tok,
           blockWidth: CalculatorHelpers.blockWidth,
+          blockHeight: CalculatorHelpers.blockHeight,
         ));
         cols.add(const SizedBox(width: 12));
         continue;
@@ -145,8 +160,9 @@ class CalculatorDisplay extends StatelessWidget {
         character: ch,
         label: CalculatorHelpers.placeName(posFromRight),
         blockWidth: CalculatorHelpers.blockWidth,
+        blockHeight: CalculatorHelpers.blockHeight,
       ));
-      if (posFromRight % 3 == 0 && posFromRight != 0) { ///calcul de la position de la colonne pour savoir si ecart tout les 3 colonnes
+      if (posFromRight % 3 == 0 && posFromRight != 0) { //calcul de la position de la colonne pour savoir si ecart tout les 3 colonnes
         cols.add(const SizedBox(width: 12));
       }
     }
@@ -158,13 +174,21 @@ class CalculatorDisplay extends StatelessWidget {
         character: ',',
         label: 'virgule',
         blockWidth: CalculatorHelpers.blockWidth,
+        blockHeight: CalculatorHelpers.blockHeight,
       ));
+
+      // Limite le nombre de décimales à 5
+      if (decPart.length > CalculatorHelpers.maxDecimals) {
+        decPart = decPart.substring(0, CalculatorHelpers.maxDecimals);
+      }
+
       for (int i = 0; i < decPart.length; i++) {
         String ch = decPart[i];
         cols.add(DigitColumn(
           character: ch,
           label: CalculatorHelpers.decimalPlaceName(i + 1),
           blockWidth: CalculatorHelpers.blockWidth,
+          blockHeight: CalculatorHelpers.blockHeight,
         ));
       }
     }
@@ -176,6 +200,7 @@ class CalculatorDisplay extends StatelessWidget {
             character: '-',
             label: 'signe',
             blockWidth: CalculatorHelpers.blockWidth,
+            blockHeight: CalculatorHelpers.blockHeight,
           ));
     }
 
@@ -216,14 +241,23 @@ class CalculatorDisplay extends StatelessWidget {
       dots.add(' ');
       for (int i = 0; i < hundreds; i++) {
         dots.add('🔲');
+        if (i%4==0 && i>0) {
+          dots.add(' '); // espace tous les 5 blocs
+        }
       }
       dots.add(' ');
       for (int i = 0; i < tens; i++) {
         dots.add('❚');
+        if (i%4==0 && i>0) {
+          dots.add(' '); // espace tous les 5 blocs
+        }
       }
       dots.add(' ');
       for (int i = 0; i < units; i++) {
         dots.add('●');
+        if (i%4==0 && i>0) {
+          dots.add(' '); // espace tous les 5 blocs
+        }
       }
     }
 

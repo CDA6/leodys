@@ -1,7 +1,15 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
 /// Classe utilitaire pour les conversions et helpers de la calculatrice
 class CalculatorHelpers {
-  /// Largeur fixe pour chaque bloc
-  static const double blockWidth = 56.0;
+  // Largeur fixe pour chaque bloc
+  static const double blockWidth = 56.0; //56
+  // Hauteur fixe pour chaque bloc
+  static const double blockHeight = 80.0;
+  // Nombre maximum de décimales affichées
+  static const int maxDecimals = 5;
 
   /// Noms des places pour la partie entière (position depuis la droite)
   static String placeName(int posFromRight) {
@@ -28,17 +36,21 @@ class CalculatorHelpers {
     return '10^-$decPos';
   }
 
-  /// Convertit la chaîne d'affichage en texte français
-  static String numberToWordsFromDisplay(String display) {
-    if (display == 'Erreur') return 'Erreur';
-    if (display.isEmpty) return '';
+  /// Convertit UN SEUL nombre (sans opérateur) en texte français
+  /// Usage interne uniquement - utiliser numberToWordsSegments() pour l'affichage
+  static String _singleNumberToWords(String numberStr) {
+    if (numberStr.isEmpty) return '';
 
-    bool neg = display.startsWith('-');
-    String s = neg ? display.substring(1) : display;
+    // Si nombre négatif
+    bool neg = numberStr.startsWith('-');
+    // on enlève le -
+    String s = neg ? numberStr.substring(1) : numberStr;
+    // Séparation partie entière et décimale
     List<String> parts = s.split('.');
     String intPart = parts[0];
     String decPart = parts.length > 1 ? parts[1] : '';
 
+    // gestion de la partie entière
     int? intValue = int.tryParse(intPart);
     String wordsInt;
     if (intValue == null) {
@@ -47,8 +59,24 @@ class CalculatorHelpers {
       wordsInt = _intToFrench(intValue);
     }
 
+    // gestion de la partie décimale
     if (decPart.isNotEmpty) {
-      String decWords = decPart.split('').map((c) => _digitWord(c)).join(' ');
+      // Limite le nombre de décimales (pour eviter les incohérences entre affichage nombre et texte)
+      if (decPart.length > CalculatorHelpers.maxDecimals) {
+        decPart = decPart.substring(0, CalculatorHelpers.maxDecimals);
+      }
+      // Convertir la partie décimale comme un nombre entier
+      int? decValue = int.tryParse(decPart);
+      String decWords;
+
+      if (decValue != null && decValue > 0) {
+        // Lire comme un nombre entier (ex: "63" → "soixante-trois")
+        decWords = _intToFrench(decValue);
+      } else {
+        // Si conversion impossible, lire chiffre par chiffre
+        decWords = decPart.split('').map((c) => _digitWord(c)).join(' ');
+      }
+
       return (neg ? 'moins ' : '') + wordsInt + ' virgule ' + decWords;
     }
     return (neg ? 'moins ' : '') + wordsInt;
@@ -69,7 +97,10 @@ class CalculatorHelpers {
       '9': 'neuf',
       '-': 'moins',
       ',': 'virgule',
-      '.': 'virgule'
+      '.': 'virgule',
+      '×': 'fois',
+      '÷': 'divisé par',
+      '+': 'plus'
     };
     return map[ch] ?? ch;
   }
@@ -165,5 +196,66 @@ class CalculatorHelpers {
       res += underHundred(rem);
     }
     return res;
+  }
+
+  /// Convertit le nombre en segments de couleur selon
+  /// que l'on a un chiffre ou un mot-clé
+  /// Tokenise l'expression complète (ex: "63+5") et traite chaque partie séparément
+  static List<({String text, Color color})> numberToWordsSegments(String display) {
+    final result = <({String text, Color color})>[];
+
+    if (display == 'Erreur') {
+      result.add((text: 'Erreur', color: Colors.red));
+      return result;
+    }
+
+    if (display.isEmpty) {
+      return result;
+    }
+
+    // Séparation des nombres et opérateurs (tokenisation)
+    final List<String> tokens = [];
+    int i = 0;
+    while (i < display.length) {
+      final ch = display[i];
+      // Détection d'un opérateur, le - peut être le signe d'un nombre négatif
+      if ((ch == '+' || ch == '×' || ch == '÷') ||
+          (ch == '-' && i > 0 && RegExp(r'[0-9.]').hasMatch(display[i - 1]))) {
+        tokens.add(ch);
+        i++;
+      } else {
+        // sinon c'est un nombre
+        int start = i;
+        if (display[i] == '-') i++; // Signe négatif
+        while (i < display.length && RegExp(r'[0-9.]').hasMatch(display[i])) {
+          i++;
+        }
+        tokens.add(display.substring(start, i));
+      }
+    }
+
+    // Converti chaque token en mots avec coloration
+    for (final token in tokens) {
+      if (['+', '-', '×', '÷'].contains(token)) {
+        // Si opérateur con converti en mot en jaune
+        final operatorWord = _digitWord(token);
+        result.add((text: ' $operatorWord ', color: Colors.yellow));
+      } else {
+        // Si nombre convertion en mots
+        final words = _singleNumberToWords(token).split(' ');
+        for (final word in words) {
+          if (word.isEmpty) continue;
+          // Coloration selon le mot
+          if (['million', 'millions', 'mille', 'cent', 'cents'].contains(word)) {
+            result.add((text: '$word ', color: Colors.green));
+          } else if (['virgule'].contains(word)) {
+            result.add((text: '$word ', color: Colors.yellow));
+          } else {
+            result.add((text: '$word ', color: Colors.white70));
+          }
+        }
+      }
+    }
+    return result;
   }
 }
