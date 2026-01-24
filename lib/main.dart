@@ -42,6 +42,9 @@ import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'common/services/database_service.dart';
+import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
+import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/notification/presentation/pages/notification_dashboard_page.dart';
@@ -114,6 +117,7 @@ void main() async {
   await voice_clock.init();
 
   runApp(MyApp(themeManager: themeManager));
+  initVehicleRecognition();
 }
 
 class MyApp extends StatelessWidget {
