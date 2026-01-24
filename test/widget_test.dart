@@ -10,6 +10,8 @@ import 'package:leodys/features/audio_reader/presentation/controllers/reader_con
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:leodys/main.dart';
+
 void main() {
   final DocumentController documentController;
   final ReaderController readerController;
