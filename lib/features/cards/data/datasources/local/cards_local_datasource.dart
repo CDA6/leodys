@@ -42,12 +42,14 @@ class CardsLocalDatasource {
       if (i == 1) versoPath = newFile.path;
     }
 
-    print("verso : $versoPath");
-
     // creation du fichier card.json contenant les métadonnées de la carte
     final now = DateTime.now().toUtc().toIso8601String();
 
     final imagesJson = {'recto': 'recto.jpg'};
+    if (rectoPath == null) {
+      throw StateError("La carte doit avoir une image recto");
+    }
+
     if (versoPath != null && versoPath.trim().isNotEmpty) {
       imagesJson['verso'] = 'verso.jpg';
     }
@@ -93,8 +95,14 @@ class CardsLocalDatasource {
       // sécurité : on ignore les dossiers sans métadonnées
       if (!jsonFile.existsSync()) continue;
 
+      late Map<String, dynamic> data;
+
       final jsonString = await jsonFile.readAsString();
-      final Map<String, dynamic> data = jsonDecode(jsonString);
+      try {
+        data = jsonDecode(jsonString);
+      } on FormatException catch (e) {
+        throw FormatException(e.message);
+      }
 
       if (data['deleted'] == true) continue;
 
@@ -121,7 +129,9 @@ class CardsLocalDatasource {
   }
 
   Future<List<CardModel>> getCardsToSync() async {
-    final appDir = await getApplicationDocumentsDirectory();
+    late Directory appDir;
+    appDir = await getApplicationDocumentsDirectory();
+
     final cardsDir = Directory('${appDir.path}/cards');
 
     if (!cardsDir.existsSync()) return [];
@@ -133,7 +143,12 @@ class CardsLocalDatasource {
       final jsonFile = File('${folder.path}/card.json');
       if (!jsonFile.existsSync()) continue;
 
-      final data = jsonDecode(await jsonFile.readAsString());
+      late dynamic data;
+      try {
+        data = jsonDecode(await jsonFile.readAsString());
+      } on FormatException catch (e) {
+        throw FormatException(e.message);
+      }
 
       // inclure les cartes PENDING, même si deleted = true
       if (data['sync_status'] != 'PENDING') continue;
@@ -145,7 +160,9 @@ class CardsLocalDatasource {
   }
 
   Future<void> markAsSynced(String cardId) async {
-    final appDir = await getApplicationDocumentsDirectory();
+    late Directory appDir;
+    appDir = await getApplicationDocumentsDirectory();
+
     final cardFolder = Directory('${appDir.path}/cards/$cardId');
 
     final jsonFile = File('${cardFolder.path}/card.json');
@@ -169,7 +186,13 @@ class CardsLocalDatasource {
 
     if (!jsonFile.existsSync()) return;
 
-    final data = jsonDecode(await jsonFile.readAsString());
+    late dynamic data;
+    try {
+      data = jsonDecode(await jsonFile.readAsString());
+    } on FormatException catch (e) {
+      throw FormatException(e.message);
+    }
+
     data['deleted'] = true;
     data['sync_status'] = 'PENDING';
     data['updated_at'] = DateTime.now().toUtc().toIso8601String();
@@ -201,6 +224,7 @@ class CardsLocalDatasource {
     } else if (update.newVerso != null) {
       final versoFile = File('${update.card.folderPath}/verso.jpg');
       await update.newVerso!.copy(versoFile.path);
+
       versoPath = versoFile.path;
     }
 

@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:leodys/features/cards/data/cards_repository.dart';
 import 'package:leodys/features/cards/data/datasources/local/cards_local_datasource.dart';
 import 'package:leodys/features/cards/data/datasources/remote/cards_remote_datasource.dart';
-import 'package:leodys/features/cards/data/sync/cards_sync_manager.dart';
+import 'package:leodys/features/cards/domain/usecases/sync_cards_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/get_local_user_cards_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/save_new_card_usecase.dart';
@@ -41,17 +41,13 @@ Future<void> init() async {
   // repository
   getIt.registerLazySingleton<CardsRepository>(
         () => CardsRepository(
-      getIt<CardsRemoteDatasource>(),
-      getIt<CardsLocalDatasource>(),
+        getIt<CardsRemoteDatasource>(), getIt<CardsLocalDatasource>()
     ),
   );
 
-  // sync manager
-  getIt.registerLazySingleton<CardSyncManager>(
-        () => CardSyncManager(
-      local: getIt<CardsLocalDatasource>(),
-      remote: getIt<CardsRemoteDatasource>(),
-    ),
+  // sync usecase
+  getIt.registerLazySingleton<SyncCardsUsecase>(
+        () => SyncCardsUsecase(getIt<CardsRepository>()),
   );
 
   // use cases
@@ -64,21 +60,21 @@ Future<void> init() async {
   getIt.registerLazySingleton<SaveNewCardUsecase>(
         () => SaveNewCardUsecase(
       getIt<CardsRepository>(),
-      getIt<CardSyncManager>(),
+      getIt<SyncCardsUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton<GetLocalUserCardsUsecase>(
         () => GetLocalUserCardsUsecase(
       getIt<CardsRepository>(),
-      getIt<CardSyncManager>(),
+      getIt<SyncCardsUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton<DeleteCardUsecase>(
         () => DeleteCardUsecase(
       getIt<CardsRepository>(),
-      getIt<CardSyncManager>(),
+      getIt<SyncCardsUsecase>(),
     ),
   );
 

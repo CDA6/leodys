@@ -58,8 +58,8 @@ void main() async {
 
 
   // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
-  // final client = Supabase.instance.client;
-  // await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
+  final client = Supabase.instance.client;
+  await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
 
   await ocr_reader.init();
   await messagerie.init();

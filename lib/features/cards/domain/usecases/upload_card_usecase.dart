@@ -1,13 +1,19 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
+import 'package:leodys/common/mixins/usecase_mixin.dart';
 import 'package:leodys/features/cards/data/cards_repository.dart';
 import 'package:leodys/features/cards/domain/card_model.dart';
 
-class UploadCardUsecase {
+import '../../../../common/errors/failures.dart';
+
+class UploadCardUsecase with UseCaseMixin<void, CardModel>{
   final CardsRepository repository;
   UploadCardUsecase(this.repository);
 
-  Future<void> call (CardModel card, String userId) async {
-    await repository.uploadCard(card, userId);
+  @override
+  Future<Either<Failure, void>> execute (CardModel card) async {
+    final result = await repository.uploadCard(card);
+    return result;
   }
 }
