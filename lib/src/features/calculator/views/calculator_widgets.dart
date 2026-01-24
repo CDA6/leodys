@@ -5,18 +5,21 @@ class DigitColumn extends StatelessWidget {
   final String character;
   final String label;
   final double blockWidth;
+  final double blockHeight;
 
   const DigitColumn({
     Key? key,
     required this.character,
     required this.label,
     required this.blockWidth,
+    required this.blockHeight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: blockWidth,
+      height: blockHeight,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       decoration: BoxDecoration(
@@ -28,21 +31,21 @@ class DigitColumn extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           FittedBox(
-            fit: BoxFit.scaleDown,
+            fit: BoxFit.scaleDown, //reduit automatiquement si besoin
             child: Text(
               character,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 28,
+                fontSize: 30, //taille du texte dans les blocs
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(height: 6),
-          SizedBox(
-            width: blockWidth - 12,
+          const SizedBox(height: 4),
+          SizedBox( // texte de l'étiquette
+            width: blockWidth - 2,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -64,11 +67,13 @@ class DigitColumn extends StatelessWidget {
 class OperatorBlock extends StatelessWidget {
   final String operator;
   final double blockWidth;
+  final double blockHeight;
 
   const OperatorBlock({
     Key? key,
     required this.operator,
     required this.blockWidth,
+    required this.blockHeight,
   }) : super(key: key);
 
   /// Retourne le nom en français de l'opérateur
@@ -109,7 +114,7 @@ class OperatorBlock extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           SizedBox(
             width: blockWidth - 12,
             child: FittedBox(
@@ -129,7 +134,7 @@ class OperatorBlock extends StatelessWidget {
   }
 }
 
-/// Bouton de la calculatrice
+/// Widget bouton de la calculatrice
 class CalculatorButton extends StatelessWidget {
   final String text;
   final Color? color;

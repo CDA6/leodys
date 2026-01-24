@@ -1,7 +1,7 @@
 import 'package:hive_ce/hive_ce.dart';
 
 /// Classe pour sauvegarder et récupérer l'historique de la calculette
-/// Note: La box doit être ouverte AVANT la création de ce service (dans calculator_view.dart)
+/// La box est ouverte avant, dans calculator_view.dart
 class HiveService {
   // Box de liste de string pour historique
   // Calcul complet + version speech
@@ -20,5 +20,10 @@ class HiveService {
   /// Récupère les entrées de l'historique
   List<String> getEntries() {
     return _historyBox.values.toList();
+  }
+
+  /// Vide l'historique
+  Future<void> clearHistory() async {
+    await _historyBox.clear();
   }
 }

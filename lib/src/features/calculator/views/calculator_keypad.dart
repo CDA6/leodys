@@ -42,6 +42,14 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     '8': ['8', '●●●●●\n●●●', '⚄⚂', 'huit'],
     '9': ['9', '●●●●●\n●●●●', '⚄⚃', 'neuf'],
     '.': ['.', '•', ',', 'virgule'],
+    '+': ['+', '+', '+', 'plus'],
+    '-': ['-', '-', '-', 'moins'],
+    '×': ['×', '×', '×', 'fois'],
+    '÷': ['÷', '÷', '÷', 'divisé par'],
+    '=': ['=', '=', '=', 'égal'],
+    'C': ['C', 'C', 'C', 'tout effacer'],
+    '⌫': ['⌫', '⌫', '⌫', 'effacer'],
+    '☰': ['☰', '☰', '☰', 'historique'],
   };
 
   /// Obtient le texte d'affichage selon le mode actuel
@@ -65,25 +73,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
               children: [
                 Expanded(
                   child: CalculatorButton(
-                    text: 'C',
-                    color: Colors.orange,
-                    textColor: Colors.white,
-                    onPressed: widget.onClearPressed,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: CalculatorButton(
-                    text: '⌫',
-                    color: Colors.orange,
-                    textColor: Colors.white,
-                    onPressed: widget.onBackspacePressed,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: CalculatorButton(
-                    text: '☰',
+                    text: _getDisplayText('☰'),
                     color: Colors.blueGrey,
                     textColor: Colors.white,
                     onPressed: () => widget.onHistoryPressed(),
@@ -92,7 +82,26 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: CalculatorButton(
-                    text: '÷',
+                    text: _getDisplayText('C'),
+                    color: Colors.orange,
+                    textColor: Colors.white,
+                    onPressed: widget.onClearPressed,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: CalculatorButton(
+                    text: _getDisplayText('⌫'),
+                    color: Colors.orange,
+                    textColor: Colors.white,
+                    onPressed: widget.onBackspacePressed,
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+                Expanded(
+                  child: CalculatorButton(
+                    text: _getDisplayText('÷'),
                     color: Colors.blueGrey,
                     textColor: Colors.white,
                     onPressed: () => widget.onOperatorPressed('÷'),
@@ -127,7 +136,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       if (value == '=') {
         // Bouton égal
         child = CalculatorButton(
-          text: displayText,
+          text: _getDisplayText(value),
           color: Colors.green,
           textColor: Colors.white,
           onPressed: widget.onEqualsPressed,
@@ -135,7 +144,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       } else if (['+', '-', '×', '÷', '%'].contains(value)) {
         // Boutons opérateurs
         child = CalculatorButton(
-          text: displayText,
+          text: _getDisplayText(value),
           color: Colors.blueGrey,
           textColor: Colors.white,
           onPressed: () => widget.onOperatorPressed(value),
@@ -155,7 +164,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       } else if (value == '.') {
         child = CalculatorButton(
           text: displayText,
-          color: Colors.white38,
+          color: Colors.white30,
           textColor: Colors.white,
           onPressed: () => widget.onNumberPressed(value)
         );

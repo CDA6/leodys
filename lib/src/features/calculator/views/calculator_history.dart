@@ -26,7 +26,7 @@ class HistoryDialog extends StatelessWidget {
                 shrinkWrap: true,
                 itemCount: history.length,
                 itemBuilder: (BuildContext context, int index) {
-                  // Afficher dans l'ordre inverse (derniers calculs en haut)
+                  // Affiche les derniers calculs en premier
                   final reversedIndex = history.length - 1 - index;
                   return ListTile(
                     title: Text(
@@ -38,6 +38,13 @@ class HistoryDialog extends StatelessWidget {
               ),
       ),
       actions: [
+        TextButton(
+          onPressed: () async {
+            viewModel.clearHistory();
+            Navigator.pop(context); // Ferme la fenetre
+          },
+          child: const Text('Effacer l\'historique'),
+        ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Fermer'),
