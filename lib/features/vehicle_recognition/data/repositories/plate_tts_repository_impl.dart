@@ -1,5 +1,5 @@
 import 'package:leodys/features/vehicle_recognition/data/services/plate_tts_service.dart';
-import 'package:leodys/features/vehicle_recognition/domain/models/reader_config.dart';
+import 'package:leodys/features/vehicle_recognition/domain/models/plate_reader_config.dart';
 import 'package:leodys/features/vehicle_recognition/domain/repositories/plate_tts_repository.dart';
 
 
@@ -9,7 +9,7 @@ class PlateTtsRepositoryImpl implements PlateTtsRepository{
   PlateTtsRepositoryImpl(this.plateTtsService);
 
   @override
-  Future<void> play(String text, ReaderConfig config) async {
+  Future<void> play(String text, PlateReaderConfig config) async {
 
     await plateTtsService.speak
       (

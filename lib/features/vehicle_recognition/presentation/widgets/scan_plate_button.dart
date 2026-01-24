@@ -17,8 +17,8 @@ class ScanPlateButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: isLoading ? null : onPressed,
-      icon: const Icon(Icons.document_scanner),
-      label: Text(isLoading ? 'Scan en cours...' : 'Scanner'),
+      icon: const Icon(Icons.camera_alt_outlined),
+      label: Text(isLoading ? 'En cours de traitement...' : 'Prendre une photo'),
     );
   }
 }
