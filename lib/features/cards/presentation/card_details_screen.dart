@@ -10,9 +10,9 @@ import '../domain/card_model.dart';
 
 class CardDetailsScreen extends StatefulWidget{
   static const route = "/card_details";
-  final CardModel? card;
+  CardModel? card;
 
-  const CardDetailsScreen({
+  CardDetailsScreen({
     super.key,
     this.card
   });
@@ -25,11 +25,11 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
   late final deleteCardUseCase = getIt<DeleteCardUsecase>();
   bool _isFront = true;
 
+
+
   Widget _buildCardImage() {
     final front = widget.card?.rectoPath;
     final back = widget.card?.versoPath;
-
-    print("back : $back");
 
     // chemin actuel selon le cote de la carte
     String? currentPath = _isFront ? front : back;
@@ -116,9 +116,19 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
             const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EditCardScreen(card: widget.card!)));
+                final updatedCard = await Navigator.push<CardModel>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditCardScreen(card: widget.card!),
+                  ),
+                );
+
+                // si carte mise à jour, affichage de la nouvelle + rafraichissement de la page
+                if (updatedCard != null) {
+                  setState(() {
+                    widget.card = updatedCard;
+                  });
+                }
               },
               icon: const Icon(Icons.update),
               label: const Text(

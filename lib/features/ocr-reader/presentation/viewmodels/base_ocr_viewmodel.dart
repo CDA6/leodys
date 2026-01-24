@@ -84,7 +84,7 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
       AppLogger().error("OCR Timeout");
     } on Exception catch (e) {
       _errorMessage = 'Erreur inattendue: ${e.toString()}';
-      AppLogger().error("OCR Exception: ${e.toString()}", e);
+      AppLogger().error("OCR Exception: ${e.toString()}", error: e);
     } finally {
       _isProcessing = false;
       notifyListeners();

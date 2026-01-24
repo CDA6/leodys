@@ -62,10 +62,25 @@ class _EditCardScreenState extends State<EditCardScreen> {
       removeVerso: _removeVerso,
     );
 
-    await updateCardUseCase.execute(update);
+    final result = await updateCardUseCase.call(update);
 
-    // Retour à l'écran précédent
-    if (mounted) Navigator.pop(context);
+    result.fold(
+          (failure) {
+        // SnackBar d'erreur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(failure.message)),
+        );
+      },
+          (updatedCard) {
+        // SnackBar succès
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Carte mise à jour avec succès !")),
+        );
+
+        // pop vers la page précédente
+        Navigator.pop(context, updatedCard);
+      },
+    );
   }
 
   /// Widget d'affichage d'image avec boutons scan/supprimer

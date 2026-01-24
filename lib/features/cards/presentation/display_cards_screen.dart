@@ -32,13 +32,23 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
   final scanService = getIt<ScanService>();
 
   Future<void> loadSavedCards() async {
-    final cards = await getLocalCards.call();
-    setState(() {
-      savedCards = cards;
-    });
+    try {
+      final cards = await getLocalCards.call(null);
+      cards.fold(
+              (failure) {
+            return SnackBar(content: Text("Erreur lors du chargement des cartes. Réessayez ultérieurement."));
+          },
+              (cards) {
+            setState(() {
+              savedCards = cards;
+            });
+          });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
-  Future<File?> startScan(BuildContext context) async {
+  Future<dynamic> startScan(BuildContext context) async {
     try {
       // conversion des chemins en Files
       List<File> imageFiles = await scanService.scanMultipleDocuments();
@@ -102,17 +112,19 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
       ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            final renamedFile = await startScan(context); // await ici !
-            if (renamedFile != null) {
-              await loadSavedCards();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Carte enregistrée avec succès.')),
-              );
-            }
+              // ouvre l'écran de scan puis de renommage
+              final newCard = await startScan(context);
+
+              // si carte bien créee
+              if (newCard != null) {
+                // refresh de la liste
+                await loadSavedCards();
+              }
           },
           tooltip: 'Ajouter une nouvelle carte',
           child: const Icon(Icons.add),
         )
+
     );
   }
 
