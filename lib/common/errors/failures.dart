@@ -37,3 +37,30 @@ class OCRFailure extends Failure {
 class ImageProcessingFailure extends Failure {
   const ImageProcessingFailure(super.message);
 }
+
+// Erreur lancée lorsqu'un upload dans un bucket échoue
+class StorageFailure extends Failure {
+  const StorageFailure(super.message);
+}
+
+// Erreur lancée lors d'une erreur au niveau des tables supabase
+class PostgresFailure extends Failure {
+  const PostgresFailure(super.message);
+}
+
+// Erreur inconnue/imprévue
+class UnknownFailure extends Failure {
+  const UnknownFailure(super.message);
+}
+
+class AuthFailure extends Failure {
+  const AuthFailure(super.message);
+}
+
+class FileFailure extends Failure {
+  FileFailure(String message) : super(message);
+}
+
+class FormatFailure extends Failure {
+  FormatFailure(String message) : super(message);
+}
