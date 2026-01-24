@@ -24,7 +24,7 @@ class ScanAndIdentifyVehicleUsecase {
     // Créer un modele de PlateScan si plaque reconnue
     final plateScan = PlateScan(
         plate: vehicle.plate,
-        vehicleLabel: '${vehicle.make} ${vehicle.model}');
+        vehicleLabel: vehicle.label!,);
     // Sauvegarder les bon résultats
     await plateHistoryRepository.savePlateScan(plateScan);
     return plateScan;

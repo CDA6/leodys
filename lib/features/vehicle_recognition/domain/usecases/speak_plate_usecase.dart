@@ -1,4 +1,4 @@
-import 'package:leodys/features/vehicle_recognition/domain/models/reader_config.dart';
+import 'package:leodys/features/vehicle_recognition/domain/models/plate_reader_config.dart';
 import 'package:leodys/features/vehicle_recognition/domain/repositories/plate_tts_repository.dart';
 
 /// Gestion de la lecture vocale
@@ -8,7 +8,7 @@ class SpeakPlateUsecase {
   SpeakPlateUsecase({required this.plateTtsRepository});
 
   /// Lnacer la lecture avec une configuration de lecture
-  Future<void> play(String text, ReaderConfig config) async {
+  Future<void> play(String text, PlateReaderConfig config) async {
 
 
     if (text.trim().isEmpty) return;

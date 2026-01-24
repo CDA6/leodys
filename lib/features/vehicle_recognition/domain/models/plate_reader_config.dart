@@ -1,6 +1,6 @@
 /// Modèle metier qui représente
 /// la configuration de lecture audio pour un text scanné
-class ReaderConfig {
+class PlateReaderConfig {
   final double speechRate; // Vitesse de lecture
   final double pitch; // Intonation de la voix
   final String languageCode; // Code de langage
@@ -12,7 +12,7 @@ class ReaderConfig {
   ///   les "{}" signifie que les parametre sont nommés,
   ///   l'ordre n'est pas important,
   ///   chaque valeur est associé à un nom
-  const ReaderConfig({
+  const PlateReaderConfig({
     // parametre obligatoire
     required this.speechRate,
     required this.pitch,
@@ -26,7 +26,7 @@ class ReaderConfig {
   ///  Configuration par défaut adaptée pour les dys
   ///   defaultConfig est une variable de classe type ReaderConfig
   ///   déclarée "static const"
-  static const ReaderConfig defaultConfig = ReaderConfig(
+  static const PlateReaderConfig defaultConfig = PlateReaderConfig(
     // les parametres nommés
     speechRate: 0.5,
     pitch: 1.1,
@@ -36,7 +36,7 @@ class ReaderConfig {
 
   /// Configuration pour un profil d'utilisateur non-dys
   /// Un paramètre de reglage à intégrer dans l'appli si le temps le permet
-  static const ReaderConfig normalConfig = ReaderConfig(
+  static const PlateReaderConfig normalConfig = PlateReaderConfig(
     // les parametres nommés
     speechRate: 1.0,
     pitch: 1.0,
@@ -48,14 +48,14 @@ class ReaderConfig {
   ///   d'une configuration existante.
   ///   Cette méthode prend des parametres nommés et nullable
   ///   Elle retourne un nouvel objet ReaderConfig
-  ReaderConfig copyWith({
+  PlateReaderConfig copyWith({
     double? speechRate,
     double? pitch,
     String? languageCode,
     String? voiceId,
     bool? dysFriendlyMode,
   }) {
-    return ReaderConfig(
+    return PlateReaderConfig(
       speechRate: speechRate ?? this.speechRate,
       pitch: pitch ?? this.pitch,
       languageCode: languageCode ?? this.languageCode,
