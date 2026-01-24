@@ -4,6 +4,7 @@ import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.da
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:provider/provider.dart';
+import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
@@ -81,6 +82,17 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       color: Colors.blue,
       description: 'TODO',
+    ),
+
+    AppFeature(
+      name: 'Scanner de cartes de fidélité',
+      icon: Icons.card_membership_sharp,
+      route: DisplayCardsScreen.route,
+      requiresInternet: false,
+      requiresAuth: true,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Scan de cartes de fidélité.',
     ),
   ];
 
