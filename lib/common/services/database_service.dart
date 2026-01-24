@@ -13,7 +13,7 @@ class DatabaseService {
 
     await Supabase.initialize(
       url: AuthConstants.projectUrl,
-      anonKey: BDDConstants.apiKeyBDD,
+      anonKey: AuthConstants.apiKey,
     );
   }
 
