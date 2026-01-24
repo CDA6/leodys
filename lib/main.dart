@@ -19,6 +19,7 @@ import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'common/services/database_service.dart';
+import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 
 import 'package:hive/hive.dart';
@@ -58,7 +59,7 @@ void main() async {
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
-
+  initVehicleRecognition();
   runApp(MyApp());
 }
 
