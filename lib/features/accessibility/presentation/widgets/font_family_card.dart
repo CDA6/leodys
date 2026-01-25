@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../common/theme/theme_context.dart';
 class FontFamilyCard extends StatelessWidget {
   final String currentFontFamily;
   final List<String> availableFonts;
@@ -14,25 +16,35 @@ class FontFamilyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: context.colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      color: context.colorScheme.onSurface,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Police de caractères',
               style: TextStyle(
-                fontSize: 16,
                 fontWeight: FontWeight.w600,
+                color: context.colorScheme.primary
               ),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: currentFontFamily,
+              initialValue: currentFontFamily,
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
@@ -43,21 +55,13 @@ class FontFamilyCard extends StatelessWidget {
                 value: font,
                 child: Text(
                   font,
-                  style: TextStyle(fontFamily: font),
+                  style: TextStyle(color: context.colorScheme.secondary),
                 ),
               ))
                   .toList(),
               onChanged: onFontSelected,
             ),
             const SizedBox(height: 8),
-            Text(
-              '💡 OpenDyslexic et Lexend sont recommandées pour la dyslexie',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.blue[700],
-                fontStyle: FontStyle.italic,
-              ),
-            ),
           ],
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/theme/theme_context.dart';
+
 class LineHeightCard extends StatelessWidget {
   final double lineHeight;
   final double minLineHeight;
@@ -17,45 +19,54 @@ class LineHeightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: context.colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      color: context.colorScheme.onSurface,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Hauteur de ligne',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  '${lineHeight.toStringAsFixed(1)}x',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    alignment: WrapAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Hauteur de ligne',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: context.colorScheme.primary
+                        ),
+                      ),
+                      Text(
+                        '${lineHeight.toStringAsFixed(1)} px',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Améliore la lisibilité',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[600],
-              ),
-            ),
             const SizedBox(height: 12),
             Slider(
+              inactiveColor: context.colorScheme.tertiary,
               value: lineHeight,
               min: minLineHeight,
               max: maxLineHeight,
-              divisions: 15,
+              divisions: ((maxLineHeight - minLineHeight) * 10).toInt(),
               label: lineHeight.toStringAsFixed(1),
               onChanged: (value) {
                 onUpdateLineHeight(value);

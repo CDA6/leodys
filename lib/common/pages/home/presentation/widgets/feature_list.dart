@@ -4,6 +4,7 @@ import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.da
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../theme/theme_context.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
@@ -43,9 +44,9 @@ class FeatureList extends StatelessWidget {
       name: 'Scanner de jeu de carte',
       icon: Icons.view_module,
       route: '/',
-      requiresInternet: true,
-      requiresAuth: true,
-      isAvailable: true,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: false,
       color: Colors.blue,
       description: 'Reconnaissance de jeu de carte classique',
     ),
@@ -92,7 +93,7 @@ class FeatureList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_features.isNotEmpty) ...[
-              _buildSectionTitle('Fonctionnalités'),
+              _buildSectionTitle(context, 'Fonctionnalités'),
               const SizedBox(height: 12),
               _buildFeaturesGrid(context, viewModel, _features),
             ],
@@ -102,13 +103,13 @@ class FeatureList extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
+      style: TextStyle(
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        fontSize: context.titleFontSize,
+        color: context.colorScheme.primary,
       ),
     );
   }
@@ -117,9 +118,9 @@ class FeatureList extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.9,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: context.baseFontSize > 16 ? 1 : 2,
+        childAspectRatio: 0.85,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
@@ -173,14 +174,15 @@ class FeatureList extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: context.colorScheme.surfaceContainer,
         title: Row(
           children: [
-            Icon(feature.icon, color: Colors.grey.shade400),
+            Icon(feature.icon, color: context.colorScheme.secondary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 feature.name,
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(color: context.colorScheme.secondary),
               ),
             ),
           ],
@@ -194,19 +196,19 @@ class FeatureList extends StatelessWidget {
               _buildRequirement(
                 icon: Icons.wifi,
                 label: 'Connexion Internet requise',
-                color: Colors.blue,
+                color: context.colorScheme.secondary,
               ),
             if (feature.requiresAuth)
               _buildRequirement(
                 icon: Icons.lock,
                 label: 'Authentification requise',
-                color: Colors.blue,
+                color: context.colorScheme.secondary,
               ),
             if (!feature.isAvailable)
               _buildRequirement(
                 icon: Icons.construction,
                 label: 'En cours de développement',
-                color: Colors.blue,
+                color: context.colorScheme.secondary,
               ),
           ],
         ),

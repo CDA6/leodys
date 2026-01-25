@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/theme/theme_context.dart';
+
 class FontSizeCard extends StatelessWidget {
   final double fontSize;
   final double minFontSize;
@@ -17,6 +19,15 @@ class FontSizeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: context.colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      color: context.colorScheme.onSurface,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -25,19 +36,18 @@ class FontSizeCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Taille',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w600,
+                      color: context.colorScheme.primary,
                   ),
                 ),
                 Text(
-                  '${fontSize.toInt()} pt',
+                  '${fontSize.toInt()} px',
                   style: TextStyle(
-                    fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colorScheme.primary,
                   ),
                 ),
               ],
@@ -45,20 +55,19 @@ class FontSizeCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Icon(Icons.text_fields, size: 16),
                 Expanded(
                   child: Slider(
+                    inactiveColor: context.colorScheme.secondary,
                     value: fontSize,
                     min: minFontSize,
                     max: maxFontSize,
-                    divisions: 16,
+                    divisions: (maxFontSize - minFontSize).toInt(),
                     label: '${fontSize.toInt()}',
                     onChanged: (value) {
                       onFontSizeChanged(value);
                     },
                   ),
                 ),
-                const Icon(Icons.text_fields, size: 32),
               ],
             ),
           ],
