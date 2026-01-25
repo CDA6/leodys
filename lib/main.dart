@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
         ),
         // --- AJOUTEZ CETTE LIGNE ICI ---
         ChangeNotifierProvider(
-            create: (_) =>voice_clock.sl<VoiceClockViewModel>() // Ou voice_clock.sl<VoiceClockViewModel>()
+            create: (_) =>voice_clock.sl<VoiceClockViewModel>() 
         ),
       ],
 
