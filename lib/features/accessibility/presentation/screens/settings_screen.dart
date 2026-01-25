@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/font_size_card.dart';
-import 'package:leodys/features/accessibility/presentation/widgets/intro_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/letter_spacing_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/line_height_card.dart';
-import 'package:leodys/features/accessibility/presentation/widgets/text_to_speech_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/theme_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/font_family_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/section_title.dart';
@@ -46,17 +44,10 @@ class SettingsScreen extends StatelessWidget {
 
           return Column(
             children: [
-              // ==========================================
-              // CONTENU SCROLLABLE
-              // ==========================================
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    // Introduction
-                    const IntroCard(),
-                    const SizedBox(height: 24),
-
                     // Section Typographie
                     const SectionTitle(
                       icon: Icons.font_download,
@@ -122,18 +113,6 @@ class SettingsScreen extends StatelessWidget {
                           await viewModel.updateThemeMode(value);
                         }
                       },
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Section Synthèse vocale
-                    const SectionTitle(
-                      icon: Icons.record_voice_over,
-                      title: 'Synthèse vocale',
-                    ),
-                    const SizedBox(height: 8),
-                    TextToSpeechCard(
-                      textToSpeechEnabled: settings.textToSpeechEnabled,
-                      toggleTextToSpeech: viewModel.toggleTextToSpeech,
                     ),
                     const SizedBox(height: 24),
                   ],

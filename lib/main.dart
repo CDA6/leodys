@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:leodys/common/widget/global_overlay.dart';
-import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
-import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import 'common/pages/home/presentation/screens/home_page.dart';
-import 'common/theme/app_theme_manager.dart';
-import 'common/utils/internet_util.dart';
 import 'constants/auth_constants.dart';
+
+import 'common/utils/internet_util.dart';
+import 'common/services/database_service.dart';
+import 'common/theme/app_theme_manager.dart';
+import 'common/widget/global_overlay.dart';
+import 'common/pages/home/presentation/screens/home_page.dart';
+
 import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
+
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
+
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
-import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
-import 'common/services/database_service.dart';
-import 'features/vocal_notes/injection_container.dart' as vocal_notes;
+import 'features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'features/notification/notification_injection.dart' as messagerie;
+import 'features/notification/presentation/pages/notification_dashboard_page.dart';
 
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
@@ -35,6 +37,8 @@ import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
 
 import 'features/authentication/domain/services/auth_service.dart';
+
+import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
@@ -45,15 +49,13 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
-
   await dotenv.load(fileName: ".env");
 
-  await Hive.initFlutter();
 
-  // 1. Initialisation des services de base
+  //Services & Utils
+  await Hive.initFlutter();
   await DatabaseService.init();
   await InternetUtil.init();
-
   await Supabase.initialize(
     url: AuthConstants.projectUrl,
     anonKey: AuthConstants.apiKey,
@@ -94,11 +96,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
-        // IMPORTANT: Initialiser le SettingsViewModel ici
         ChangeNotifierProvider(
           create: (_) {
             final viewModel = accessibility.sl<SettingsViewModel>();
-            // Initialiser de manière asynchrone
             Future.microtask(() => viewModel.init());
             return viewModel;
           },
@@ -110,7 +110,6 @@ class MyApp extends StatelessWidget {
             navigatorKey: navigatorKey,
             title: 'Leodys',
             debugShowCheckedModeBanner: false,
-            // CLEF: Utiliser le thème du manager
             theme: themeManager.currentTheme,
             initialRoute: HomePage.route,
             builder: (context, child) {

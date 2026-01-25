@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/pages/home/presentation/widgets/welcome_section.dart';
 import 'package:leodys/common/widget/connection_warning.dart';
 import 'package:leodys/common/widget/global_appbar.dart';
 import 'package:leodys/features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
@@ -38,7 +39,7 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // En-tête de bienvenue
-                    _buildWelcomeSection(context, viewModel),
+                    WelcomeSection(),
                     const SizedBox(height: 24),
 
                     // Avertissement si pas de connexion
@@ -58,48 +59,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-
-  Widget _buildWelcomeSection(BuildContext context, HomeViewModel viewModel) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        // Utilise les couleurs du thème au lieu de bleu fixe
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primary,
-            colorScheme.primaryContainer,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Bienvenue',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            viewModel.isAuthenticated
-                ? 'Toutes vos fonctionnalités à portée de main !'
-                : 'Connectez-vous pour accéder à toutes les fonctionnalités',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
 }

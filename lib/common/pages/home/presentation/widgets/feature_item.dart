@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context.dart';
 import '../../domain/entities/app_feature.dart';
 
-/// Widget représentant une fonctionnalité individuelle.
 class FeatureItem extends StatelessWidget {
   final AppFeature feature;
   final bool isAccessible;
@@ -16,32 +16,36 @@ class FeatureItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool shouldCenter = context.baseFontSize > 16;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isAccessible ? feature.color : Colors.grey.shade300,
+          color: isAccessible ? feature.color : Colors.grey,
           width: 1,
         ),
       ),
-      color: isAccessible ? Colors.white : Colors.grey.shade100,
-      child: GestureDetector(
+      color: isAccessible
+          ? context.colorScheme.onSurface
+          : Colors.grey.withValues(alpha: 0.2),
+      child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: shouldCenter
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
             children: [
-              // Icône
-              _buildIcon(),
+              _buildIcon(context),
               const SizedBox(height: 8),
+              _buildTitle(context),
 
-              // Nom de la feature
-              _buildTitle(),
-              const SizedBox(height: 20),
-
-              // Badges des prérequis
+              !shouldCenter ? Spacer() : SizedBox(height: 12),
               _buildBadges(),
             ],
           ),
@@ -50,33 +54,31 @@ class FeatureItem extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon() {
+  Widget _buildIcon(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isAccessible
             ? feature.color.withValues(alpha: 0.1)
-            : Colors.grey.shade200,
+            : Colors.grey.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(
         feature.icon,
         size: 40,
-        color: isAccessible ? feature.color : Colors.grey.shade400,
+        color: isAccessible ? feature.color : Colors.grey,
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(BuildContext context) {
     return Text(
       feature.name,
       textAlign: TextAlign.center,
-      maxLines: 2,
+      maxLines: 3,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: isAccessible ? Colors.black87 : Colors.grey.shade500,
+        color: isAccessible ? context.colorScheme.secondary : Colors.grey,
         height: 1.2,
       ),
     );
@@ -118,17 +120,14 @@ class FeatureItem extends StatelessWidget {
     );
   }
 
-  Widget _buildBadge({
-    required IconData icon,
-    required Color color,
-  }) {
+  Widget _buildBadge({required IconData icon, required Color color}) {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

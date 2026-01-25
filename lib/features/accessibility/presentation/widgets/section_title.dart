@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/theme/theme_context.dart';
+
 class SectionTitle extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -14,14 +16,15 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 24),
+        Icon(icon, size: 24, color: context.colorScheme.primary ),
         const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                  color: context.colorScheme.primary
+              ),
+            ),
         ),
       ],
     );
