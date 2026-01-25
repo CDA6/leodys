@@ -53,8 +53,7 @@ class VoiceClockScreen extends StatelessWidget {
             Semantics(
               label: "Lire l'heure vocalement",
               child:
-
-              TtsReaderWidget(text:"Il est exactement ${DateFormat('HH:mm').format(viewModel.currentTime)}")
+              TtsReaderWidget(text:"Il est exactement ${DateFormat('HH:mm').format(viewModel.currentTime)}",size:70)
             ),
           ],
         ),
