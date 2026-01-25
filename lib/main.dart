@@ -6,6 +6,7 @@ import 'package:leodys/common/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,6 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-
   // 1. Initialisation des services de base
   await DatabaseService.init();
   await InternetUtil.init();
@@ -57,10 +57,12 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-
   // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
   final client = Supabase.instance.client;
-  await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
+  await client.auth.signInWithPassword(
+    email: 'coleen@test.com',
+    password: 'leodys123',
+  );
 
   await ocr_reader.init();
   await messagerie.init();
@@ -88,10 +90,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
-        // --- AJOUTEZ CETTE LIGNE ICI ---
-        ChangeNotifierProvider(
-            create: (_) =>voice_clock.sl<VoiceClockViewModel>() 
-        ),
+
       ],
 
       child: MaterialApp(
@@ -109,19 +108,30 @@ class MyApp extends StatelessWidget {
 
             return MapScreen(viewModel: viewModel);
           },
-          PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
-          HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
-          NotificationDashboard.route: (context) =>
-              const NotificationDashboard(),
+          PrintedTextReaderScreen.route: (context) =>
+              const PrintedTextReaderScreen(),
+          HandwrittenTextReaderScreen.route: (context) =>
+              const HandwrittenTextReaderScreen(),
+
+          NotificationDashboard.route: (context) => ChangeNotifierProvider(
+            create: (_) => messagerie.sl<NotificationController>(),
+            child: const NotificationDashboard(),
+          ),
+
           VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
           VocalNoteEditorScreen.route: (context) =>
               const VocalNoteEditorScreen(),
-          VoiceClockScreen.route: (context) =>
-          const VoiceClockScreen(),
+
+          VoiceClockScreen.route: (context) => ChangeNotifierProvider(
+            create: (_) => voice_clock.sl<VoiceClockViewModel>(),
+            // GetIt fournit l'instance propre
+            child: const VoiceClockScreen(),
+          ),
+
           ReaderScreen.route: (context) => const ReaderScreen(),
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
-          DisplayCardsScreen.route: (context) => const DisplayCardsScreen()
+          DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
         },
       ),
     );
