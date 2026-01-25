@@ -24,12 +24,23 @@ class AppThemes {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primaryContainer: Colors.blue,
-        primary: Colors.blue,
-        secondary: Colors.grey[900]!,
-        tertiary: Colors.grey[300]!,
-        surface: Color(0xFFF5F5F5),
-        onSurface: Colors.white,
+        primary: Colors.blue, // texte, icônes, éléments principaux
+        onPrimary: Colors.white,
+
+        primaryContainer: Colors.blue, // conteneurs, boutons
+        onPrimaryContainer: Colors.white,
+        onSecondaryContainer: const Color(0xFFEBEBEB),
+
+        secondary: const Color(0xFF191919), // éléments secondaires
+        onSecondary: const Color(0xFFB4B4B4),
+
+        surface: const Color(0xFFF5F5F5), // surfaces principales
+        onSurface: Colors.black,
+
+        surfaceContainerHighest: Colors.white, // surfaces supérieures,
+        onSurfaceVariant: const Color(0xFF0F0F0F),
+
+        outline: const Color(0xFFC8C8C8),
       ),
     );
   }
@@ -51,17 +62,21 @@ class AppThemes {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: const Color(0xFFFFFFFF), // Noir pur (texte, icônes, éléments principaux)
-        onPrimary: const Color(0xFF000000), // Blanc pur (texte/icônes SUR un fond `primary`)
+        primary: Colors.white, // texte, icônes, éléments principaux
+        onPrimary: Colors.black,
 
-        primaryContainer: const Color(0xFF0A0A0A), // Noir très foncé (conteneurs, boutons)
-        onPrimaryContainer: const Color(0xFFFFFFFF), // Blanc (texte/icônes SUR `primaryContainer`)
+        primaryContainer: const Color(0xFF141414), // conteneurs, boutons
+        onPrimaryContainer: Colors.white,
+        onSecondaryContainer: const Color(0xFFEBEBEB),
 
-        secondary: const Color(0xFFB4B4B4), // Gris foncé (éléments secondaires)
-        onSecondary: const Color(0xFF232323), // Blanc (texte/icônes SUR `secondary`)
+        secondary: const Color(0xFFB4B4B4), // éléments secondaires
+        onSecondary: const Color(0xFF0F0F0F),
 
-        surface: const Color(0xFF000000), // Blanc (fond des cartes, surfaces principales)
-        onSurface: const Color(0xFF0A0A0A), // Noir (texte/icônes SUR `surface`)
+        surface: Colors.black, // surfaces principales
+        onSurface: Colors.white,
+
+        surfaceContainerHighest: const Color(0xFF141414), // surfaces supérieures,
+        onSurfaceVariant: Colors.white,
 
         outline: const Color(0xFF666666),
       ),

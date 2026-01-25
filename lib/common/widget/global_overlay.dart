@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context.dart';
 
 import '../../features/accessibility/presentation/screens/settings_screen.dart';
 import '../../main.dart';
@@ -43,9 +44,9 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
         // Fond noir transparent
         if (_isMenuOpen)
           GestureDetector(
-            onTap: _closeMenu, // Ferme le menu si on clique sur le fond
+            onTap: _closeMenu,
             child: Container(
-              color: Colors.black.withValues(alpha: 0.75), // Transparence à 50%
+              color: Colors.black.withValues(alpha: 0.9),
               width: double.infinity,
               height: double.infinity,
             ),
@@ -61,8 +62,12 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: context.colorScheme.outline,
+                    width: 1.0,
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -72,7 +77,8 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
                     _buildMenuItem(
                       icon: Icons.home,
                       label: 'Accueil',
-                      color: Colors.blue,
+                      labelColor: context.colorScheme.onPrimaryContainer,
+                      bgColor: context.colorScheme.primaryContainer,
                       onTap: () {
                         _closeMenu();
                         navigatorKey.currentState!.pushNamedAndRemoveUntil(
@@ -85,7 +91,8 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
                     _buildMenuItem(
                       icon: Icons.settings,
                       label: 'Préférences',
-                      color: Colors.blue,
+                      labelColor: context.colorScheme.onPrimaryContainer,
+                      bgColor: context.colorScheme.primaryContainer,
                       onTap: () {
                         _closeMenu();
                         navigatorKey.currentState!.pushNamedAndRemoveUntil(
@@ -98,7 +105,8 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
                     _buildMenuItem(
                       icon: Icons.close,
                       label: 'Fermer',
-                      color: Colors.orange,
+                      labelColor: context.colorScheme.onSurfaceVariant,
+                      bgColor: Colors.transparent,
                       onTap: () {
                         _closeMenu();
                       },
@@ -115,13 +123,14 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
           bottom: 16,
           child: FloatingActionButton(
             onPressed: _toggleMenu,
-            backgroundColor: Colors.blue,
+            backgroundColor: context.colorScheme.primary,
             child: AnimatedRotation(
-              turns: _isMenuOpen ? 0.125 : 0,
+              turns: _isMenuOpen ? 0.4 : 0,
               duration: const Duration(milliseconds: 200),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
+              child: Icon(
+                Icons.settings,
+                color: context.colorScheme.onPrimary,
+                size: 36,
               ),
             ),
           ),
@@ -133,23 +142,24 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
   Widget _buildMenuItem({
     required IconData icon,
     required String label,
-    required Color color,
+    required Color labelColor,
+    required Color bgColor,
     required VoidCallback onTap,
   }) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 8), // Espacement entre les boutons
+      margin: const EdgeInsets.only(bottom: 8),
       child: TextButton.icon(
         onPressed: onTap,
         style: TextButton.styleFrom(
-          backgroundColor: color, // Fond bleu
-          foregroundColor: Colors.white, // Texte et icône en blanc
+          backgroundColor: bgColor,
+          foregroundColor: labelColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // Bords arrondis
+            borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding interne
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         ),
-        icon: Icon(icon, size: 24), // Icône à gauche
+        icon: Icon(icon, size: 24),
         label: Text(
           label,
           style: const TextStyle(

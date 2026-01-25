@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../../../common/theme/theme_context.dart';
+
 class FontFamilyCard extends StatelessWidget {
   final String currentFontFamily;
   final List<String> availableFonts;
@@ -24,7 +24,7 @@ class FontFamilyCard extends StatelessWidget {
           width: 1,
         ),
       ),
-      color: context.colorScheme.onSurface,
+      color: context.colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
