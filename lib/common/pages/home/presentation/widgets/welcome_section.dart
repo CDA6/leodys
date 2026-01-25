@@ -34,7 +34,7 @@ class WelcomeSection extends StatelessWidget {
                     ? 'Toutes vos fonctionnalités à portée de main !'
                     : 'Connectez-vous pour accéder à toutes les fonctionnalités',
                 style: TextStyle(
-                  color: context.colorScheme.secondary,
+                  color: context.colorScheme.onSecondaryContainer,
                 ),
               ),
             ],

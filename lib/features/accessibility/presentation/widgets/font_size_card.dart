@@ -27,7 +27,7 @@ class FontSizeCard extends StatelessWidget {
           width: 1,
         ),
       ),
-      color: context.colorScheme.onSurface,
+      color: context.colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -57,7 +57,7 @@ class FontSizeCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Slider(
-                    inactiveColor: context.colorScheme.secondary,
+                    inactiveColor: context.colorScheme.primary.withValues(alpha: 0.1),
                     value: fontSize,
                     min: minFontSize,
                     max: maxFontSize,

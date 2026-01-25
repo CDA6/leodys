@@ -25,7 +25,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Reconnaissance de texte simple',
     ),
 
@@ -36,7 +35,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Reconnaissance de texte complexe',
     ),
 
@@ -47,7 +45,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: false,
-      color: Colors.blue,
       description: 'Reconnaissance de jeu de carte classique',
     ),
 
@@ -58,7 +55,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Visualiser et naviguer sur la carte',
     ),
 
@@ -69,7 +65,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'TODO',
     ),
 
@@ -80,7 +75,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: false,
-      color: Colors.blue,
       description: 'TODO',
     ),
   ];
@@ -109,7 +103,7 @@ class FeatureList extends StatelessWidget {
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: context.titleFontSize,
-        color: context.colorScheme.primary,
+        color: context.colorScheme.onSurface,
       ),
     );
   }
@@ -173,16 +167,24 @@ class FeatureList extends StatelessWidget {
   void _showBlockedFeatureDialog(BuildContext context, AppFeature feature) {
     showDialog(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.9),
       builder: (context) => AlertDialog(
-        backgroundColor: context.colorScheme.surfaceContainer,
+        backgroundColor: context.colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: context.colorScheme.outline,
+            width: 1.0,
+          ),
+        ),
         title: Row(
           children: [
-            Icon(feature.icon, color: context.colorScheme.secondary),
+            Icon(feature.icon, color: context.colorScheme.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 feature.name,
-                style: TextStyle(color: context.colorScheme.secondary),
+                style: TextStyle(color: context.colorScheme.primary),
               ),
             ),
           ],
@@ -217,8 +219,8 @@ class FeatureList extends StatelessWidget {
             child: TextButton(
               onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+                backgroundColor: context.colorScheme.primaryContainer,
+                foregroundColor: context.colorScheme.onPrimaryContainer,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

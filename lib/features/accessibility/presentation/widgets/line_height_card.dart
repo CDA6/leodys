@@ -27,7 +27,7 @@ class LineHeightCard extends StatelessWidget {
           width: 1,
         ),
       ),
-      color: context.colorScheme.onSurface,
+      color: context.colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -62,7 +62,7 @@ class LineHeightCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Slider(
-              inactiveColor: context.colorScheme.tertiary,
+              inactiveColor: context.colorScheme.primary.withValues(alpha: 0.1),
               value: lineHeight,
               min: minLineHeight,
               max: maxLineHeight,

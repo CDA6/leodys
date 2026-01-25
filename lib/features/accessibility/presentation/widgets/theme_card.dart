@@ -65,14 +65,14 @@ class _ThemeOptionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: isSelected
-              ? context.colorScheme.outline
+              ? context.colorScheme.primary
               : Colors.grey[300]!,
           width: isSelected ? 2 : 1,
         ),
       ),
       color: isSelected
-          ? context.colorScheme.primary.withValues(alpha: 0.1)
-          : context.colorScheme.onSurface,
+          ? context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1)
+          : context.colorScheme.surfaceContainerHighest,
       child: InkWell(
         onTap: () => onChanged(value),
         borderRadius: BorderRadius.circular(12),
