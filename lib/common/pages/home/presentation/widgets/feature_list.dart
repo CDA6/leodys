@@ -93,16 +93,6 @@ class FeatureList extends StatelessWidget {
       color: Colors.blue,
       description: 'TODO',
     ),
-    AppFeature(
-      name: 'Messagerie',
-      icon: Icons.message,
-      route: NotificationDashboard.route,
-      requiresInternet: true,
-      requiresAuth: false,
-      isAvailable: true,
-      color: Colors.blue,
-      description: 'TODO',
-    ),
 
     AppFeature(
       name: 'Scanner de cartes de fidélité',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../../common/widget/tts_reader_widget.dart';
 import '../viewmodel/voice_clock_viewmodel.dart';
 import '../../domain/entities/clock_config.dart';
 
@@ -9,9 +10,12 @@ class VoiceClockScreen extends StatelessWidget {
 
   const VoiceClockScreen({super.key});
 
+
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<VoiceClockViewModel>();
+
 
     return Scaffold(
       appBar: AppBar(title: const Text("Horloge Vocale")),
@@ -24,7 +28,7 @@ class VoiceClockScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _styleButton(context, "Digital", ClockType.digital, viewModel),
-                const SizedBox(width: 20),
+                const SizedBox(width: 30),
                 _styleButton(context, "Aiguilles", ClockType.analog, viewModel),
               ],
             ),
@@ -48,17 +52,9 @@ class VoiceClockScreen extends StatelessWidget {
             // Bouton de lecture vocale massif
             Semantics(
               label: "Lire l'heure vocalement",
-              child: ElevatedButton.icon(
-                onPressed: viewModel.speakTime,
-                icon: const Icon(Icons.volume_up, size: 40),
-                label: const Text("Quelle heure est-il ?", style: TextStyle(fontSize: 24)),
-                style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
-                ),
-              ),
+              child:
+
+              TtsReaderWidget(text:"Il est exactement ${DateFormat('HH:mm').format(viewModel.currentTime)}")
             ),
           ],
         ),
