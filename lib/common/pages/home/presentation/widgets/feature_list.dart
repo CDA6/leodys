@@ -67,7 +67,7 @@ class FeatureList extends StatelessWidget {
       icon: Icons.message,
       route: '/messagerie',
       requiresInternet: true,
-      requiresAuth: false,
+      requiresAuth: true,
       isAvailable: true,
       color: Colors.blue,
       description: 'Envoyer des notifications par mail',
