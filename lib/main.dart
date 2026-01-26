@@ -161,6 +161,9 @@ class MyApp extends StatelessWidget {
               HomePage.route: (context) =>
                 const HomePage(),
 
+              SettingsScreen.route: (context) =>
+              const SettingsScreen(),
+
               MapScreen.route: (context) {
                 final dataSource = GeolocatorDatasource();
                 final repository = LocationRepositoryImpl(dataSource);
