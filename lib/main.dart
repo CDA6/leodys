@@ -1,10 +1,19 @@
+import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
+import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
+import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
+import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
+import 'package:leodys/common/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
+import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'common/pages/home/presentation/screens/home_page.dart';
 import 'constants/auth_constants.dart';
 
 import 'common/utils/internet_util.dart';
@@ -19,6 +28,13 @@ import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/left_right/presentation/real_time_yolo_screen.dart';
+import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
+import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
+import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
+import 'features/notification/notification_injection.dart' as messagerie;
+import 'features/cards/providers.dart' as cards;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
@@ -29,12 +45,11 @@ import 'features/notification/presentation/pages/notification_dashboard_page.dar
 
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import 'features/map/data/dataSources/geolocator_datasource.dart';
-import 'features/map/data/repositories/location_repository_impl.dart';
-import 'features/map/presentation/viewModel/map_view_model.dart';
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
+import 'features/left_right/injection_container.dart' as pose_detection;
 
 import 'features/authentication/domain/services/auth_service.dart';
 
@@ -51,14 +66,19 @@ void main() async {
   await initializeDateFormatting('fr_FR');
   await dotenv.load(fileName: ".env");
 
-
-  //Services & Utils
-  await Hive.initFlutter();
-  await DatabaseService.init();
+  // Initialisation des services de base
+  await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   await InternetUtil.init();
   await Supabase.initialize(
-    url: AuthConstants.projectUrl,
-    anonKey: AuthConstants.apiKey,
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
+  // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
+  final client = Supabase.instance.client;
+  await client.auth.signInWithPassword(
+    email: 'coleen@test.com',
+    password: 'leodys123',
   );
 
   //ThemeManager
@@ -69,8 +89,11 @@ void main() async {
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
-
-  runApp(MyApp(themeManager: themeManager));
+  await cards.init();
+  await pose_detection.init();
+  await voice_clock.init();
+  
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -96,14 +119,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
-        ChangeNotifierProvider(
+         ChangeNotifierProvider(
           create: (_) {
             final viewModel = accessibility.sl<SettingsViewModel>();
             Future.microtask(() => viewModel.init());
             return viewModel;
           },
         ),
-      ],
+
+     ],
       child: Consumer<AppThemeManager>(
         builder: (context, themeManager, _) {
           return MaterialApp(
@@ -118,29 +142,51 @@ class MyApp extends StatelessWidget {
               );
             },
             routes: {
-              HomePage.route: (context) => const HomePage(),
-              MapScreen.route: (context) {
-                final dataSource = GeolocatorDatasource();
-                final repository = LocationRepositoryImpl(dataSource);
-                final useCase = WatchUserLocationUseCase(repository);
-                final viewModel = MapViewModel(useCase);
-                return MapScreen(viewModel: viewModel);
-              },
-              SettingsScreen.route: (context) => const SettingsScreen(),
-              PrintedTextReaderScreen.route: (context) =>
+          HomePage.route: (context) => 
+            const HomePage(),
+          
+          MapScreen.route: (context) {
+            final dataSource = GeolocatorDatasource();
+            final repository = LocationRepositoryImpl(dataSource);
+            final useCase = WatchUserLocationUseCase(repository);
+            final viewModel = MapViewModel(useCase);
+
+            return MapScreen(viewModel: viewModel);
+          },
+            
+          RealTimeYoloScreen.route: (context) => 
+            const RealTimeYoloScreen(),
+          
+          PrintedTextReaderScreen.route: (context) =>
               const PrintedTextReaderScreen(),
-              HandwrittenTextReaderScreen.route: (context) =>
+          
+          HandwrittenTextReaderScreen.route: (context) =>
               const HandwrittenTextReaderScreen(),
-              NotificationDashboard.route: (context) =>
-              const NotificationDashboard(),
-              VocalNotesListScreen.route: (context) =>
-              const VocalNotesListScreen(),
-              VocalNoteEditorScreen.route: (context) =>
+
+          NotificationDashboard.route: (context) => ChangeNotifierProvider(
+            create: (_) => messagerie.sl<NotificationController>(),
+            child: const NotificationDashboard(),
+          ),
+
+          VocalNotesListScreen.route: (context) => 
+            const VocalNotesListScreen(),
+          
+          VocalNoteEditorScreen.route: (context) =>
               const VocalNoteEditorScreen(),
-              ReaderScreen.route: (context) => const ReaderScreen(),
-              DocumentsScreen.route: (context) => const DocumentsScreen(),
-            },
-          );
+
+          VoiceClockScreen.route: (context) => ChangeNotifierProvider(
+            create: (_) => voice_clock.sl<VoiceClockViewModel>(),
+            child: const VoiceClockScreen(),
+          ),
+
+          ReaderScreen.route: (context) => 
+            const ReaderScreen(),
+          
+          DocumentsScreen.route: (context) => 
+            const DocumentsScreen(),
+          
+          DisplayCardsScreen.route: (context) => 
+            const DisplayCardsScreen(),
         },
       ),
     );

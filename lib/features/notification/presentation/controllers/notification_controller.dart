@@ -1,10 +1,17 @@
+import 'package:flutter/cupertino.dart';
+
 import '../../domain/entities/message_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/entities/referent_entity.dart';
+import '../../domain/usecases/send_notification_email.dart';
+import '../../domain/usecases/sync_message_history.dart';
 
-class NotificationController {
+class NotificationController extends ChangeNotifier{
   final NotificationRepository repository;
-  NotificationController(this.repository);
+  final SendNotificationEmail sendNotificationEmail;
+  final SyncMessageHistory syncMessageHistory;
+
+  NotificationController(this.repository, this.sendNotificationEmail, this.syncMessageHistory);
 
   Future<List<MessageEntity>> fetchHistory() => repository.getMessageHistory();
   Future<List<ReferentEntity>> fetchReferents() => repository.getReferents();
@@ -23,7 +30,7 @@ class NotificationController {
   Future<void> removeReferent(String id) => repository.deleteReferent(id);
 
   Future<void> notify(ReferentEntity referent) {
-    return repository.sendEmailToReferent(
+    return sendNotificationEmail.call(
       referent: referent,
       subject: "Alerte de suivi Leodys",
       body: "Bonjour ${referent.name},\nJe souhaite vous contacter concernant...",
@@ -31,18 +38,10 @@ class NotificationController {
   }
 
   Future<void> sendMessage({required ReferentEntity referent, required String subject, required String body}) async {
-    // 1. Envoi réel
-    await repository.sendEmailToReferent(referent: referent, subject: subject, body: body);
+    await sendNotificationEmail.call(referent: referent, subject: subject, body: body);
+  }
 
-    // 2. Sauvegarde dans l'historique
-    final message = MessageEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      referentId: referent.id,
-      referentName: referent.name,
-      subject: subject,
-      body: body,
-      sentAt: DateTime.now(),
-    );
-    await repository.saveMessage(message);
+  Future<void> synchronizeMessageHistory() async {
+    await syncMessageHistory.call();
   }
 }

@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/common/utils/internet_util.dart';
+import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
+import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
+import '../../../../../features/cards/presentation/display_cards_screen.dart';
+import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
+import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../domain/entities/app_feature.dart';
+import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
 
 import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
@@ -59,6 +68,26 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Visualiser et naviguer sur la carte',
     ),
+    AppFeature(
+      name: 'Messagerie',
+      icon: Icons.message,
+      route: '/messagerie',
+      requiresInternet: true,
+      requiresAuth: true,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Envoyer des notifications par mail',
+    ),
+    AppFeature(
+      name: 'Horloge',
+      icon: Icons.access_time,
+      route: '/voice-clock',
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: "Ecouter l'heure",
+    ),
 
     AppFeature(
       name: 'Lecteur d\'écran',
@@ -78,6 +107,28 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: false,
       description: 'TODO',
+    ),
+
+    AppFeature(
+      name: 'Scanner de cartes de fidélité',
+      icon: Icons.card_membership_sharp,
+      route: DisplayCardsScreen.route,
+      requiresInternet: false,
+      requiresAuth: true,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Scan de cartes de fidélité.',
+    ),
+
+    AppFeature(
+      name: 'Aide Gauche / Droite',
+      icon: Icons.accessibility_new,
+      route: RealTimeYoloScreen.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Aide à la latéralisation via la caméra.',
     ),
   ];
 

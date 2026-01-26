@@ -1,14 +1,14 @@
 
 import '../../domain/models/reader_config.dart';
 import '../../domain/repositories/tts_repository.dart';
-import '../services/tts_service_imp.dart';
+import '../services/tts_service.dart';
 
 /// Implémentation du repository de TTS
 /// Relie le Domain (contrat TtsRepository) et le service technique de
 /// synthese vocal (TtsServiceImpl)
 class TtsRepositoryImpl implements TtsRepository {
   // Appel le plugin flutter_tts
-  final TtsServiceImpl _ttsService;
+  final TtsService _ttsService;
 
   // Injection de service TTS via le constructeur
   TtsRepositoryImpl(this._ttsService);
