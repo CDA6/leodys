@@ -79,7 +79,7 @@ class CalculatorDisplay extends StatelessWidget {
                     alignment: WrapAlignment.end,
                     spacing: 4,
                     runSpacing: 4,
-                    children: _buildQuantityDots(display)
+                    children: CalculatorHelpers.buildQuantityDots(display)
                         .map((dot) => FittedBox(
                               fit: BoxFit.contain,
                               child: Text(
@@ -104,7 +104,7 @@ class CalculatorDisplay extends StatelessWidget {
           child: ExcludeSemantics( // car on a deja un Semantics pour le display
             child: Icon(
               Icons.volume_up,
-              color: Colors.white.withValues(alpha: 0.3), // blacn transparent
+              color: Colors.white.withValues(alpha: 0.3), // blanc transparent
               size: 32,
             ),
           ),
@@ -127,7 +127,7 @@ class CalculatorDisplay extends StatelessWidget {
     final segments = CalculatorHelpers.numberToWordsSegments(display);
 
     // Concatène tous les segments de texte
-    return segments.map((segment) => segment.text).join('').trim();
+    return segments.map((segment) => segment.text).join(' ').trim();
   }
 
   /// Construit les colonnes de chiffres avec espacement
@@ -256,62 +256,5 @@ class CalculatorDisplay extends StatelessWidget {
     }
 
     return cols;
-  }
-
-  /// Construit les points représentant la quantité
-  ///  🧊 vaut 1000
-  /// 🔲 vaut 100
-  /// ❚ vaut 10
-  /// ● vaut 1
-  List<String> _buildQuantityDots(String display) {
-    if (display == 'Erreur') return [];
-
-    double? val = double.tryParse(display.replaceAll(',', '.'));
-    int qty = 0;
-    if (val != null) {
-      qty = val.abs().floor();
-    }
-
-    int thousands = qty ~/ 1000; // on récupère le nombre de milliers
-    int hundreds = (qty % 1000) ~/ 100; // on récupère le nombre de centaines
-    int tens = (qty % 100) ~/ 10; // on récupère le nombre de dizaines
-    int units = qty % 10; // on récupère le nombre d'unités
-
-    List<String> dots = [];
-
-    if (qty >= 1000000) { // limite pour l'affichage (pour éviter bug)
-      dots.add('⚠️ : Nombre trop grand'); // Avertissement si la quantité est trop grande
-    } else {
-      if (thousands > 10) {
-        dots.add('$thousands🧊');
-      } else {
-        for (int i = 0; i < thousands; i++) {
-          dots.add('🧊');
-        }
-      }
-      dots.add(' ');
-      for (int i = 0; i < hundreds; i++) {
-        dots.add('🔲');
-        if (i%4==0 && i>0) {
-          dots.add(' '); // espace tous les 5 blocs
-        }
-      }
-      dots.add(' ');
-      for (int i = 0; i < tens; i++) {
-        dots.add('❚');
-        if (i%4==0 && i>0) {
-          dots.add(' '); // espace tous les 5 blocs
-        }
-      }
-      dots.add(' ');
-      for (int i = 0; i < units; i++) {
-        dots.add('●');
-        if (i%4==0 && i>0) {
-          dots.add(' '); // espace tous les 5 blocs
-        }
-      }
-    }
-
-    return dots;
   }
 }

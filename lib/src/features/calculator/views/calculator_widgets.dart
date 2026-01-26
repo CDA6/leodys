@@ -21,11 +21,11 @@ class DigitColumn extends StatelessWidget {
       width: blockWidth,
       height: blockHeight,
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
       decoration: BoxDecoration(
         color: Colors.black,
         border: Border.all(color: Colors.white24),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(6), // angles arrondis
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -38,7 +38,7 @@ class DigitColumn extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 30, //taille du texte dans les blocs
+                fontSize: 36, //taille du texte dans les blocs
                 fontWeight: FontWeight.bold,
               ),
             ),
