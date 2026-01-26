@@ -172,7 +172,6 @@ class CardsLocalDatasource {
     data['updated_at'] = DateTime.now().toUtc().toIso8601String();
     print('data after : $data');
 
-    // ❌ ne pas mettre const
     await jsonFile.writeAsString(
       JsonEncoder.withIndent('  ').convert(data),
     );
