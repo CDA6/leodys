@@ -106,10 +106,15 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
         //User location
         CurrentLocationLayer(
-          alignPositionOnUpdate: AlignOnUpdate.always,
-          alignDirectionOnUpdate: AlignOnUpdate.always,
+          alignPositionOnUpdate: AlignOnUpdate.never,
+          alignDirectionOnUpdate: AlignOnUpdate.never,
           style: LocationMarkerStyle(
             marker: DefaultLocationMarker(color: Colors.blue),
+            markerSize: const Size.square(20),
+            accuracyCircleColor: const Color(0x182196F3),
+            showHeadingSector: true,
+            headingSectorRadius: 60,
+            headingSectorColor: const Color(0xCC2196F3),
           ),
         ),
       ],
