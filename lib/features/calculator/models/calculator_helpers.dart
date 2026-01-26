@@ -44,7 +44,11 @@ class CalculatorHelpers {
   static List<String> buildQuantityDots(String display) {
     if (display == 'Erreur') return [];
 
-    double? val = double.tryParse(display.replaceAll(',', '.'));
+    // Extraire le dernier nombre (après le dernier opérateur)
+    String lastNumber = _extractLastNumber(display);
+
+    // on ingore la partie décimale
+    double? val = double.tryParse(lastNumber.replaceAll(',', '.'));
     int qty = 0;
     if (val != null) {
       qty = val.abs().floor();
@@ -310,6 +314,38 @@ class CalculatorHelpers {
         }
     }
     return result;
+  }
+
+  /// Récupere le dernier nombre d'une opération
+  /// (Apres un opérateur si il y en a un)
+  static String _extractLastNumber(String display) {
+    // Supprimer les espaces
+    display = display.trim();
+
+    // Si vide, retourner "0"
+    if (display.isEmpty) return '0';
+
+    // Chercher le dernier opérateur (+, -, ×, ÷)
+    final operators = ['+', '-', '×', '÷'];
+    int lastOperatorIndex = -1;
+
+    for (var op in operators) {
+      int index = display.lastIndexOf(op);
+      if (index > lastOperatorIndex) {
+        lastOperatorIndex = index;
+      }
+    }
+
+    // Si aucun opérateur on renvoie tout l'affichage
+    if (lastOperatorIndex == -1) {
+      return display;
+    }
+
+    // Extraire la partie après le dernier opérateur
+    String lastPart = display.substring(lastOperatorIndex + 1).trim();
+
+    // Si vide (pas encore de nombre apres l'opérateur), retourner "0"
+    return lastPart.isEmpty ? '0' : lastPart;
   }
 
 }

@@ -14,11 +14,16 @@ class CalculatorState {
   /// État d'erreur
   final bool hasError;
 
+  /// Indique si on vient de calculer un résultat avec "="
+  /// Permet de réutiliser le résultat avec un opérateur ou de le remplacer avec un chiffre
+  final bool justCalculated;
+
   const CalculatorState({
     this.display = '0',
     this.current = '',
     this.expression = '',
     this.hasError = false,
+    this.justCalculated = false, //boolean indiquant si on a deja un résultat
   });
 
   /// Crée une copie de l'état avec des modifications
@@ -27,12 +32,14 @@ class CalculatorState {
     String? current,
     String? expression,
     bool? hasError,
+    bool? justCalculated,
   }) {
     return CalculatorState(
       display: display ?? this.display,
       current: current ?? this.current,
       expression: expression ?? this.expression,
       hasError: hasError ?? this.hasError,
+      justCalculated: justCalculated ?? this.justCalculated,
     );
   }
 
