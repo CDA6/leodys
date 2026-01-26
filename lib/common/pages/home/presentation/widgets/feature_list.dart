@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/common/utils/internet_util.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
-import 'package:provider/provider.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
+
+import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
+import 'package:leodys/common/pages/home/domain/entities/app_feature.dart';
+
+import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
+import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'package:leodys/features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 
 /// Widget affichant la liste des fonctionnalités disponibles.
 ///
@@ -27,7 +36,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Reconnaissance de texte simple',
     ),
 
@@ -38,7 +46,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Reconnaissance de texte complexe',
     ),
 
@@ -46,10 +53,9 @@ class FeatureList extends StatelessWidget {
       name: 'Scanner de jeu de carte',
       icon: Icons.view_module,
       route: '/',
-      requiresInternet: true,
-      requiresAuth: true,
-      isAvailable: true,
-      color: Colors.blue,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: false,
       description: 'Reconnaissance de jeu de carte classique',
     ),
 
@@ -60,7 +66,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Visualiser et naviguer sur la carte',
     ),
     AppFeature(
@@ -91,7 +96,16 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
+      description: 'TODO',
+    ),
+
+    AppFeature(
+      name: 'Lecteur de plaque d\'immatriculation',
+      icon: Icons.directions_car_rounded,
+      route: ReaderScreen.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: false,
       description: 'TODO',
     ),
 
@@ -126,7 +140,7 @@ class FeatureList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_features.isNotEmpty) ...[
-              _buildSectionTitle('Fonctionnalités'),
+              _buildSectionTitle(context, 'Fonctionnalités'),
               const SizedBox(height: 12),
               _buildFeaturesGrid(context, viewModel, _features),
             ],
@@ -136,13 +150,13 @@ class FeatureList extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
+      style: TextStyle(
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        fontSize: context.titleFontSize,
+        color: context.colorScheme.onSurface,
       ),
     );
   }
@@ -151,9 +165,9 @@ class FeatureList extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.9,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: context.baseFontSize > 16 ? 1 : 2,
+        childAspectRatio: 0.85,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
@@ -206,15 +220,24 @@ class FeatureList extends StatelessWidget {
   void _showBlockedFeatureDialog(BuildContext context, AppFeature feature) {
     showDialog(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.9),
       builder: (context) => AlertDialog(
+        backgroundColor: context.colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: context.colorScheme.outline,
+            width: 1.0,
+          ),
+        ),
         title: Row(
           children: [
-            Icon(feature.icon, color: Colors.grey.shade400),
+            Icon(feature.icon, color: context.colorScheme.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 feature.name,
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(color: context.colorScheme.primary),
               ),
             ),
           ],
@@ -228,19 +251,19 @@ class FeatureList extends StatelessWidget {
               _buildRequirement(
                 icon: Icons.wifi,
                 label: 'Connexion Internet requise',
-                color: Colors.blue,
+                color: context.colorScheme.secondary,
               ),
             if (feature.requiresAuth)
               _buildRequirement(
                 icon: Icons.lock,
                 label: 'Authentification requise',
-                color: Colors.blue,
+                color: context.colorScheme.secondary,
               ),
             if (!feature.isAvailable)
               _buildRequirement(
                 icon: Icons.construction,
                 label: 'En cours de développement',
-                color: Colors.blue,
+                color: context.colorScheme.secondary,
               ),
           ],
         ),
@@ -249,8 +272,8 @@ class FeatureList extends StatelessWidget {
             child: TextButton(
               onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+                backgroundColor: context.colorScheme.primaryContainer,
+                foregroundColor: context.colorScheme.onPrimaryContainer,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
