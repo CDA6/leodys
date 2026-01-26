@@ -3,7 +3,6 @@
 *.log
 *.pyc
 *.swp
-*.md
 .DS_Store
 .atom/
 .build/
@@ -13,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 .metadata
+*.py
+.env
 
 # IntelliJ/IDE related
 *.iml
@@ -53,4 +54,12 @@ app.*.map.json
 /windows/runner/runner.exe
 
 # Web related
-/web/build/!/pubspec.lock!/pubspec.yaml
+/web/build/
+
+# Gradle related
+/android/app/.gradle/
+
+# Temporary/Editor files
+*.swo
+
+/assets
