@@ -75,7 +75,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: true,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Envoyer des notifications par mail',
     ),
     AppFeature(
@@ -85,7 +84,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: "Ecouter l'heure",
     ),
 
@@ -116,7 +114,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: true,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Scan de cartes de fidélité.',
     ),
 
@@ -127,7 +124,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Aide à la latéralisation via la caméra.',
     ),
   ];

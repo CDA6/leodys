@@ -14,6 +14,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'common/pages/home/presentation/screens/home_page.dart';
+import 'common/utils/app_logger.dart';
 import 'constants/auth_constants.dart';
 
 import 'common/utils/internet_util.dart';
@@ -67,19 +68,34 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   // Initialisation des services de base
-  await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   await InternetUtil.init();
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-  );
+  await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
 
-  // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
-  final client = Supabase.instance.client;
-  await client.auth.signInWithPassword(
-    email: 'coleen@test.com',
-    password: 'leodys123',
-  );
+  try {
+    await Supabase.initialize(
+      url: dotenv.env['SUPABASE_URL']!,
+      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+      debug: false,
+    );
+    AppLogger().info("Supabase initialized successfully");
+  } catch (e) {
+    AppLogger().error("Failed to initialize Supabase: $e");
+  }
+
+  if (InternetUtil.isConnected) {
+    try {
+      final client = Supabase.instance.client;
+      await client.auth.signInWithPassword(
+        email: 'coleen@test.com',
+        password: 'leodys123',
+      );
+      AppLogger().info("User authenticated successfully");
+    } catch (e) {
+      AppLogger().error("Failed to authenticate user: $e");
+    }
+  } else {
+    AppLogger().warning("No internet connection. Skipping authentication.");
+  }
 
   //ThemeManager
   final themeManager = AppThemeManager();
@@ -93,7 +109,7 @@ void main() async {
   await pose_detection.init();
   await voice_clock.init();
   
-  runApp(MyApp());
+  runApp(MyApp(themeManager: themeManager));
 }
 
 class MyApp extends StatelessWidget {
@@ -142,51 +158,53 @@ class MyApp extends StatelessWidget {
               );
             },
             routes: {
-          HomePage.route: (context) => 
-            const HomePage(),
-          
-          MapScreen.route: (context) {
-            final dataSource = GeolocatorDatasource();
-            final repository = LocationRepositoryImpl(dataSource);
-            final useCase = WatchUserLocationUseCase(repository);
-            final viewModel = MapViewModel(useCase);
+              HomePage.route: (context) =>
+                const HomePage(),
 
-            return MapScreen(viewModel: viewModel);
-          },
-            
-          RealTimeYoloScreen.route: (context) => 
-            const RealTimeYoloScreen(),
-          
-          PrintedTextReaderScreen.route: (context) =>
-              const PrintedTextReaderScreen(),
-          
-          HandwrittenTextReaderScreen.route: (context) =>
-              const HandwrittenTextReaderScreen(),
+              MapScreen.route: (context) {
+                final dataSource = GeolocatorDatasource();
+                final repository = LocationRepositoryImpl(dataSource);
+                final useCase = WatchUserLocationUseCase(repository);
+                final viewModel = MapViewModel(useCase);
 
-          NotificationDashboard.route: (context) => ChangeNotifierProvider(
-            create: (_) => messagerie.sl<NotificationController>(),
-            child: const NotificationDashboard(),
-          ),
+                return MapScreen(viewModel: viewModel);
+              },
 
-          VocalNotesListScreen.route: (context) => 
-            const VocalNotesListScreen(),
-          
-          VocalNoteEditorScreen.route: (context) =>
-              const VocalNoteEditorScreen(),
+              RealTimeYoloScreen.route: (context) =>
+                const RealTimeYoloScreen(),
 
-          VoiceClockScreen.route: (context) => ChangeNotifierProvider(
-            create: (_) => voice_clock.sl<VoiceClockViewModel>(),
-            child: const VoiceClockScreen(),
-          ),
+              PrintedTextReaderScreen.route: (context) =>
+                  const PrintedTextReaderScreen(),
 
-          ReaderScreen.route: (context) => 
-            const ReaderScreen(),
-          
-          DocumentsScreen.route: (context) => 
-            const DocumentsScreen(),
-          
-          DisplayCardsScreen.route: (context) => 
-            const DisplayCardsScreen(),
+              HandwrittenTextReaderScreen.route: (context) =>
+                  const HandwrittenTextReaderScreen(),
+
+              NotificationDashboard.route: (context) => ChangeNotifierProvider(
+                create: (_) => messagerie.sl<NotificationController>(),
+                child: const NotificationDashboard(),
+              ),
+
+              VocalNotesListScreen.route: (context) =>
+                const VocalNotesListScreen(),
+
+              VocalNoteEditorScreen.route: (context) =>
+                  const VocalNoteEditorScreen(),
+
+              VoiceClockScreen.route: (context) => ChangeNotifierProvider(
+                create: (_) => voice_clock.sl<VoiceClockViewModel>(),
+                child: const VoiceClockScreen(),
+              ),
+
+              ReaderScreen.route: (context) =>
+                const ReaderScreen(),
+
+              DocumentsScreen.route: (context) =>
+                const DocumentsScreen(),
+
+              DisplayCardsScreen.route: (context) =>
+                const DisplayCardsScreen(),
+            },
+          );
         },
       ),
     );
