@@ -13,10 +13,17 @@ class CardsRemoteDatasource {
 
   // récupération des cartes hébergées sur supabase
   Future<void> pullRemoteCards(String userId) async {
-    final response = await supabase
-        .from('loyalty_card')
-        .select()
-        .eq('user_id', userId);
+    var response = [];
+    try {
+      response = await supabase
+          .from('loyalty_card')
+          .select()
+          .eq('user_id', userId);
+    } on PostgrestException catch (e) {
+      throw PostgrestException(message: e.message);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
 
     final appDir = await getApplicationDocumentsDirectory();
     final cardsDir = Directory('${appDir.path}/cards');
@@ -54,8 +61,10 @@ class CardsRemoteDatasource {
           final bytes = await supabase.storage.from('cards').download(storagePath);
           final file = File('${folder.path}/$img');
           await file.writeAsBytes(bytes);
+        } on StorageException catch (e) {
+          throw StorageException(e.message);
         } catch (e) {
-          print('Warning: image not found in bucket: $storagePath');
+          throw Exception(e.toString());
         }
       }
 
@@ -84,28 +93,44 @@ class CardsRemoteDatasource {
       final path = 'user_$userId/$cardId/$img';
       try {
         await supabase.storage.from('cards').remove([path]);
-        print('suppression $path');
+      } on StorageException catch (e) {
+        throw StorageException(e.message);
       } catch (e) {
-        // ignorer si le fichier n’existe pas, ou logger
-        print('Erreur suppression image $path: $e');
+        throw Exception(e.toString());
       }
     }
 
     // supprimer ligne de la carte dans la table loyalty_cards
-    await supabase
-        .from('loyalty_card')
-        .delete()
-        .eq('id', cardId)
-        .eq('user_id', userId);
+    try {
+      await supabase
+          .from('loyalty_card')
+          .delete()
+          .eq('id', cardId)
+          .eq('user_id', userId);
+    } on PostgrestException catch (e) {
+      throw PostgrestException(message: e.message);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
-  Future<void> uploadCard(String userId, CardModel card) async {
-    // upload des images dan sle bucket
+  Future<void> uploadCard(CardModel card) async {
+    // upload des images dans le bucket
     final images = <String, String>{
       'recto': card.rectoPath,
-      'verso': ?card.versoPath,
+      // ajout du verso seulement s'il existe
+      if (card.versoPath != null && card.versoPath!.isNotEmpty)
+        'verso': card.versoPath!,
     };
 
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      throw AuthException("Erreur : utilisateur non connecté");
+    }
+
+    final userId = user.id;
+
+    // upload de chaque image dans le bucket
     for (final entry in images.entries) {
       final localPath = entry.value;
       if (localPath.isEmpty) continue;
@@ -113,20 +138,23 @@ class CardsRemoteDatasource {
       final file = File(localPath);
       if (!file.existsSync()) continue;
 
+      // chemin distant
       final storagePath = 'user_$userId/${card.id}/${entry.key}.jpg';
 
       try {
         await supabase.storage
             .from('cards')
             .upload(storagePath, file, fileOptions: const FileOptions(upsert: true));
+      } on StorageException catch (e) {
+        throw StorageException(e.message);
       } catch (e) {
-        print('Erreur upload image ${entry.key}: $e');
-        rethrow;
+        throw Exception(e.toString());
       }
     }
 
-    // upsert dans la table
+    // upsert dans la table loyalty_card
     try {
+      // ajout ou modification d'une ligne existante dans la table loyalty_card
       await supabase.from('loyalty_card').upsert({
         'id': card.id,
         'user_id': userId,
@@ -135,10 +163,10 @@ class CardsRemoteDatasource {
         'updated_at': DateTime.now().toUtc().toIso8601String(),
         'deleted': card.deleted,
       }, onConflict: 'id'); // clé primaire pour upsert
+    } on PostgrestException catch (e) {
+      throw PostgrestException(message: e.message);
     } catch (e) {
-      print('Erreur upsert card ${card.id}: $e');
-      rethrow;
+      throw Exception(e.toString());
     }
   }
-
 }

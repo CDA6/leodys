@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/printed_text_viewmodel.dart';
-import '../widgets/analyze_button.dart';
-import '../widgets/build_error_message.dart';
-import '../widgets/image_picker_section.dart';
+import 'package:leodys/features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
+import 'package:leodys/features/ocr-reader/presentation/widgets/analyze_button.dart';
+import 'package:leodys/features/ocr-reader/presentation/widgets/build_error_message.dart';
+import 'package:leodys/features/ocr-reader/presentation/widgets/image_picker_section.dart';
 import 'ocr_result_screen.dart';
 
 class PrintedTextReaderScreen extends StatelessWidget {

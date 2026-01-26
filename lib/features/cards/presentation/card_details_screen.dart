@@ -1,28 +1,31 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
+import 'package:leodys/features/cards/presentation/edit_card_screen.dart';
 import 'package:leodys/features/cards/providers.dart';
 
 import '../domain/card_model.dart';
 
-class CardDetailsScreen extends ConsumerStatefulWidget{
+class CardDetailsScreen extends StatefulWidget{
   static const route = "/card_details";
-  final CardModel? card;
+  CardModel? card;
 
-  const CardDetailsScreen({
+  CardDetailsScreen({
     super.key,
     this.card
   });
 
   @override
-  ConsumerState<CardDetailsScreen> createState() => _CardDetailsScreenState();
+  State<CardDetailsScreen> createState() => _CardDetailsScreenState();
 }
 
-class _CardDetailsScreenState extends ConsumerState<CardDetailsScreen> {
-  late final deleteCardUseCase = ref.read(deleteCardUseCaseProvider);
+class _CardDetailsScreenState extends State<CardDetailsScreen> {
+  late final deleteCardUseCase = getIt<DeleteCardUsecase>();
   bool _isFront = true;
+
+
 
   Widget _buildCardImage() {
     final front = widget.card?.rectoPath;
@@ -102,6 +105,38 @@ class _CardDetailsScreenState extends ConsumerState<CardDetailsScreen> {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final updatedCard = await Navigator.push<CardModel>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditCardScreen(card: widget.card!),
+                  ),
+                );
+
+                // si carte mise à jour, affichage de la nouvelle + rafraichissement de la page
+                if (updatedCard != null) {
+                  setState(() {
+                    widget.card = updatedCard;
+                  });
+                }
+              },
+              icon: const Icon(Icons.update),
+              label: const Text(
+                'Modifier la carte',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow.shade500,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 shape: RoundedRectangleBorder(

@@ -1,4 +1,4 @@
-import '../../domain/entities/ocr_result.dart';
+import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 
 class OcrResultModel {
   final String text;

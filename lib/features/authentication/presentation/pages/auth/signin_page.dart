@@ -23,7 +23,6 @@ class _SigninPageState extends State<SigninPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint('🏁 [SigninPage] Initialisation...');
     _checkBiometricAvailability();
   }
 
@@ -82,18 +81,64 @@ class _SigninPageState extends State<SigninPage> {
     } on AuthException catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Les identifiants fournis sont incorrects'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Un problème est survenu lors de la connexion.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  /// Nouvelle méthode : Connexion Google
+  Future<void> _handleGoogleLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = context.read<AuthService>();
+      await authService.signInWithGoogle();
+
+      if (mounted) {
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Connexion Google réussie !'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur Google: ${e.message}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Un problème est survenu: $e'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -138,7 +183,7 @@ class _SigninPageState extends State<SigninPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Un problème est survenu'),
             backgroundColor: Colors.red,
           ),
@@ -171,6 +216,69 @@ class _SigninPageState extends State<SigninPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Logo ou titre
+                const Icon(
+                  Icons.lock_outline,
+                  size: 80,
+                  color: Colors.blue,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Bienvenue sur Leodys',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // ===== NOUVEAU : Bouton Google Sign-In =====
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading ? null : _handleGoogleLogin,
+                    icon: Image.network(
+                      'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                      height: 24,
+                      width: 24,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.login, size: 24);
+                      },
+                    ),
+                    label: const Text(
+                      'Continuer avec Google',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black87,
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Séparateur OU
+                const Row(
+                  children: [
+                    Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OU',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Section biométrique (si disponible)
                 if (_isBiometricAvailable) ...[
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -241,6 +349,7 @@ class _SigninPageState extends State<SigninPage> {
                   const SizedBox(height: 32),
                 ],
 
+                // Formulaire email/password
                 TextFormField(
                   controller: _emailController,
                   enabled: !_isLoading,
@@ -282,13 +391,13 @@ class _SigninPageState extends State<SigninPage> {
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : ElevatedButton.icon(
-                          onPressed: _handleEmailPasswordLogin,
-                          icon: const Icon(Icons.login),
-                          label: const Text("Se connecter"),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
+                    onPressed: _handleEmailPasswordLogin,
+                    icon: const Icon(Icons.login),
+                    label: const Text("Se connecter"),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
 
@@ -296,13 +405,13 @@ class _SigninPageState extends State<SigninPage> {
                   onPressed: _isLoading
                       ? null
                       : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterPage(),
-                            ),
-                          );
-                        },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RegisterPage(),
+                      ),
+                    );
+                  },
                   child: const Text("Pas de compte ? Inscrivez-vous"),
                 ),
               ],
