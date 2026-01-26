@@ -4,7 +4,13 @@ import 'package:provider/provider.dart';
 import '../../features/accessibility/domain/entities/settings.dart';
 import '../../features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
 
-extension ThemeContext on BuildContext {
+/// Extension pour accéder facilement aux propriétés du thème et des paramètres d'accessibilité depuis un `BuildContext`.
+///
+/// Permet d'obtenir :
+/// - Le `ColorScheme`.
+/// - Les paramètres d'accessibilité (police, tailles, espacements).
+/// - Un fallback sécurisé si `SettingsViewModel` n'est pas disponible. (cf. feature/accessibility)
+extension ThemeContextExtension on BuildContext {
   /// ColorScheme du thème actuel
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
 
@@ -16,7 +22,6 @@ extension ThemeContext on BuildContext {
     try {
       return watch<SettingsViewModel>().settings;
     } catch (e) {
-      // Fallback si le SettingsViewModel n'est pas disponible
       return const Settings();
     }
   }

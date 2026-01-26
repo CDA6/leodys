@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class LineHeightCard extends StatelessWidget {
   final double lineHeight;

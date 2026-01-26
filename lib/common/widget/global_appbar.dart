@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/authentication/presentation/pages/auth/signin_page.dart';
 import 'package:leodys/features/authentication/presentation/pages/auth/register_page.dart';
 import 'package:provider/provider.dart';

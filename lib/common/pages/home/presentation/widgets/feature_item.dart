@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/common/theme/theme_context.dart';
-import '../../domain/entities/app_feature.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/common/pages/home/domain/entities/app_feature.dart';
 
 class FeatureItem extends StatelessWidget {
   final AppFeature feature;

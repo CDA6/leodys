@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/no_params.dart';
-import '../../../../common/mixins/usecase_mixin.dart';
-import '../../../../common/theme/app_theme_manager.dart';
-import '../../../../common/theme/app_themes.dart';
-import '../../../../common/theme/theme_provider.dart';
-import '../../domain/entities/settings.dart';
+import 'package:leodys/common/mixins/usecase_mixin.dart';
+import 'package:leodys/common/theme/app_theme_manager.dart';
+import 'package:leodys/common/theme/app_themes.dart';
+import 'package:leodys/common/theme/theme_provider.dart';
+import 'package:leodys/features/accessibility/domain/entities/settings.dart';
 
 class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
   final UseCaseMixin<Settings, NoParams> getSettingsUseCase;
   final UseCaseMixin<void, Settings> updateSettingsUseCase;
   final UseCaseMixin<void, NoParams> resetSettingsUseCase;
+
   final AppThemeManager? _themeManager;
 
   Settings _settings = const Settings();
@@ -79,16 +80,6 @@ class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
 
   Future<void> updateLineHeight(double lineHeight) async {
     _settings = _settings.copyWith(lineHeight: lineHeight);
-    await _saveSettings();
-  }
-
-  Future<void> toggleHighlightCurrentLine(bool value) async {
-    _settings = _settings.copyWith(highlightCurrentLine: value);
-    await _saveSettings();
-  }
-
-  Future<void> toggleTextToSpeech(bool value) async {
-    _settings = _settings.copyWith(textToSpeechEnabled: value);
     await _saveSettings();
   }
 
