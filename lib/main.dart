@@ -44,6 +44,7 @@ import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
 import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
+import 'features/map/map_injection.dart' as map;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/calculator/presentation/views/calculator_view.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
@@ -59,7 +60,8 @@ import 'features/map/data/dataSources/geolocator_datasource.dart';
 import 'features/map/data/repositories/location_repository_impl.dart';
 import 'features/map/presentation/viewModel/map_view_model.dart';
 import 'features/vocal_chat/injection_container.dart' as vocal_chat;
-import 'features/text_simplification/injection_container.dart' as text_simplification;
+import 'features/text_simplification/injection_container.dart'
+    as text_simplification;
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
@@ -120,6 +122,7 @@ void main() async {
   await voice_clock.init();
   await gamecard_reader.init();
   await profile.init();
+  await map.init();
 
   initVehicleRecognition();
   runApp(riverpod.ProviderScope(child: MyApp(themeManager: themeManager)));
@@ -181,14 +184,8 @@ class MyApp extends StatelessWidget {
 
               SettingsScreen.route: (context) => const SettingsScreen(),
 
-              MapScreen.route: (context) {
-                final dataSource = GeolocatorDatasource();
-                final repository = LocationRepositoryImpl(dataSource);
-                final useCase = WatchUserLocationUseCase(repository);
-                final viewModel = MapViewModel(useCase);
-
-                return MapScreen(viewModel: viewModel);
-              },
+              MapScreen.route: (context) =>
+                  MapScreen(viewModel: map.locator<MapViewModel>()),
 
               RealTimeYoloScreen.route: (context) => const RealTimeYoloScreen(),
 
@@ -214,10 +211,12 @@ class MyApp extends StatelessWidget {
                 child: const VocalChatScreen(),
               ),
 
-              TextSimplificationScreen.route: (context) => ChangeNotifierProvider(
-                create: (_) => text_simplification.sl<TextSimplificationViewModel>(),
-                child: const TextSimplificationScreen(),
-              ),
+              TextSimplificationScreen.route: (context) =>
+                  ChangeNotifierProvider(
+                    create: (_) =>
+                        text_simplification.sl<TextSimplificationViewModel>(),
+                    child: const TextSimplificationScreen(),
+                  ),
 
               VoiceClockScreen.route: (context) => ChangeNotifierProvider(
                 create: (_) => voice_clock.sl<VoiceClockViewModel>(),
