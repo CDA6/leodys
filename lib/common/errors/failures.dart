@@ -58,9 +58,9 @@ class AuthFailure extends Failure {
 }
 
 class FileFailure extends Failure {
-  FileFailure(String message) : super(message);
+  FileFailure(super.message);
 }
 
 class FormatFailure extends Failure {
-  FormatFailure(String message) : super(message);
+  FormatFailure(super.message);
 }

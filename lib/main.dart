@@ -9,6 +9,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_edit_screen.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,6 +24,7 @@ import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
 import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
+import 'features/profile/providers.dart' as profile;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
@@ -69,6 +72,7 @@ void main() async {
   await vocal_notes.init(navigatorKey);
   await cards.init();
   await voice_clock.init();
+  await profile.init();
 
   runApp(MyApp());
 }
@@ -132,6 +136,7 @@ class MyApp extends StatelessWidget {
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
           DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+          ProfileScreen.route: (context) => const ProfileScreen(),
         },
       ),
     );
