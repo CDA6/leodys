@@ -15,6 +15,7 @@ import 'common/pages/home/presentation/screens/home_page.dart';
 import 'constants/auth_constants.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
+import 'features/left_right/presentation/real_time_yolo_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
@@ -28,6 +29,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
+import 'features/left_right/injection_container.dart' as pose_detection;
 
 import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
@@ -46,16 +48,13 @@ void main() async {
   await Hive.initFlutter();
 
   // 1. Initialisation des services de base
-  // double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   // await DatabaseService.init();
   await InternetUtil.init();
-
 
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-
 
   // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
   final client = Supabase.instance.client;
@@ -65,9 +64,10 @@ void main() async {
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
   await cards.init();
+  await pose_detection.init();
 
   runApp(
-    MyApp()
+      MyApp()
   );
 }
 
@@ -105,16 +105,17 @@ class MyApp extends StatelessWidget {
 
             return MapScreen(viewModel: viewModel);
           },
+          RealTimeYoloScreen.route: (context) => const RealTimeYoloScreen(),
+
           PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
           HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
           NotificationDashboard.route: (context) =>
-              const NotificationDashboard(),
+          const NotificationDashboard(),
           VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
           VocalNoteEditorScreen.route: (context) =>
-              const VocalNoteEditorScreen(),
+          const VocalNoteEditorScreen(),
           ReaderScreen.route: (context) => const ReaderScreen(),
           DocumentsScreen.route: (context) => const DocumentsScreen(),
-          // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
           DisplayCardsScreen.route: (context) => const DisplayCardsScreen()
         },
       ),
