@@ -55,6 +55,7 @@ dependencies:
   equatable: ^2.0.0
   flutter_secure_storage: ^10.0.0
   cryptography: ^2.9.0
+  flutter_map_location_marker: ^10.2.0
   file_picker: ^10.3.9
   webview_flutter: ^4.4.1
   html: ^0.15.4

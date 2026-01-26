@@ -30,8 +30,8 @@ class GeolocatorDatasource {
 
     yield* Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 1,
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 3,
       ),
     );
   }
