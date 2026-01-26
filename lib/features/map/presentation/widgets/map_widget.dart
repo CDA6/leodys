@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 
 class MapWidget extends StatefulWidget {
   final GeoPosition position;
+  final double _initZoom = 18.0;
+  final double _minZoom = 1.0;
+  final double _maxZoom = 20.0;
+
   const MapWidget({super.key, required this.position});
 
   @override
@@ -18,6 +23,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(MapWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (oldWidget.position != widget.position) {
       _animatedMapMove(
         LatLng(widget.position.latitude, widget.position.longitude),
@@ -66,22 +72,45 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           widget.position.latitude,
           widget.position.longitude,
         ),
-        initialZoom: 16.0,
+        initialZoom: widget._initZoom,
+        minZoom: widget._minZoom,
+        maxZoom: widget._maxZoom,
       ),
       children: [
+        //Background map
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          minZoom: widget._minZoom,
+          maxZoom: widget._maxZoom,
         ),
+
+        //Trajectory dot
+        // PolylineLayer(
+        //   polylines: [
+        //     Polyline(points: [], color: Colors.blue, strokeWidth: 4.0),
+        //   ],
+        // ),
+
+        //Fixed points
         MarkerLayer(
           markers: [
-            Marker(
-              point: LatLng(
-                widget.position.latitude,
-                widget.position.longitude,
-              ),
-              child: const Icon(Icons.my_location, color: Colors.blue),
-            ),
+            // Marker(
+            //   point: LatLng(
+            //     widget.position.latitude,
+            //     widget.position.longitude,
+            //   ),
+            //   child: const Icon(Icons.my_location, color: Colors.blue),
+            // ),
           ],
+        ),
+
+        //User location
+        CurrentLocationLayer(
+          alignPositionOnUpdate: AlignOnUpdate.always,
+          alignDirectionOnUpdate: AlignOnUpdate.always,
+          style: LocationMarkerStyle(
+            marker: DefaultLocationMarker(color: Colors.blue),
+          ),
         ),
       ],
     );
