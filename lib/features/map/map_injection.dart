@@ -24,7 +24,8 @@ Future<void> init() async {
   );
 
   // Presentation Layer
-  locator.registerFactory<MapViewModel>(
+  locator.registerLazySingleton<MapViewModel>(
     () => MapViewModel(locator<WatchUserLocationUseCase>()),
+    dispose: (param) => param.dispose(),
   );
 }

@@ -15,8 +15,6 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
-  Key _streamKey = UniqueKey();
-
   @override
   void initState() {
     super.initState();
@@ -32,11 +30,19 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      widget.viewModel.handleLeaving();
+    } else if (state == AppLifecycleState.resumed) {
+      widget.viewModel.handleLanding();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Navigation Piéton")),
       body: StreamBuilder<GeoPosition>(
-        key: _streamKey,
         initialData: widget.viewModel.currentPosition,
         stream: widget.viewModel.positionStream,
         builder: (context, snapshot) {
@@ -72,15 +78,5 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         },
       ),
     );
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      //upate the key force the stream to call getPositionStream()
-      setState(() {
-        _streamKey = UniqueKey();
-      });
-    }
   }
 }
