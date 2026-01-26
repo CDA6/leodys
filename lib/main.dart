@@ -16,6 +16,7 @@ import 'common/pages/home/presentation/screens/home_page.dart';
 import 'constants/auth_constants.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
+import 'features/left_right/presentation/real_time_yolo_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
 import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
@@ -32,6 +33,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
+import 'features/left_right/injection_container.dart' as pose_detection;
 
 import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
@@ -47,11 +49,10 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  // 1. Initialisation des services de base
-  await DatabaseService.init();
+  // Initialisation des services de base
+  await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   await InternetUtil.init();
 
-  // double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -68,8 +69,9 @@ void main() async {
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
   await cards.init();
+  await pose_detection.init();
   await voice_clock.init();
-
+  
   runApp(MyApp());
 }
 
@@ -99,7 +101,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: HomePage.route,
         routes: {
-          HomePage.route: (context) => const HomePage(),
+          HomePage.route: (context) => 
+            const HomePage(),
+          
           MapScreen.route: (context) {
             final dataSource = GeolocatorDatasource();
             final repository = LocationRepositoryImpl(dataSource);
@@ -108,8 +112,13 @@ class MyApp extends StatelessWidget {
 
             return MapScreen(viewModel: viewModel);
           },
+            
+          RealTimeYoloScreen.route: (context) => 
+            const RealTimeYoloScreen(),
+          
           PrintedTextReaderScreen.route: (context) =>
               const PrintedTextReaderScreen(),
+          
           HandwrittenTextReaderScreen.route: (context) =>
               const HandwrittenTextReaderScreen(),
 
@@ -118,20 +127,25 @@ class MyApp extends StatelessWidget {
             child: const NotificationDashboard(),
           ),
 
-          VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
+          VocalNotesListScreen.route: (context) => 
+            const VocalNotesListScreen(),
+          
           VocalNoteEditorScreen.route: (context) =>
               const VocalNoteEditorScreen(),
 
           VoiceClockScreen.route: (context) => ChangeNotifierProvider(
             create: (_) => voice_clock.sl<VoiceClockViewModel>(),
-            // GetIt fournit l'instance propre
             child: const VoiceClockScreen(),
           ),
 
-          ReaderScreen.route: (context) => const ReaderScreen(),
-          DocumentsScreen.route: (context) => const DocumentsScreen(),
-          // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
-          DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+          ReaderScreen.route: (context) => 
+            const ReaderScreen(),
+          
+          DocumentsScreen.route: (context) => 
+            const DocumentsScreen(),
+          
+          DisplayCardsScreen.route: (context) => 
+            const DisplayCardsScreen(),
         },
       ),
     );
