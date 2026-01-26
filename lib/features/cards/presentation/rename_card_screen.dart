@@ -72,7 +72,10 @@ class _RenameCardState extends State<RenameCardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Nommer la carte")),
+      appBar: AppBar(
+          title: const Text("Nommer la carte"),
+          // backgroundColor: context.colorScheme.primaryContainer,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
