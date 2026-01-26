@@ -6,9 +6,13 @@ import 'package:leodys/common/utils/app_logger.dart';
 
 class MapViewModel {
   final WatchUserLocationUseCase watchUserLocation;
-  Stream<GeoPosition> get positionStream => watchUserLocation();
+  Stream<GeoPosition> get positionStream => watchUserLocation().map((pos) {
+    _lastKnownPosition = pos;
+    return pos;
+  });
 
-  GeoPosition? currentPosition;
+  GeoPosition? _lastKnownPosition;
+  GeoPosition? get currentPosition => _lastKnownPosition;
 
   MapViewModel(this.watchUserLocation);
 
