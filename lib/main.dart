@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_ce_flutter/adapters.dart';
-import 'src/features/calculator/calculator.dart';
+import 'features/calculator/calculator.dart';
 
 void main() async{
   // Pour cacher la barre de statut et la barre de navigation

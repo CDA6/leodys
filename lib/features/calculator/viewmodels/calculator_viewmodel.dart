@@ -22,6 +22,18 @@ class CalculatorViewModel extends ChangeNotifier {
 
   /// Gère l'appui sur un chiffre ou le point décimal
   void onNumberPressed(String value) {
+    // Si on vient de calculer un résultat, recommencer à zéro avec ce chiffre
+    if (_state.justCalculated) {
+      String newCurrent = value;
+      _updateState(_state.copyWith(
+        current: newCurrent,
+        display: newCurrent,
+        expression: '',
+        justCalculated: false,
+      ));
+      return;
+    }
+
     if (value == '.' && _state.current.contains('.')) return;
 
     String newCurrent = (_state.current == '0' && value != '.')
@@ -41,6 +53,17 @@ class CalculatorViewModel extends ChangeNotifier {
 
   /// Gère l'appui sur un opérateur (+, -, ×, ÷)
   void onOperatorPressed(String op) {
+    // Si on vient de calculer, réutiliser le résultat
+    if (_state.justCalculated) {
+      _updateState(_state.copyWith(
+        expression: '${_state.display}$op',
+        current: '',
+        display: '${_state.display}$op',
+        justCalculated: false,
+      ));
+      return;
+    }
+
     // Cas spécial: démarrer un nombre négatif
     if (_state.current.isEmpty && _state.expression.isEmpty) {
       if (op == '-' && _state.current.isEmpty) {
@@ -110,6 +133,7 @@ class CalculatorViewModel extends ChangeNotifier {
       current: '',
       expression: '',
       hasError: result.isNaN,
+      justCalculated: true, // Mémoriser qu'on vient de calculer
     ));
   }
 
@@ -120,6 +144,7 @@ class CalculatorViewModel extends ChangeNotifier {
       current: '',
       expression: '',
       hasError: false,
+      justCalculated: false,
     ));
   }
 
@@ -150,55 +175,76 @@ class CalculatorViewModel extends ChangeNotifier {
     }
   }
 
-  /// Évalue une expression arithmétique (gauche-à-droite)
+  /// Évalue une expression arithmétique
+  /// avec respect des règles de priorité
+  /// × et ÷ avant + et -
   double _evaluateExpression(String expr) {
     try {
-      // Tokenisation: nombres et opérateurs
-      final tokens = <String>[];
-      int i = 0;
-      while (i < expr.length) {
-        final c = expr[i];
-        if (c == '+' ||
-            c == '×' ||
-            c == '÷' ||
-            (c == '-' && i > 0 && RegExp(r'[0-9.]').hasMatch(expr[i - 1]))) {
-          tokens.add(c);
-          i++;
+      // Extraire tous les nombres et opérateurs
+      List<double> numbers = [];
+      List<String> operators = [];
+      StringBuffer currentNumber = StringBuffer();
+
+      for (int i = 0; i < expr.length; i++) {
+        String char = expr[i];
+
+        if (char == '+' || char == '-' || char == '×' || char == '÷') {
+          // Gérer le cas du nombre négatif au début
+          if (char == '-' && currentNumber.isEmpty && numbers.isEmpty) {
+            currentNumber.write(char);
+            continue; // Ignore le reste de la boucle for cette itération
+          }
+
+          //Récupère le nombre courant
+          if (currentNumber.isNotEmpty) {
+            numbers.add(double.parse(currentNumber.toString().replaceAll(',', '.')));
+            currentNumber.clear();
+          }
+          operators.add(char);
         } else {
-          int start = i;
-          if (expr[i] == '-') i++;
-          while (i < expr.length && (RegExp(r'[0-9.]').hasMatch(expr[i]))) i++;
-          tokens.add(expr.substring(start, i));
+          currentNumber.write(char);
         }
       }
 
-      // Évaluation gauche-à-droite
-      if (tokens.isEmpty) return double.nan;
-      double acc = double.parse(tokens[0].replaceAll(',', '.'));
-      int idx = 1;
-      while (idx < tokens.length) {
-        final op = tokens[idx];
-        final next = double.parse(tokens[idx + 1].replaceAll(',', '.'));
-        switch (op) {
-          case '+':
-            acc = acc + next;
-            break;
-          case '-':
-            acc = acc - next;
-            break;
-          case '×':
-            acc = acc * next;
-            break;
-          case '÷':
-            if (next == 0) return double.nan;
-            acc = acc / next;
-            break;
-          default:
-            return double.nan;
-        }
-        idx += 2;
+      // Ajouter le dernier nombre
+      if (currentNumber.isNotEmpty) {
+        numbers.add(double.parse(currentNumber.toString().replaceAll(',', '.')));
       }
-      return acc;
+
+      if (numbers.isEmpty) return double.nan;
+
+      // Étape 1 : Traiter × et ÷
+      int i = 0;
+      while (i < operators.length) {
+        if (operators[i] == '×' || operators[i] == '÷') {
+          double result;
+          if (operators[i] == '×') {
+            result = numbers[i] * numbers[i + 1];
+          } else {
+            // Division par zéro
+            if (numbers[i + 1] == 0) return double.nan;
+            result = numbers[i] / numbers[i + 1];
+          }
+
+          numbers[i] = result;
+          numbers.removeAt(i + 1);
+          operators.removeAt(i);
+        } else {
+          i++;
+        }
+      }
+
+      // Étape 2 : Traiter + et -
+      double result = numbers[0];
+      for (int i = 0; i < operators.length; i++) {
+        if (operators[i] == '+') {
+          result += numbers[i + 1];
+        } else if (operators[i] == '-') {
+          result -= numbers[i + 1];
+        }
+      }
+
+      return result;
     } catch (e) {
       return double.nan;
     }
