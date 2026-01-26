@@ -25,7 +25,7 @@ class GeolocatorDatasource {
 
     if (permission == LocationPermission.deniedForever) {
       AppLogger().info("GPS access denied forever");
-      throw 'GPS_DENIED_FOREVER.';
+      throw 'GPS_DENIED_FOREVER';
     }
 
     yield* Geolocator.getPositionStream(
