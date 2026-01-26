@@ -7,7 +7,7 @@ class CalculatorHelpers {
   // Largeur fixe pour chaque bloc
   static const double blockWidth = 56.0; //56
   // Hauteur fixe pour chaque bloc
-  static const double blockHeight = 80.0;
+  static const double blockHeight = 90.0;
   // Nombre maximum de décimales affichées
   static const int maxDecimals = 5;
 
@@ -34,6 +34,45 @@ class CalculatorHelpers {
     const names = ['dixième', 'centième', 'millième', '10^-4', '10^-5', '10^-6'];
     if (decPos - 1 < names.length) return names[decPos - 1];
     return '10^-$decPos';
+  }
+
+  /// Construit les points représentant la quantité
+  /// 🧊 vaut 1000
+  /// 🔲 vaut 100
+  /// ❚ vaut 10
+  /// ● vaut 1
+  static List<String> buildQuantityDots(String display) {
+    if (display == 'Erreur') return [];
+
+    double? val = double.tryParse(display.replaceAll(',', '.'));
+    int qty = 0;
+    if (val != null) {
+      qty = val.abs().floor();
+    }
+
+    int thousands = qty ~/ 1000; // on récupère le nombre de milliers
+    int hundreds = (qty % 1000) ~/ 100; // on récupère le nombre de centaines
+    int tens = (qty % 100) ~/ 10; // on récupère le nombre de dizaines
+    int units = qty % 10; // on récupère le nombre d'unités
+
+    List<String> dots = [];
+
+    if (qty >= 1000000) { // limite pour l'affichage (pour éviter bug)
+      dots.add('⚠️ : Nombre trop grand'); // Avertissement si la quantité est trop grande
+    } else {
+      if (thousands > 10) {
+        dots.add('$thousands🧊');
+      } else {
+        dots.addAll(_groupSymbolsByFive('🧊', thousands));
+      }
+      dots.add(' ');
+      dots.addAll(_groupSymbolsByFive('🔲', hundreds));
+      dots.add(' ');
+      dots.addAll(_groupSymbolsByFive('❚', tens));
+      dots.add(' ');
+      dots.addAll(_groupSymbolsByFive('●', units));
+    }
+    return dots;
   }
 
   /// Convertit UN SEUL nombre (sans opérateur) en texte français
@@ -155,6 +194,7 @@ class CalculatorHelpers {
       'seize'
     ];
 
+    //Focntion interne pour les dizaines (<100)
     String underHundred(int m) {
       if (m < 17) return units[m];
       if (m < 20) return 'dix-${units[m - 10]}';
@@ -258,4 +298,18 @@ class CalculatorHelpers {
     }
     return result;
   }
+
+  /// Groupe les symboles par 5
+  static List<String> _groupSymbolsByFive(String s, int count) {
+    List<String> result = [];
+    for (int i = 0; i < count; i ++) {
+      result.add(s);
+      if ((i+1) % 5 == 0 && i > 0) //pour ajouter un espace tout les 5
+        {
+          result.add(' ');
+        }
+    }
+    return result;
+  }
+
 }
