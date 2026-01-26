@@ -36,11 +36,11 @@ class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
     required this.updateSettingsUseCase,
     required this.resetSettingsUseCase,
     AppThemeManager? themeManager,
-  }) : _themeManager = themeManager {
-    _themeManager?.registerThemeProvider(this);
-  }
+  }) : _themeManager = themeManager;
 
   Future<void> init() async {
+    _themeManager?.registerThemeProvider(this);
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
