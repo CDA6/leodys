@@ -37,10 +37,11 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       appBar: AppBar(title: const Text("Navigation Piéton")),
       body: StreamBuilder<GeoPosition>(
         key: _streamKey,
+        initialData: widget.viewModel.currentPosition,
         stream: widget.viewModel.positionStream,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+          if (snapshot.hasData) {
+            return MapWidget(position: snapshot.data!);
           }
 
           if (snapshot.hasError) {
@@ -58,11 +59,16 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             );
           }
 
-          if (!snapshot.hasData) {
-            return const Center(child: Text("Recherche de position..."));
-          }
-
-          return MapWidget(position: snapshot.data!);
+          return const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text("Recherche de position..."),
+              ],
+            ),
+          );
         },
       ),
     );
