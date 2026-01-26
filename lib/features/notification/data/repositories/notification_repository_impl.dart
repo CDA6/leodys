@@ -3,15 +3,19 @@ import '../../domain/entities/referent_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../datasources/notification_local_datasource.dart';
 import '../datasources/notification_remote_datasource.dart';
+import '../datasources/email_sender_datasource.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationLocalDataSource localDataSource;
-  final NotificationRemoteDataSource remoteDataSource;
+  final NotificationRemoteDataSource remoteMessageDataSource;
+  final EmailSenderDataSource emailSenderDataSource;
 
   NotificationRepositoryImpl({
     required this.localDataSource,
-    required this.remoteDataSource,
+    required this.remoteMessageDataSource,
+    required this.emailSenderDataSource
   });
+
 
   @override
   Future<List<ReferentEntity>> getReferents() => localDataSource.getReferents();
@@ -23,13 +27,19 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<void> deleteReferent(String id) => localDataSource.deleteReferent(id);
 
   @override
-  Future<void> saveMessage(MessageEntity message) => localDataSource.saveMessage(message);
+  Future<void> saveLocalMessage(MessageEntity message) => localDataSource.saveMessage(message);
+
+  @override
+  Future<void> saveRemoteMessage(MessageEntity message) => remoteMessageDataSource.saveMessageToRemote(message);
 
   @override
   Future<List<MessageEntity>> getMessageHistory() => localDataSource.getMessageHistory();
 
   @override
-  Future<void> sendEmailToReferent({required ReferentEntity referent, required String subject, required String body}) {
-    return remoteDataSource.sendEmail(referent: referent, subject: subject, body: body);
+  Future<List<MessageEntity>> getRemoteMessageHistory() => remoteMessageDataSource.getMessagesFromRemote();
+
+  @override
+  Future<void> sendEmailToExternalService({required ReferentEntity referent, required String subject, required String body}) {
+    return emailSenderDataSource.sendEmail(referent: referent, subject: subject, body: body);
   }
 }
