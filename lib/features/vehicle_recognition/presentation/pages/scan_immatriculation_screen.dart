@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:leodys/features/vehicle_recognition/presentation/controllers/pending_recognition_controller.dart';
 import 'package:leodys/features/vehicle_recognition/presentation/controllers/plate_tts_controller.dart';
 import 'package:leodys/features/vehicle_recognition/presentation/widgets/scan_plate_button.dart';
 import 'package:leodys/features/vehicle_recognition/presentation/widgets/vehicle_label_preview.dart';
@@ -23,16 +22,12 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
 
   late final ScanImmatriculationController controller;
   late final PlateTtsController ttsController;
-  late final PendingRecognitionController pendingController;
 
   @override
   void initState() {
     super.initState();
-    debugPrint('ScanImmatriculationScreen initState');
     controller = createScanImmatriculationController();
     ttsController = createPlateTtsController();
-    pendingController = createPendinController();
-    pendingController.startListeningNetwork();
     debugPrint('controller ok ');
   }
 
@@ -40,8 +35,6 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
   void dispose() {
     controller.dispose();
     ttsController.dispose();
-    pendingController.stopListeningNetwork();
-    pendingController.dispose();
     super.dispose();
   }
 

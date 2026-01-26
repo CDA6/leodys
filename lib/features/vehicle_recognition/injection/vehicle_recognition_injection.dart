@@ -4,30 +4,22 @@ import 'package:leodys/features/vehicle_recognition/data/services/plate_tts_serv
 import 'package:leodys/features/vehicle_recognition/domain/repositories/plate_tts_repository.dart';
 
 // Repositories
-import '../../audio_reader/domain/models/reader_config.dart';
 import '../data/repositories/plate_history_repository_impl.dart';
 import '../data/services/vehicle_recongnizer_service.dart';
 import '../domain/models/plate_reader_config.dart';
 import '../domain/repositories/vehicle_repository.dart';
-import '../domain/repositories/pending_recognition_repository.dart';
 import '../domain/repositories/plate_history_repository.dart';
-import '../domain/repositories/network_status_repository.dart';
 
 // Data implementations
 import '../data/repositories/vehicle_repository_impl.dart';
-import '../data/repositories/pending_recognition_repository_impl.dart';
-import '../data/repositories/network_status_repository_impl.dart';
 
 // Use cases
 import '../domain/usecases/scan_and_identify_vehicle_usecase.dart';
-import '../domain/usecases/process_pending_recognition_usecase.dart';
-import '../domain/usecases/is_network_available_usecase.dart';
 
 // Controllers
 import '../domain/usecases/speak_plate_usecase.dart';
 import '../presentation/controllers/plate_tts_controller.dart';
 import '../presentation/controllers/scan_immatriculation_controller.dart';
-import '../presentation/controllers/pending_recognition_controller.dart';
 import '../presentation/controllers/plate_history_controller.dart';
 final GetIt sl = GetIt.instance;
 
@@ -60,14 +52,6 @@ void initVehicleRecognition() {
     ),
   );
 
-  sl.registerLazySingleton<PendingRecognitionRepository>(
-        () => PendingRecognitionRepositoryImpl(),
-  );
-
-  sl.registerLazySingleton<NetworkStatusRepository>(
-        () => NetworkStatusRepositoryImpl(),
-  );
-
   // À adapter selon implémentation existante
   sl.registerLazySingleton<PlateHistoryRepository>(
         () => PlateHistoryRepositoryImpl(),
@@ -81,18 +65,6 @@ void initVehicleRecognition() {
     ),
   );
 
-  sl.registerLazySingleton(
-        () => ProcessPendingRecognitionUsecase(
-      pendingRepository: sl(),
-      scanAndIdentifyVehicleUsecase: sl(),
-      plateHistoryRepository: sl(),
-    ),
-  );
-
-  sl.registerLazySingleton(
-        () => IsNetworkAvailableUsecase(sl()),
-  );
-
   sl.registerLazySingleton<SpeakPlateUsecase>(
         () => SpeakPlateUsecase(
       plateTtsRepository: sl(),
@@ -104,8 +76,6 @@ void initVehicleRecognition() {
   sl.registerFactory(
         () => ScanImmatriculationController(
       scanUsecase: sl(),
-      networkUsecase: sl(),
-      pendingRepository: sl(),
     ),
   );
 
@@ -113,14 +83,6 @@ void initVehicleRecognition() {
         () => PlateTtsController(
       speakPlateUsecase: sl(),
       readerConfig: sl(), // déjà utilisé ailleurs (audio reader)
-    ),
-  );
-
-  sl.registerFactory(
-        () => PendingRecognitionController(
-      processUsecase: sl(),
-      networkUsecase: sl(),
-      networkRepository: sl(),
     ),
   );
 
@@ -142,8 +104,4 @@ PlateHistoryController createPlateHistoryController(){
 
 PlateTtsController createPlateTtsController(){
   return sl<PlateTtsController>();
-}
-
-PendingRecognitionController createPendinController(){
-  return sl<PendingRecognitionController>();
 }
