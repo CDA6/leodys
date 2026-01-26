@@ -5,6 +5,7 @@ import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:provider/provider.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
+import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
@@ -117,6 +118,16 @@ class FeatureList extends StatelessWidget {
       description: 'Calculette pour dyscalculique.',
     ),
 
+    AppFeature(
+      name: 'Aide Gauche / Droite',
+      icon: Icons.accessibility_new,
+      route: RealTimeYoloScreen.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Aide à la latéralisation via la caméra.',
+    ),
   ];
 
   @override
