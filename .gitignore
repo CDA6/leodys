@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 .metadata
+*.py
+.env
 
 # IntelliJ/IDE related
 *.iml
@@ -59,3 +61,5 @@ app.*.map.json
 
 # Temporary/Editor files
 *.swo
+
+/assets

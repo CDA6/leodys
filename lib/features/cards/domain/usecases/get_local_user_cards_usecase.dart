@@ -1,16 +1,21 @@
+import 'package:dartz/dartz.dart';
+import 'package:leodys/common/mixins/usecase_mixin.dart';
+
+import '../../../../common/errors/failures.dart';
 import '../../data/cards_repository.dart';
-import '../../data/sync/cards_sync_manager.dart';
+import 'sync_cards_usecase.dart';
 import '../card_model.dart';
 
-class GetLocalUserCardsUsecase {
+class GetLocalUserCardsUsecase with UseCaseMixin<List<CardModel>, void>{
   final CardsRepository repository;
-  final CardSyncManager syncManager;
+  final SyncCardsUsecase syncManager;
 
   GetLocalUserCardsUsecase(this.repository, this.syncManager);
 
-  Future<List<CardModel>> call() async {
+  @override
+  Future<Either<Failure, List<CardModel>>> execute(void _) async {
     final cards = await repository.getLocalUserCards();
-    await syncManager.sync();
+    await syncManager.call(null);
 
     return cards;
   }

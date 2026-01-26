@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leodys/features/cards/domain/usecases/params/save_new_card_params.dart';
 import 'package:leodys/features/cards/providers.dart';
 
 import '../domain/usecases/save_new_card_usecase.dart';
 
-class RenameCardScreen extends ConsumerStatefulWidget{
+class RenameCardScreen extends StatefulWidget{
   final List<File> imageFiles;
   late final File? pdfFile;
 
@@ -16,22 +16,45 @@ class RenameCardScreen extends ConsumerStatefulWidget{
   });
 
   @override
-  ConsumerState<RenameCardScreen> createState() => _RenameCardState();
+  State<RenameCardScreen> createState() => _RenameCardState();
 }
 
-class _RenameCardState extends ConsumerState<RenameCardScreen> {
+class _RenameCardState extends State<RenameCardScreen> {
   final TextEditingController _controller = TextEditingController();
   String? error;
+  final saveNewCardUsecase = getIt<SaveNewCardUsecase>();
 
-  Future<void> onSave(
-      List<File> imageFiles,
-      String name,
-      SaveNewCardUsecase saveNewCardUsecase,
-      ) async {
-    await saveNewCardUsecase.call(imageFiles, name);
+  Future<void> onSave(List<File> imageFiles, String name) async {
+    final params = SaveNewCardParams(imageFiles, name);
+    final result = await saveNewCardUsecase.call(params);
+
+    result.fold(
+          (failure) {
+        // affichage d'une snackbar en cas d'échec
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Erreur : ${failure.message}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+          (card) {
+        // affichage d'une snackbar de succès
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Carte '${card.name}' enregistrée avec succès !"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // retourne au précédent écran et passe la carte créée
+        Navigator.pop(context, card);
+      },
+    );
   }
 
-  void _save(SaveNewCardUsecase saveNewCardUsecase) async {
+
+  void _save() async {
     final newName = _controller.text.trim();
 
     if (newName.isEmpty) {
@@ -43,15 +66,11 @@ class _RenameCardState extends ConsumerState<RenameCardScreen> {
 
     setState(() => error = null);
 
-    await onSave(widget.imageFiles, newName, saveNewCardUsecase);
-
-    Navigator.pop(context);
+    await onSave(widget.imageFiles, newName);
   }
 
   @override
   Widget build(BuildContext context) {
-    final saveNewCardUsecase = ref.read(saveNewCardUseCaseProvider);
-
     return Scaffold(
       appBar: AppBar(title: const Text("Nommer la carte")),
       body: Padding(
@@ -75,7 +94,7 @@ class _RenameCardState extends ConsumerState<RenameCardScreen> {
                 ),
               ),
             ElevatedButton(
-              onPressed: () => _save(saveNewCardUsecase),
+              onPressed: () => _save(),
               child: const Text("Enregistrer"),
             ),
           ],

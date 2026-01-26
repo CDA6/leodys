@@ -9,7 +9,7 @@ class AuthService extends ChangeNotifier {
   final BiometricRepository _biometricRepository = BiometricRepositoryImpl();
   final AuthRepository _authRepository = AuthRepositoryImpl();
 
-  bool _isLoggedOut = false;
+  bool _isLoggedOut = true;
 
   bool get isAuthenticated => !_isLoggedOut;
 
@@ -44,8 +44,18 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> signInWithBiometric() async {
+  Future<void> signInWithGoogle() async {
+    final response = await _authRepository.signInWithGoogle();
 
+    if (response.session == null) {
+      throw Exception('Échec de la connexion Google');
+    }
+
+    _isLoggedOut = false;
+    notifyListeners();
+  }
+
+  Future<bool> signInWithBiometric() async {
     if (!hasValidSession()) return false;
 
     final success = await _biometricRepository.authenticate();

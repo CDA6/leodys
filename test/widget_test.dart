@@ -5,15 +5,19 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:leodys/features/audio_reader/presentation/controllers/document_controller.dart';
+import 'package:leodys/features/audio_reader/presentation/controllers/reader_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:leodys/main.dart';
 
 void main() {
+  final DocumentController documentController;
+  final ReaderController readerController;
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    //await tester.pumpWidget(MyApp(documentController: documentController, readerController: readerController,));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

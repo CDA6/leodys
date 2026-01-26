@@ -1,50 +1,86 @@
+import 'package:get_it/get_it.dart';
+import 'package:leodys/features/cards/services/scan_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:leodys/features/cards/data/cards_repository.dart';
+import 'package:leodys/features/cards/data/datasources/local/cards_local_datasource.dart';
 import 'package:leodys/features/cards/data/datasources/remote/cards_remote_datasource.dart';
-import 'package:leodys/features/cards/data/sync/cards_sync_manager.dart';
+import 'package:leodys/features/cards/domain/usecases/sync_cards_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/get_local_user_cards_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/save_new_card_usecase.dart';
 import 'package:leodys/features/cards/domain/usecases/upload_card_usecase.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'data/cards_repository.dart';
-import 'data/datasources/local/cards_local_datasource.dart';
+import 'domain/usecases/update_card_usecase.dart';
 
-final supabaseClientProvider = Provider<SupabaseClient>((ref) {
-  return Supabase.instance.client;
-});
+final getIt = GetIt.instance;
 
-final cardsRemoteDatasourceProvider = Provider<CardsRemoteDatasource>((ref) {
-  final supabase = ref.read(supabaseClientProvider);
-  return CardsRemoteDatasource(supabase: supabase);
-});
+Future<void> init() async {
+  // supabase
+  getIt.registerLazySingleton<SupabaseClient>(
+        () => Supabase.instance.client,
+  );
 
-final cardsLocalDatasourceProvider = Provider<CardsLocalDatasource>((ref) {
-  return CardsLocalDatasource();
-});
+  // remote datasource
+  getIt.registerLazySingleton<CardsRemoteDatasource>(
+        () => CardsRemoteDatasource(
+      supabase: getIt<SupabaseClient>(),
+    ),
+  );
 
-final cardsRepositoryProvider = Provider<CardsRepository>((ref) {
-  final remoteDatasource = ref.read(cardsRemoteDatasourceProvider);
-  final localDatasource = ref.read(cardsLocalDatasourceProvider);
-  return CardsRepository(remoteDatasource, localDatasource);
-});
+  // local datasource
+  getIt.registerLazySingleton<CardsLocalDatasource>(
+        () => CardsLocalDatasource(),
+  );
 
-final uploadCardUseCaseProvider = Provider<UploadCardUsecase>((ref) {
-  return UploadCardUsecase(ref.read(cardsRepositoryProvider));
-});
+  // scan service
+  getIt.registerLazySingleton<ScanService>(
+        () => ScanService(),
+  );
 
-final cardSyncManagerProvider = Provider<CardSyncManager>((ref) {
-  return CardSyncManager(local: ref.read(cardsLocalDatasourceProvider), remote: ref.read(cardsRemoteDatasourceProvider));
-});
+  // repository
+  getIt.registerLazySingleton<CardsRepository>(
+        () => CardsRepository(
+        getIt<CardsRemoteDatasource>(), getIt<CardsLocalDatasource>()
+    ),
+  );
 
-final saveNewCardUseCaseProvider = Provider<SaveNewCardUsecase>((ref) {
-  return SaveNewCardUsecase(ref.read(cardsRepositoryProvider), ref.read(cardSyncManagerProvider));
-});
+  // sync usecase
+  getIt.registerLazySingleton<SyncCardsUsecase>(
+        () => SyncCardsUsecase(getIt<CardsRepository>()),
+  );
 
-final getLocalUserCardsUseCaseProvider = Provider<GetLocalUserCardsUsecase>((ref) {
-  return GetLocalUserCardsUsecase(ref.read(cardsRepositoryProvider), ref.read(cardSyncManagerProvider));
-});
+  // use cases
+  getIt.registerLazySingleton<UploadCardUsecase>(
+        () => UploadCardUsecase(
+      getIt<CardsRepository>(),
+    ),
+  );
 
-final deleteCardUseCaseProvider = Provider<DeleteCardUsecase>((ref) {
-  return DeleteCardUsecase(ref.read(cardsRepositoryProvider), ref.read(cardSyncManagerProvider));
-});
+  getIt.registerLazySingleton<SaveNewCardUsecase>(
+        () => SaveNewCardUsecase(
+      getIt<CardsRepository>(),
+      getIt<SyncCardsUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetLocalUserCardsUsecase>(
+        () => GetLocalUserCardsUsecase(
+      getIt<CardsRepository>(),
+      getIt<SyncCardsUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<DeleteCardUsecase>(
+        () => DeleteCardUsecase(
+      getIt<CardsRepository>(),
+      getIt<SyncCardsUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<UpdateCardUsecase>(
+        () => UpdateCardUsecase(
+          getIt<CardsRepository>()
+        ),
+  );
+}
