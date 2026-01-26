@@ -1,15 +1,13 @@
-
 import 'package:leodys/features/audio_reader/presentation/controllers/document_controller.dart';
 import 'package:leodys/features/audio_reader/presentation/controllers/reader_controller.dart';
 import 'package:leodys/features/audio_reader/presentation/controllers/reading_progess_controller.dart';
 import 'package:leodys/features/audio_reader/presentation/controllers/scan_and_read_text_controller.dart';
-
 import 'data/repositories/ocr_repository_impl.dart';
 import 'data/repositories/document_repository_impl.dart';
 import 'data/repositories/reading_progress_repository_impl.dart';
 import 'data/repositories/tts_repository_impl.dart';
-import 'data/services/ocr_service_impl.dart';
-import 'data/services/tts_service_imp.dart';
+import 'data/services/ocr_service.dart';
+import 'data/services/tts_service.dart';
 import 'domain/usecases/document_usecase.dart';
 import 'domain/usecases/read_text_usecase.dart';
 import 'domain/usecases/reading_progress_usecase.dart';
@@ -17,8 +15,8 @@ import 'domain/usecases/scan_and_read_text_usecase.dart';
 import 'domain/usecases/scan_document_usecase.dart';
 
 ReaderController createReaderController() {
-  final ocrService = OcrServiceImpl();
-  final ttsService = TtsServiceImpl();
+  final ocrService = OcrService();
+  final ttsService = TtsService();
 
   final ocrRepository = OcrRepositoryImpl(ocrService);
   final ttsRepository = TtsRepositoryImpl(ttsService);
@@ -36,8 +34,8 @@ ReaderController createReaderController() {
 }
 
 ScanAndReadTextController createScanAndReadController() {
-  final ocrService = OcrServiceImpl();
-  final ttsService = TtsServiceImpl();
+  final ocrService = OcrService();
+  final ttsService = TtsService();
 
   final ocrRepository = OcrRepositoryImpl(ocrService);
   final ttsRepository = TtsRepositoryImpl(ttsService);

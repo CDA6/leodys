@@ -50,12 +50,13 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur lors de l\'inscription'),
+            content: Text('Erreur: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }

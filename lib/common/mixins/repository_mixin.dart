@@ -28,7 +28,7 @@ mixin RepositoryMixin {
       );
       return result;
     } catch (e, stackTrace) {
-      AppLogger().error('[$_repositoryName.$methodName] Exception non gérée: $e', stackTrace);
+      AppLogger().error('[$_repositoryName.$methodName] Exception non gérée: $e', stackTrace: stackTrace);
       rethrow;
     }
   }

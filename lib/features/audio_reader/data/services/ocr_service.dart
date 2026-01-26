@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
-class OcrServiceImpl {
+class OcrService {
 
 /// Analyse l'image et retourne le texte reconnu
   Future<String> recognizeText(String imagePath) async {

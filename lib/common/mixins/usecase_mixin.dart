@@ -25,7 +25,7 @@ mixin UseCaseMixin<Type, Params> {
 
       return result;
     } catch (e, stackTrace) {
-      AppLogger().error('[$useCaseName] Exception non gérée: $e', stackTrace);
+      AppLogger().error('[$useCaseName] Exception non gérée: $e', stackTrace: stackTrace);
       rethrow;
     }
   }

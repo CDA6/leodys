@@ -2,7 +2,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 /// Service technique responsable de la synthese vocale
 /// Encapsule l'utilisation du plugin flutter_tts
-class TtsServiceImpl {
+class TtsService {
 
   /// Instance de plugin Flutter de syntese vocale.
   /// Transforme du texte en audio
