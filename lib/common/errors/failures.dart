@@ -38,6 +38,14 @@ class ImageProcessingFailure extends Failure {
   const ImageProcessingFailure(super.message);
 }
 
+/// Erreur liée à la gestion du cache local (Hive).
+///
+/// Survient quand :
+/// - La lecture/écriture dans la base de données locale échoue (ex: fichier corrompu, permissions insuffisantes).
+/// - La désérialisation/sérialisation des données échoue (ex: schéma Hive incompatible avec [SettingsModel]).
+/// - La boîte Hive n'est pas initialisée ou est inaccessible.
+/// - L'opération est interrompue par une erreur système (ex: espace disque insuffisant).
+/// ```
 class CacheFailure extends Failure {
   const CacheFailure(super.message);
 }
