@@ -72,39 +72,63 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             child: Row(
               children: [
                 Expanded(
-                  child: CalculatorButton(
-                    text: _getDisplayText('☰'),
-                    color: Colors.blueGrey,
-                    textColor: Colors.white,
-                    onPressed: () => widget.onHistoryPressed(),
+                  child: Semantics(
+                    label: 'Bouton historique',
+                    hint: 'Ouvrir l\'historique des calculs',
+                    button: true,
+                    enabled: true,
+                    child: CalculatorButton(
+                      text: _getDisplayText('☰'),
+                      color: Colors.blueGrey,
+                      textColor: Colors.white,
+                      onPressed: () => widget.onHistoryPressed(),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: CalculatorButton(
-                    text: _getDisplayText('C'),
-                    color: Colors.orange,
-                    textColor: Colors.white,
-                    onPressed: widget.onClearPressed,
+                  child: Semantics(
+                    label: 'Bouton tout effacer',
+                    hint: 'Effacer tout le calcul en cours',
+                    button: true,
+                    enabled: true,
+                    child: CalculatorButton(
+                      text: _getDisplayText('C'),
+                      color: Colors.orange,
+                      textColor: Colors.white,
+                      onPressed: widget.onClearPressed,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: CalculatorButton(
-                    text: _getDisplayText('⌫'),
-                    color: Colors.orange,
-                    textColor: Colors.white,
-                    onPressed: widget.onBackspacePressed,
+                  child: Semantics(
+                    label: 'Bouton effacer',
+                    hint: 'Effacer le dernier caractère',
+                    button: true,
+                    enabled: true,
+                    child: CalculatorButton(
+                      text: _getDisplayText('⌫'),
+                      color: Colors.orange,
+                      textColor: Colors.white,
+                      onPressed: widget.onBackspacePressed,
+                    ),
                   ),
                 ),
 
                 const SizedBox(width: 8),
                 Expanded(
-                  child: CalculatorButton(
-                    text: _getDisplayText('÷'),
-                    color: Colors.blueGrey,
-                    textColor: Colors.white,
-                    onPressed: () => widget.onOperatorPressed('÷'),
+                  child: Semantics(
+                    label: 'Bouton diviser',
+                    hint: 'Diviser par',
+                    button: true,
+                    enabled: true,
+                    child: CalculatorButton(
+                      text: _getDisplayText('÷'),
+                      color: Colors.blueGrey,
+                      textColor: Colors.white,
+                      onPressed: () => widget.onOperatorPressed('÷'),
+                    ),
                   ),
                 ),
               ],
@@ -134,45 +158,91 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
       Widget child;
       if (value == '=') {
-        // Bouton égal
-        child = CalculatorButton(
-          text: _getDisplayText(value),
-          color: Colors.green,
-          textColor: Colors.white,
-          onPressed: widget.onEqualsPressed,
+        // Bouton égal avec Semantics
+        child = Semantics(
+          label: 'Bouton égal',
+          hint: 'Calculer le résultat',
+          button: true,
+          enabled: true,
+          child: CalculatorButton(
+            text: _getDisplayText(value),
+            color: Colors.green,
+            textColor: Colors.white,
+            onPressed: widget.onEqualsPressed,
+          ),
         );
       } else if (['+', '-', '×', '÷', '%'].contains(value)) {
-        // Boutons opérateurs
-        child = CalculatorButton(
-          text: _getDisplayText(value),
-          color: Colors.blueGrey,
-          textColor: Colors.white,
-          onPressed: () => widget.onOperatorPressed(value),
+        // Boutons opérateurs avec Semantics
+        final operatorLabels = {
+          '+': 'Bouton plus',
+          '-': 'Bouton moins',
+          '×': 'Bouton multiplier',
+          '÷': 'Bouton diviser',
+          '%': 'Bouton pourcentage',
+        };
+        child = Semantics(
+          label: operatorLabels[value] ?? 'Bouton opérateur',
+          hint: 'Opération ${_getDisplayText(value)}',
+          button: true,
+          enabled: true,
+          child: CalculatorButton(
+            text: _getDisplayText(value),
+            color: Colors.blueGrey,
+            textColor: Colors.white,
+            onPressed: () => widget.onOperatorPressed(value),
+          ),
         );
       } else if (value == 'MODE') {
-        // Bouton pour changer le mode d'affichage
-        child = CalculatorButton(
-          text: ['123', '●●●', '⚀⚁⚂', 'ABC'][_displayMode],
-          color: Colors.deepPurple,
-          textColor: Colors.white,
-          onPressed: () {
-            setState(() {
-              _displayMode = (_displayMode + 1) % 4;
-            });
-          },
+        // Bouton pour changer le mode d'affichage avec Semantics dynamique
+        final modeNames = ['points', 'dés', 'texte', 'chiffres'];
+        final currentMode = modeNames[_displayMode];
+        final nextMode = modeNames[(_displayMode + 1) % 4];
+        child = Semantics(
+          label: 'Bouton mode d\'affichage',
+          hint: 'Mode actuel : $currentMode. Appuyer pour passer en mode $nextMode',
+          button: true,
+          enabled: true,
+          child: CalculatorButton(
+            text: 'Mode\n${['●','⚄ ⚄','Abc','123'][_displayMode]}',
+            color: Colors.deepPurple,
+            textColor: Colors.white,
+            onPressed: () {
+              setState(() {
+                _displayMode = (_displayMode + 1) % 4;
+              });
+            },
+          ),
         );
       } else if (value == '.') {
-        child = CalculatorButton(
-          text: displayText,
-          color: Colors.white30,
-          textColor: Colors.white,
-          onPressed: () => widget.onNumberPressed(value)
+        // Bouton virgule avec Semantics
+        child = Semantics(
+          label: 'Bouton virgule',
+          hint: 'Ajouter une virgule décimale',
+          button: true,
+          enabled: true,
+          child: CalculatorButton(
+            text: displayText,
+            color: Colors.white30,
+            textColor: Colors.white,
+            onPressed: () => widget.onNumberPressed(value)
+          ),
         );
       } else {
-        // Boutons numériques
-        child = CalculatorButton(
-          text: displayText,
-          onPressed: () => widget.onNumberPressed(value),
+        // Boutons numériques avec Semantics
+        final numberNames = {
+          '0': 'zéro', '1': 'un', '2': 'deux', '3': 'trois',
+          '4': 'quatre', '5': 'cinq', '6': 'six', '7': 'sept',
+          '8': 'huit', '9': 'neuf'
+        };
+        child = Semantics(
+          label: 'Bouton ${numberNames[value] ?? value}',
+          hint: 'Entrer le chiffre ${numberNames[value] ?? value}',
+          button: true,
+          enabled: true,
+          child: CalculatorButton(
+            text: displayText,
+            onPressed: () => widget.onNumberPressed(value),
+          ),
         );
       }
 

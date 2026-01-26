@@ -168,6 +168,7 @@ class CalculatorButton extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: Text(
             text,
+            textAlign: TextAlign.center, // Centre le texte dans le bouton
             style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w500),
           ),
         ),

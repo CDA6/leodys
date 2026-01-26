@@ -237,7 +237,7 @@ class CalculatorHelpers {
     // Converti chaque token en mots avec coloration
     for (final token in tokens) {
       if (['+', '-', '×', '÷'].contains(token)) {
-        // Si opérateur con converti en mot en jaune
+        // Si opérateur con converti le mot en jaune
         final operatorWord = _digitWord(token);
         result.add((text: ' $operatorWord ', color: Colors.yellow));
       } else {
