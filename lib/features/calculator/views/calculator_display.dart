@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import '../models/calculator_helpers.dart';
 import 'calculator_widgets.dart';
+import 'package:leodys/features/vocal_notes/injection_container.dart' as vocal_notes;
+import 'package:leodys/features/vocal_notes/data/services/speech_service.dart';
+
+
 
 /// Widget d'affichage de la calculatrice
 /// Contient l'affichage des chiffres, le texte en français et les points
 class CalculatorDisplay extends StatelessWidget {
   final String display;
+  final SpeechService _speechService = vocal_notes.sl<SpeechService>();
 
-  const CalculatorDisplay({
-    Key? key,
+  CalculatorDisplay({
+    super.key,
     required this.display,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +33,12 @@ class CalculatorDisplay extends StatelessWidget {
           button: true,
           enabled: true,
           child: GestureDetector( // Detect l'appuie sur l'écran pour TTS
-            onTap: () {
-              //todo tts
+            onTap: () async {
+              await _speechService.init();
+              // Récupère le texte en toutes lettres depuis les segments
+              String textToSpeak = _getDisplayDescription(display);
+              // Envoie au service TTS
+              _speechService.speak(textToSpeak);
             },
             child: Container(
               width: double.infinity,
