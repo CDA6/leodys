@@ -9,6 +9,7 @@ import '../../../../../features/ocr-reader/presentation/screens/printed_text_rea
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
+import 'package:leodys/features/calculator/calculator.dart';
 
 /// Widget affichant la liste des fonctionnalités disponibles.
 ///
@@ -104,6 +105,18 @@ class FeatureList extends StatelessWidget {
       color: Colors.blue,
       description: 'Scan de cartes de fidélité.',
     ),
+
+    AppFeature(
+      name: 'Calculette',
+      icon: Icons.calculate,
+      route: CalculatorView.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Calculette pour dyscalculique.',
+    ),
+
   ];
 
   @override

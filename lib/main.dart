@@ -38,6 +38,8 @@ import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart'
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 
+import 'features/calculator/calculator.dart';
+
 /// Global navigator key pour accéder au context depuis les services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -132,6 +134,7 @@ class MyApp extends StatelessWidget {
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
           DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+          CalculatorView.route: (context) => const CalculatorView(),
         },
       ),
     );

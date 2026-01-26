@@ -5,6 +5,7 @@ import '../repositories/hive_service.dart';
 
 /// ViewModel de la calculatrice - Gère toute la logique métier
 class CalculatorViewModel extends ChangeNotifier {
+  static const String route = '/calculator';
   // État courant de la calculatrice
   CalculatorState _state = CalculatorState.initial;
 

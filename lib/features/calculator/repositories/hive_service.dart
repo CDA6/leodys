@@ -1,4 +1,4 @@
-import 'package:hive_ce/hive_ce.dart';
+import 'package:hive/hive.dart';
 
 /// Classe pour sauvegarder et récupérer l'historique de la calculette
 /// La box est ouverte avant, dans calculator_view.dart

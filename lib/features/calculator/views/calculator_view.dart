@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_ce/hive_ce.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/calculator_viewmodel.dart';
 import 'calculator_display.dart';
@@ -8,7 +8,8 @@ import 'calculator_keypad.dart';
 /// Vue principale de la calculatrice (architecture MVVM)
 /// Cette classe ne contient que l'UI et délègue toute la logique au ViewModel
 class CalculatorView extends StatefulWidget {
-  const CalculatorView({Key? key}) : super(key: key);
+  const CalculatorView({super.key});
+  static const route = '/calculator';
 
   @override
   State<CalculatorView> createState() => _CalculatorViewState();
@@ -57,33 +58,39 @@ class _CalculatorContent extends StatelessWidget {
     final viewModel = context.watch<CalculatorViewModel>();
     final state = viewModel.state;
 
-    return SizedBox.expand(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          // Zone d'affichage (écran de la calculatrice)
-          ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 80,
-              maxHeight: 300,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Calculatrice'),
+        centerTitle: true,
+      ),
+      body: SizedBox.expand(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            // Zone d'affichage (écran de la calculatrice)
+            ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: 80,
+                maxHeight: 300,
+              ),
+              child: CalculatorDisplay(
+                display: state.display,
+              ),
             ),
-            child: CalculatorDisplay(
-              display: state.display,
-            ),
-          ),
 
-          // Pavé de boutons
-          Expanded(
-            child: CalculatorKeypad(
-              onNumberPressed: viewModel.onNumberPressed,
-              onOperatorPressed: viewModel.onOperatorPressed,
-              onEqualsPressed: viewModel.onEqualsPressed,
-              onClearPressed: viewModel.onClearPressed,
-              onBackspacePressed: viewModel.onBackspacePressed,
-              onHistoryPressed: () => viewModel.onHistoryPressed(context),
+            // Pavé de boutons
+            Expanded(
+              child: CalculatorKeypad(
+                onNumberPressed: viewModel.onNumberPressed,
+                onOperatorPressed: viewModel.onOperatorPressed,
+                onEqualsPressed: viewModel.onEqualsPressed,
+                onClearPressed: viewModel.onClearPressed,
+                onBackspacePressed: viewModel.onBackspacePressed,
+                onHistoryPressed: () => viewModel.onHistoryPressed(context),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
