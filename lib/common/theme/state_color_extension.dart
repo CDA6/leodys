@@ -41,11 +41,11 @@ class StateColorScheme extends ThemeExtension<StateColorScheme> {
   );
 
   static const highContrast = StateColorScheme(
-    error: Color(0xFFFF000A),
+    error: error50,
     onError: Colors.white,
-    success: Color(0xFF00FF00),
-    onSuccess: Colors.black,
-    warning: Colors.yellow,
+    success: success50,
+    onSuccess: Colors.white,
+    warning: warning50,
     onWarning: Colors.black,
   );
 
