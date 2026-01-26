@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import 'package:leodys/common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class WelcomeSection extends StatelessWidget {
 

@@ -1,5 +1,3 @@
-
-
 import 'package:leodys/features/accessibility/domain/entities/settings.dart';
 
 class SettingsModel {

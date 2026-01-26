@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 import '../../features/accessibility/presentation/screens/settings_screen.dart';
 import '../../main.dart';

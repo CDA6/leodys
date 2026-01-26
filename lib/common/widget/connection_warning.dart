@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
-Widget ConnectionWarning(String message) {
-  return Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: Colors.orange.shade50,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.orange.shade200),
-    ),
-    child: Row(
-      children: [
-        Icon(Icons.wifi_off, color: Colors.orange.shade700, size: 20),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            message,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.orange.shade900,
+class ConnectionWarning extends StatelessWidget {
+  final String message;
+
+  const ConnectionWarning({
+    super.key,
+    required this.message
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.stateColors.warning.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: context.stateColors.warning),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.wifi_off, color: context.stateColors.warning, size: context.titleFontSize),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: context.stateColors.warning,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

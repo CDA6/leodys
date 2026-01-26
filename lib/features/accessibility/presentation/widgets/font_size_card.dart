@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class FontSizeCard extends StatelessWidget {
   final double fontSize;
@@ -75,5 +75,4 @@ class FontSizeCard extends StatelessWidget {
       ),
     );
   }
-
 }

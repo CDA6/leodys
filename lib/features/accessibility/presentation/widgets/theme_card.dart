@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/common/theme/theme_context.dart';
-
-import '../../../../common/theme/app_themes.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/common/theme/app_themes.dart';
 
 class ThemeCard extends StatelessWidget {
   final String themeMode;

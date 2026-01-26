@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class LetterSpacingCard extends StatelessWidget {
   final double letterSpacing;

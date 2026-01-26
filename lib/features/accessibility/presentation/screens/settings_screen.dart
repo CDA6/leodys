@@ -1,12 +1,14 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+
+import 'package:leodys/features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
+
 import 'package:leodys/features/accessibility/presentation/widgets/font_size_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/letter_spacing_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/line_height_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/theme_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/font_family_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/section_title.dart';
-import 'package:provider/provider.dart';
-import '../viewmodels/settings_viewmodel.dart';
 
 
 class SettingsScreen extends StatelessWidget {

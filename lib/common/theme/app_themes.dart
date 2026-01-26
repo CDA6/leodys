@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'state_color_extension.dart';
+
 class ThemeConfig {
   final String key;
   final String title;
@@ -18,6 +20,17 @@ class ThemeConfig {
 
 class AppThemes {
   AppThemes._();
+
+  static const Color blue50 = Color(0xFF183661);
+  static const Color blue40 = Color(0xFF1F36AD);
+  static const Color blue30 = Color(0xFF172982);
+  static const Color blue20 = Color(0xFF0F1B57);
+  static const Color blue10 = Color(0xFF080E2B);
+
+  static const Color grey98 = Color(0xFFFAFAFA);
+  static const Color grey96 = Color(0xFFF0F0F0);
+  static const Color grey94 = Color(0xFFEBEBEB);
+  static const Color grey92 = Color(0xFFE6E6E6);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -42,6 +55,9 @@ class AppThemes {
 
         outline: const Color(0xFFC8C8C8),
       ),
+      extensions: <ThemeExtension<dynamic>>[
+        StateColorScheme.light,
+      ],
     );
   }
 
@@ -80,6 +96,9 @@ class AppThemes {
 
         outline: const Color(0xFF666666),
       ),
+      extensions: <ThemeExtension<dynamic>>[
+        StateColorScheme.highContrast,
+      ],
     );
   }
 

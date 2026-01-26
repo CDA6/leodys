@@ -1,11 +1,10 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:leodys/common/pages/home/presentation/widgets/welcome_section.dart';
 import 'package:leodys/common/widget/connection_warning.dart';
 import 'package:leodys/common/widget/global_appbar.dart';
-import 'package:leodys/features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
-import 'package:provider/provider.dart';
-import '../viewmodels/home_viewmodel.dart';
-import '../widgets/feature_list.dart';
+import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
+import 'package:leodys/common/pages/home/presentation/widgets/welcome_section.dart';
+import 'package:leodys/common/pages/home/presentation/widgets/feature_list.dart';
 
 /// Page d'accueil de l'application.
 ///
@@ -44,7 +43,7 @@ class HomePage extends StatelessWidget {
 
                     // Avertissement si pas de connexion
                     if (!viewModel.isConnected) ...[
-                      ConnectionWarning('Pas de connexion Internet. Certaines fonctionnalités sont limitées.'),
+                      ConnectionWarning(message: 'Pas de connexion Internet. Certaines fonctionnalités sont limitées.'),
                       const SizedBox(height: 16),
                     ],
 

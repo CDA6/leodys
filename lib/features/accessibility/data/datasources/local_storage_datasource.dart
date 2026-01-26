@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import '../models/settings_model.dart';
+import 'package:leodys/features/accessibility/data/models/settings_model.dart';
 
 abstract class LocalStorageDatasource {
   Future<SettingsModel?> getSettings();

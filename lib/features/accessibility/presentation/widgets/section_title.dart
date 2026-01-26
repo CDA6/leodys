@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/theme/theme_context.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class SectionTitle extends StatelessWidget {
   final IconData icon;
