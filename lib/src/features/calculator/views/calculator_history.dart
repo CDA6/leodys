@@ -12,42 +12,67 @@ class HistoryDialog extends StatelessWidget {
     final history = viewModel.getHistory();
 
     return AlertDialog(
-      title: const Text('Historique des calculs'),
+      title: Semantics(
+        header: true,
+        child: const Text('Historique des calculs'),
+      ),
       content: SizedBox(
         width: double.maxFinite,
         child: history.isEmpty //Si hitorique vide on affiche un message
-            ? const Center(
-                child: Text(
-                  'Aucun calcul dans l\'historique',
-                  style: TextStyle(color: Colors.grey),
+            ? Semantics(
+                label: 'Aucun calcul dans l\'historique',
+                child: const Center(
+                  child: Text(
+                    'Aucun calcul dans l\'historique',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ) //sinon on affiche l'historique
-            : ListView.builder(
-                shrinkWrap: true,
-                itemCount: history.length,
-                itemBuilder: (BuildContext context, int index) {
-                  // Affiche les derniers calculs en premier
-                  final reversedIndex = history.length - 1 - index;
-                  return ListTile(
-                    title: Text(
-                      history[reversedIndex],
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  );
-                },
+            : Semantics(
+                label: 'Liste de ${history.length} calcul${history.length > 1 ? 's' : ''}',
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: history.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // Affiche les derniers calculs en premier
+                    final reversedIndex = history.length - 1 - index;
+                    final calculation = history[reversedIndex];
+                    return Semantics(
+                      label: 'Calcul ${index + 1}: $calculation',
+                      child: ListTile(
+                        title: Text(
+                          calculation,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
       ),
       actions: [
-        TextButton(
-          onPressed: () async {
-            viewModel.clearHistory();
-            Navigator.pop(context); // Ferme la fenetre
-          },
-          child: const Text('Effacer l\'historique'),
+        Semantics(
+          label: 'Effacer tout l\'historique',
+          hint: 'Supprimer tous les calculs de l\'historique',
+          button: true,
+          enabled: true,
+          child: TextButton(
+            onPressed: () async {
+              viewModel.clearHistory();
+              Navigator.pop(context); // Ferme la fenetre
+            },
+            child: const Text('Effacer l\'historique'),
+          ),
         ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Fermer'),
+        Semantics(
+          label: 'Fermer la fenêtre d\'historique',
+          hint: 'Revenir à la calculatrice',
+          button: true,
+          enabled: true,
+          child: TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fermer'),
+          ),
         ),
       ],
     );

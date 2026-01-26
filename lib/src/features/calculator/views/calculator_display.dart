@@ -14,69 +14,120 @@ class CalculatorDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 200,
-      color: Colors.black,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Affichage en colonnes
-          FittedBox(
-            /// Permet de réduire l'affichage automatiquement si trop grand
-            fit: BoxFit.scaleDown,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: _buildDigitColumns(display),
+    // Génère une description vocale du display pour les lecteurs d'écran
+    String displayDescription = _getDisplayDescription(display);
+
+    // Widget de superposition
+    return Stack(
+      children: [
+        // Semantics pour l'ensemble de l'affichage
+        Semantics(
+          label: 'Affichage de la calculatrice',
+          value: displayDescription,
+          hint: 'Appuyer pour activer la synthèse vocale',
+          button: true,
+          enabled: true,
+          child: GestureDetector( // Detect l'appuie sur l'écran pour TTS
+            onTap: () {
+              //todo tts
+            },
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              color: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                // Affichage en colonnes
+                FittedBox(
+                  /// Permet de réduire l'affichage automatiquement si trop grand
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: _buildDigitColumns(display),
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                // Ligne en toutes lettres avec coloration
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: RichText(
+                    textAlign: TextAlign.right,
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 18),
+                      children: CalculatorHelpers.numberToWordsSegments(display)
+                          .map((segment) => TextSpan(
+                                text: segment.text,
+                                style: TextStyle(color: segment.color),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                // Ligne de points (quantité)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: _buildQuantityDots(display)
+                        .map((dot) => FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                dot,
+                                style: const TextStyle(
+                                    color: Colors.white70, fontSize: 18),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
+        ),
 
-          const SizedBox(height: 6),
-
-          // Ligne en toutes lettres avec coloration
-          Align(
-            alignment: Alignment.centerRight,
-            child: RichText(
-              textAlign: TextAlign.right,
-              text: TextSpan(
-                style: const TextStyle(fontSize: 18),
-                children: CalculatorHelpers.numberToWordsSegments(display)
-                    .map((segment) => TextSpan(
-                          text: segment.text,
-                          style: TextStyle(color: segment.color),
-                        ))
-                    .toList(),
-              ),
+        // Icône TTS (haut à gauche)
+        Positioned(
+          top: 12,
+          left: 12,
+          child: ExcludeSemantics( // car on a deja un Semantics pour le display
+            child: Icon(
+              Icons.volume_up,
+              color: Colors.white.withValues(alpha: 0.3), // blacn transparent
+              size: 32,
             ),
           ),
-
-          const SizedBox(height: 6),
-
-          // Ligne de points (quantité)
-          Align(
-            alignment: Alignment.centerRight,
-            child: Wrap(
-              alignment: WrapAlignment.end,
-              spacing: 4,
-              runSpacing: 4,
-              children: _buildQuantityDots(display)
-                  .map((dot) => FittedBox(
-                        fit: BoxFit.contain,
-                        child: Text(
-                          dot,
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 18),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  /// Génère une description vocale pour les lecteurs d'écran
+  /// Utilise numberToWordsSegments() existante pour la conversion
+  String _getDisplayDescription(String display) {
+    if (display == 'Erreur') {
+      return 'Erreur de calcul';
+    }
+    if (display.isEmpty) {
+      return 'Affichage vide';
+    }
+
+    // Utilise la méthode existante qui convertit déjà tout en français
+    final segments = CalculatorHelpers.numberToWordsSegments(display);
+
+    // Concatène tous les segments de texte
+    return segments.map((segment) => segment.text).join('').trim();
   }
 
   /// Construit les colonnes de chiffres avec espacement
@@ -221,14 +272,14 @@ class CalculatorDisplay extends StatelessWidget {
       qty = val.abs().floor();
     }
 
-    int thousands = qty ~/ 1000; /// on récupère le nombre de milliers
-    int hundreds = (qty % 1000) ~/ 100; /// on récupère le nombre de centaines
-    int tens = (qty % 100) ~/ 10; /// on récupère le nombre de dizaines
-    int units = qty % 10; /// on récupère le nombre d'unités
+    int thousands = qty ~/ 1000; // on récupère le nombre de milliers
+    int hundreds = (qty % 1000) ~/ 100; // on récupère le nombre de centaines
+    int tens = (qty % 100) ~/ 10; // on récupère le nombre de dizaines
+    int units = qty % 10; // on récupère le nombre d'unités
 
     List<String> dots = [];
 
-    if (qty >= 1000000) { /// limite pour l'affichage (pour éviter bug)
+    if (qty >= 1000000) { // limite pour l'affichage (pour éviter bug)
       dots.add('⚠️ : Nombre trop grand'); // Avertissement si la quantité est trop grande
     } else {
       if (thousands > 10) {
