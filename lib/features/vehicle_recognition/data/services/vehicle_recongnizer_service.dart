@@ -35,43 +35,24 @@ class VehicleRecognizerService {
     );
 
     request.fields['regions'] = 'fr';
-    //request.fields['mmc'] = 'true'; à décommenter àpres debug
+    request.fields['mmc'] = 'true';
 
     final response = await request.send();
     final body = await response.stream.bytesToString();
 
-    // debug
-    debugPrint('--- Plate Recognizer RAW RESPONSE ---');
-    debugPrint(body);
-    debugPrint('-----------------------------------');
-
-
-
-    // if (response.statusCode != 200) {
-    //   throw Exception(
-    //     'Erreur Plate Recognizer (${response.statusCode}) : $body',
-    //   );
-    // }
-
-    debugPrint('PlateRecognizer statusCode: ${response.statusCode}');
-
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Erreur Plate Recognizer (${response.statusCode}) : $body',
+      );
+    }
 
     final Map<String, dynamic> json =
     jsonDecode(body) as Map<String, dynamic>;
-
-    debugPrint('PlateRecognizer parsed json keys: ${json.keys}');
-    debugPrint('results: ${json['results']}');
-
 
     final List results = json['results'] as List? ?? [];
 
     if (results.isEmpty) {
       return null;
-    }
-
-    // debug
-    if ((json['results'] as List).isEmpty) {
-      debugPrint('⚠️ Aucun résultat reconnu par Plate Recognizer');
     }
 
 
