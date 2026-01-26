@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../domain/card_model.dart';
 import '../datasources/local/cards_local_datasource.dart';
 import '../datasources/remote/cards_remote_datasource.dart';
 
