@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
+import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
@@ -129,6 +130,16 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Aide à la latéralisation via la caméra.',
     ),
+
+   //ajout bouton confidential document
+    AppFeature(name: 'Document confidentiel',
+        icon: Icons.file_download,
+        route: ConfidentialDocumentScreen.route,
+        requiresInternet : false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Stocker et visualiser des photos de vos docuemnt confidentiel (carte ID, permis, ...)',
+    )
   ];
 
   @override

@@ -1,1 +1,1 @@
-enum SaveResult {fullSuccess, localOnly, failure}
+enum SaveResult {fullSuccess, localOnly, remoteOnly, failure}

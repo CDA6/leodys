@@ -5,8 +5,9 @@ import '../../domain/entity/picture_download.dart';
 
 class PhotoCard extends StatelessWidget{
   final PictureDownload image;
+  final VoidCallback? onDelete;
 
-  const PhotoCard({super.key, required this.image});
+  const PhotoCard({super.key, required this.image, this.onDelete});
 
   @override
   Widget build(BuildContext context) {

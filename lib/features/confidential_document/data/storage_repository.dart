@@ -80,7 +80,6 @@ class RemoteStorageRepository {
    }
  }
 
-  //TODO supprimer un fichier
 Future<void> deleteImage(List<String> titles, {String? bucketName}) async {
   bucketName ??= _userId;
   final List<String> listFilePath = titles.map((title) {
