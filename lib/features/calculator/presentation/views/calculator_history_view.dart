@@ -70,7 +70,7 @@ class HistoryDialog extends StatelessWidget {
           button: true,
           enabled: true,
           child: TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.pop(context),
             child: const Text('Fermer'),
           ),
         ),

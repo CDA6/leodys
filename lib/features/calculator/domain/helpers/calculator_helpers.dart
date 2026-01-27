@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 /// Classe utilitaire pour les conversions et helpers de la calculatrice
@@ -80,7 +79,6 @@ class CalculatorHelpers {
   }
 
   /// Convertit UN SEUL nombre (sans opérateur) en texte français
-  /// Usage interne uniquement - utiliser numberToWordsSegments() pour l'affichage
   static String _singleNumberToWords(String numberStr) {
     if (numberStr.isEmpty) return '';
 
@@ -125,7 +123,7 @@ class CalculatorHelpers {
     return (neg ? 'moins ' : '') + wordsInt;
   }
 
-  /// Mot pour un chiffre unique
+  /// Mot corespondant à un chiffre ou un symbole
   static String _digitWord(String ch) {
     const map = {
       '0': 'zéro',
@@ -148,7 +146,7 @@ class CalculatorHelpers {
     return map[ch] ?? ch;
   }
 
-  /// Conversion d'un entier en français
+  /// Conversion d'un nombre entier en français
   static String _intToFrench(int n) {
     if (n == 0) return 'zéro';
     if (n < 0) return 'moins ' + _intToFrench(-n);
@@ -244,7 +242,7 @@ class CalculatorHelpers {
 
   /// Convertit le nombre en segments de couleur selon
   /// que l'on a un chiffre ou un mot-clé
-  /// Tokenise l'expression complète (ex: "63+5") et traite chaque partie séparément
+  /// Tokenise l'expression complète et traite chaque partie séparément
   static List<({String text, Color color})> numberToWordsSegments(String display) {
     final result = <({String text, Color color})>[];
 
@@ -257,7 +255,7 @@ class CalculatorHelpers {
       return result;
     }
 
-    // Séparation des nombres et opérateurs (tokenisation)
+    // Séparation des nombres et opérateurs
     final List<String> tokens = [];
     int i = 0;
     while (i < display.length) {
