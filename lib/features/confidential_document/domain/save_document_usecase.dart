@@ -2,11 +2,14 @@ import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
 import 'package:leodys/features/confidential_document/data/local_storage_repository.dart';
 import 'package:leodys/features/confidential_document/data/storage_repository.dart';
+import 'package:leodys/features/confidential_document/data/sync_registry_repository.dart';
 import 'package:leodys/features/confidential_document/domain/encrypted_session.dart';
 import 'package:leodys/features/confidential_document/domain/encryption_service.dart';
 import 'package:leodys/features/confidential_document/domain/entity/decryption_result.dart';
+import 'package:leodys/features/confidential_document/domain/entity/fileMetadata.dart';
 import 'package:leodys/features/confidential_document/domain/entity/picture_download.dart';
 import 'package:leodys/features/confidential_document/domain/entity/save_result.dart';
+import 'package:leodys/features/confidential_document/domain/entity/status_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SaveDocumentUsecase {
@@ -16,6 +19,7 @@ class SaveDocumentUsecase {
       LocalStorageRepository();
   final EncryptionService _encryptionService = EncryptionService();
   EncryptionSession session = EncryptionSession();
+  final SyncRegistryRepository _syncRegistryRepository = SyncRegistryRepository();
 
   //Get the actual user
   User? get user => Supabase.instance.client.auth.currentUser;
@@ -30,6 +34,8 @@ class SaveDocumentUsecase {
     String title,
     SecretKey key,
   ) async {
+    FileMetadata? metadata;
+    SaveResult savRes = SaveResult.failure;
     bool localSuccess = false;
     bool remoteSuccess = false;
     try {
@@ -40,6 +46,7 @@ class SaveDocumentUsecase {
       if (!kIsWeb) {
         try {
           await _localStorageRepository.uploadDocument(encryptByte, title);
+
           localSuccess = true;
         } catch (e) {
           print("Erreur disque : $e");
@@ -54,23 +61,35 @@ class SaveDocumentUsecase {
       } catch (e) {
         print("Erreur réseau : $e");
       }
-      ;
-      if (localSuccess && remoteSuccess) return SaveResult.fullSuccess;
-      if (localSuccess) return SaveResult.localOnly;
-      return SaveResult.failure;
+      if (localSuccess && remoteSuccess) {
+        metadata = FileMetadata(title: title, status: SyncStatus.synced, lastUpdated: DateTime.now());
+        savRes = SaveResult.fullSuccess;
+      } else if (localSuccess) {
+        metadata = FileMetadata(title: title, status: SyncStatus.pendingDownload, lastUpdated: DateTime.now());
+        savRes = SaveResult.localOnly;
+      } else {
+        savRes = SaveResult.failure;
+      }
+
+      if(metadata != null) {
+     _syncRegistryRepository.updateEntry(metadata);
+      }
+      return savRes;
+
     } catch (e) {
       return SaveResult.failure;
     }
   }
 
   Future<DecryptionResult?> getAllImages(bool hasConnection) async {
-    print("Lancement recherhce image dans usecase");
+    print("Lancement recherhce image dans usecase"); //TODO ça bloque là
     final SecretKey? key = session.key;
     int errorCount = 0;
     List<PictureDownload> listPicture = [];
 
     //Récupération du local hors-ligne
     if (!hasConnection) {
+      print("Has Connection : {$hasConnection}");
       final Map<String, Uint8List> listFile = await _localStorageRepository
           .getAllEncryptedFiles();
       if (listFile.isEmpty) {
@@ -92,7 +111,7 @@ class SaveDocumentUsecase {
       }
     }
     ///Récupération seulement sur le remote storage et pas de local
-    if (hasConnection && kIsWeb) {
+    if (hasConnection) {
       final List<String> listTitles = await _remoteStorageRepository
           .getListTitle();
       if (listTitles.isEmpty) {
@@ -117,8 +136,6 @@ class SaveDocumentUsecase {
         }
       }
     }
-    //TODO local et en ligne
-
     return DecryptionResult(listPicture, errorCount);
   }
 }

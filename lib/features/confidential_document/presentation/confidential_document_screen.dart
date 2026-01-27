@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:leodys/features/confidential_document/presentation/widget/photo_card.dart';
@@ -10,6 +7,8 @@ import '../domain/entity/picture_download.dart';
 import 'confidential_document_viewmodel.dart';
 
 class ConfidentialDocumentScreen extends StatelessWidget {
+  static const String route = '/document_confidentiel';
+
   const ConfidentialDocumentScreen({super.key});
 
   @override
@@ -30,13 +29,33 @@ class _ConfidentialDocumentContent extends StatelessWidget {
       appBar: AppBar(title: Text("Document confidentiel")),
       body: Consumer<ConfidentialDocumentViewmodel>(
         builder: (context, vm, child) {
+
+          //LISTENER UI (SnackBars)
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+
+            if (vm.infoSaveImg != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(vm.infoSaveImg!)),
+              );
+              vm.clearInfoSave();
+            }
+
+            if (vm.alerteSync != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(vm.alerteSync!)),
+              );
+              vm.clearAlerte();
+            }
+          });
+
           return SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _ActionButtons(),
-                _ShowGallery(),
                 _NewImage(),
+                _ShowGallery(),
                 if (vm.emailUser != null)
                   Text("Connecté avec : ${vm.emailUser}")
                 else
@@ -95,61 +114,85 @@ class _AlerteState extends State<_Alerte> {
 class _ActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final vm = context.read<ConfidentialDocumentViewmodel>();
+    // On utilise watch pour que le widget se redessine quand isLoading ou hasConnection changent
+    final vm = context.watch<ConfidentialDocumentViewmodel>();
+
     return Wrap(
-      spacing: 10,
+      spacing: 12, // Un peu plus d'espace pour respirer
+      runSpacing: 10, // Espace entre les lignes si le Wrap passe à la ligne
+      alignment: WrapAlignment.center,
       children: [
+        // --- BOUTON SYNCHRONISATION (Nouveau) ---
+        ElevatedButton.icon(
+          onPressed: (vm.isLoading || !vm.hasConnection) ? null : () => vm.sync(),
+          style: _buttonStyle(Colors.orangeAccent),
+          icon: vm.isLoading
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+              : const Icon(Icons.sync),
+          label: const Text("Synchro"),
+        ),
+
+        // --- BOUTON PHOTO ---
         if (!kIsWeb)
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: vm.isLoading ? null : vm.takePicture,
+            style: _buttonStyle(Colors.blueAccent),
             icon: const Icon(Icons.camera_alt),
-            label: const Text(
-              "Prendre une photo",
-            ), //TODO à developper après téléchargement
+            label: const Text("Photo"),
           ),
+
+        // --- BOUTON TÉLÉCHARGER ---
         ElevatedButton.icon(
-          onPressed: vm.getPicture,
+          onPressed: vm.isLoading ? null : vm.getPicture,
+          style: _buttonStyle(Colors.blueAccent),
           icon: const Icon(Icons.file_upload),
           label: const Text("Télécharger"),
         ),
-        ElevatedButton.icon(
-          onPressed: () async {
-            if (vm.session.isLocked) {
-              final String? password = await showDialog<String>(
-                context: context,
-                builder: (context) => const _Alerte(),
-              );
 
-              if (password != null && password.isNotEmpty) {
-                bool success = await vm.saveKey(password);
-                if (!success) {
-                  // Gérer l'erreur si la génération échoue
-                  return;
-                }
-              } else {
-                return; // L'utilisateur a annulé
-              }
-            }
-            if (!vm.session.isLocked) {
-              vm.maskGallery(false);
-              await vm.getAllPicture();
-              if (vm.errorCount > 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${vm.errorCount} sont impossible à charger'),
-                  ),
-                );
-              }
-            }
-          },
-          icon: const Icon(Icons.picture_in_picture),
-          label: const Text("Voir ma galerie"),
+        // --- BOUTON GALERIE ---
+        ElevatedButton.icon(
+          onPressed: vm.isLoading ? null : () async => _handleGalleryAccess(context, vm),
+          style: _buttonStyle(Colors.teal),
+          icon: const Icon(Icons.collections),
+          label: const Text("Ma Galerie"),
         ),
       ],
     );
   }
-}
 
+  // --- STYLE GÉNÉRIQUE POUR LA COHÉRENCE ---
+  ButtonStyle _buttonStyle(Color color) {
+    return ElevatedButton.styleFrom(
+      backgroundColor: color,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    );
+  }
+
+  // --- LOGIQUE EXTRAITE (Plus lisible) ---
+  Future<void> _handleGalleryAccess(BuildContext context, ConfidentialDocumentViewmodel vm) async {
+    if (vm.session.isLocked) {
+      final String? password = await showDialog<String>(
+        context: context,
+        builder: (context) => const _Alerte(),
+      );
+
+      if (password == null || password.isEmpty) return;
+      bool success = await vm.saveKey(password);
+      if (!success) return;
+    }
+
+    if (!vm.session.isLocked) {
+      vm.maskGallery(false);
+      await vm.getAllPicture();
+
+    }
+  }
+
+  void _showSnack(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
 class _NewImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -171,7 +214,9 @@ class _NewImage extends StatelessWidget {
           ),
         ),
         ElevatedButton.icon(
-          onPressed: () async {
+          onPressed: vm.isSaving
+              ? null
+              : () async {
             if (vm.session.isLocked) {
               final String? password = await showDialog<String>(
                 context: context,
@@ -179,21 +224,23 @@ class _NewImage extends StatelessWidget {
               );
               if (password != null && password.isNotEmpty) {
                 bool success = await vm.saveKey(password);
-                if (!success) {
-                  // Gérer l'erreur si la génération échoue
-                  return;
-                }
+                if (!success) return;
               } else {
-                return; // L'utilisateur a annulé
+                return;
               }
             }
-            if (!vm.session.isLocked) {
-              await vm.saveImage();
-            }
+            await vm.saveImage();
           },
-          icon: const Icon(Icons.save),
-          label: const Text("Enregistrer"),
+          icon: vm.isSaving
+              ? const SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+              : const Icon(Icons.save),
+          label: Text(vm.isSaving ? "Enregistrement..." : "Enregistrer"),
         ),
+
         ElevatedButton.icon(
           onPressed: vm.cancelImageFile,
           icon: const Icon(Icons.clear),
@@ -222,12 +269,12 @@ class _ShowGallery extends StatelessWidget {
           // Affichage de la galerie
           if (vm.pictures != null && vm.pictures!.isNotEmpty)
             SizedBox(
-              height: 400,
-              child: _buildGallery(context, vm.pictures!), // Appel de ta méthode de grille
+              height: 600,
+              child: _buildGallery(context, vm.pictures!, vm.deletePicture()), // Appel de ta méthode de grille
             )
           else if (!vm.lookingForPicture) // On affiche "aucun" seulement si on ne charge pas
             const SizedBox(
-              height: 400,
+              height: 200,
               child: Center(child: Text("Aucun fichier enregistré")),
             ),
 
@@ -257,7 +304,7 @@ class _ShowGallery extends StatelessWidget {
   }
 
   //TODO widget afficher galerie d'image
-  Widget _buildGallery(BuildContext context, List<PictureDownload> pictures) {
+  Widget _buildGallery(BuildContext context, List<PictureDownload> pictures, VoidCallback onDelete) {
     double width = MediaQuery.of(context).size.width;
 
     // 2. On définit le nombre de colonnes selon la largeur
@@ -280,7 +327,7 @@ class _ShowGallery extends StatelessWidget {
       ),
       itemCount: pictures.length,
       itemBuilder: (context, index) {
-        return PhotoCard(image: pictures[index]);
+        return PhotoCard(image: pictures[index], onDelete: onDelete);
       },
     );
   }
