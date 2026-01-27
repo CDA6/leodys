@@ -27,6 +27,7 @@ import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'common/services/database_service.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
+import 'features/vocal_chat/injection_container.dart' as vocal_chat;
 
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -37,6 +38,8 @@ import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
+import 'features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
+import 'features/vocal_chat/presentation/viewmodels/vocal_chat_viewmodel.dart';
 
 /// Global navigator key pour accéder au context depuis les services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -67,6 +70,7 @@ void main() async {
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
+  await vocal_chat.init();
   await cards.init();
   await voice_clock.init();
 
@@ -121,6 +125,11 @@ class MyApp extends StatelessWidget {
           VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
           VocalNoteEditorScreen.route: (context) =>
               const VocalNoteEditorScreen(),
+
+          VocalChatScreen.route: (context) => ChangeNotifierProvider(
+            create: (_) => vocal_chat.sl<VocalChatViewModel>(),
+            child: const VocalChatScreen(),
+          ),
 
           VoiceClockScreen.route: (context) => ChangeNotifierProvider(
             create: (_) => voice_clock.sl<VoiceClockViewModel>(),
