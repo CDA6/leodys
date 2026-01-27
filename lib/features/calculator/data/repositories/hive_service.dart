@@ -1,10 +1,8 @@
 import 'package:hive/hive.dart';
 
 /// Classe pour sauvegarder et récupérer l'historique de la calculette
-/// La box est ouverte avant, dans calculator_view.dart
 class HiveService {
-  // Box de liste de string pour historique
-  // Calcul complet + version speech
+  // Box de string pour historique
   late Box<String> _historyBox;
 
   /// Constructeur qui récupère la box
@@ -12,7 +10,7 @@ class HiveService {
     _historyBox = Hive.box('calculator_history');
   }
 
-  /// Sauvegarde une nouvelle entrée dans l'historique
+  /// Sauvegarde une entrée dans l'historique
   Future<void> saveEntry(String entry) async {
     await _historyBox.add(entry);
   }

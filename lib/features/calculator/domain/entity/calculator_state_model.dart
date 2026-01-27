@@ -1,21 +1,18 @@
 /// Modèle représentant l'état complet de la calculatrice
-/// Contient toutes les données nécessaires pour l'affichage et les calculs
-/// Note: L'historique est géré séparément par HiveService
 class CalculatorState {
-  /// Texte actuellement affiché à l'écran
+  // Texte affiché à l'écran
   final String display;
 
-  /// Nombre en cours de saisie
+  // Nombre en cours de saisie
   final String current;
 
-  /// Expression en cours de construction (ex: "6+")
+  // Expression en cours de construction
   final String expression;
 
-  /// État d'erreur
+  // État d'erreur
   final bool hasError;
 
-  /// Indique si on vient de calculer un résultat avec "="
-  /// Permet de réutiliser le résultat avec un opérateur ou de le remplacer avec un chiffre
+  // Indique si on vient de calculer un résultat
   final bool justCalculated;
 
   const CalculatorState({
@@ -23,10 +20,10 @@ class CalculatorState {
     this.current = '',
     this.expression = '',
     this.hasError = false,
-    this.justCalculated = false, //boolean indiquant si on a deja un résultat
+    this.justCalculated = false,
   });
 
-  /// Crée une copie de l'état avec des modifications
+  // Crée une copie de l'état avec des modifications
   CalculatorState copyWith({
     String? display,
     String? current,

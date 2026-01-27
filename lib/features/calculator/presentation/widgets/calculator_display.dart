@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/calculator_helpers.dart';
-import 'calculator_widgets.dart';
+import '../../domain/helpers/calculator_helpers.dart';
+import 'calculator_digit_column.dart';
+import 'calculator_operator_block.dart';
 import 'package:leodys/features/vocal_notes/injection_container.dart' as vocal_notes;
 import 'package:leodys/features/vocal_notes/data/services/speech_service.dart';
 
@@ -52,7 +53,7 @@ class CalculatorDisplay extends StatelessWidget {
                 children: [
                 // Affichage en colonnes
                 FittedBox(
-                  /// Permet de réduire l'affichage automatiquement si trop grand
+                  // Permet de réduire l'affichage automatiquement si trop grand
                   fit: BoxFit.scaleDown,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -122,7 +123,7 @@ class CalculatorDisplay extends StatelessWidget {
     );
   }
 
-  /// Génère une description vocale pour les lecteurs d'écran
+  /// Génère une description pour les lecteurs d'écran
   /// Utilise numberToWordsSegments() existante pour la conversion
   String _getDisplayDescription(String display) {
     if (display == 'Erreur') {
@@ -132,7 +133,7 @@ class CalculatorDisplay extends StatelessWidget {
       return 'Affichage vide';
     }
 
-    // Utilise la méthode existante qui convertit déjà tout en français
+    // Utilise la méthode existante qui convertit en français
     final segments = CalculatorHelpers.numberToWordsSegments(display);
 
     // Concatène tous les segments de texte

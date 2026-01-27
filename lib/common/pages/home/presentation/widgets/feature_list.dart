@@ -9,7 +9,7 @@ import '../../../../../features/ocr-reader/presentation/screens/printed_text_rea
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
-import 'package:leodys/features/calculator/calculator.dart';
+import 'package:leodys/features/calculator/presentation/views/calculator_view.dart';
 
 /// Widget affichant la liste des fonctionnalités disponibles.
 ///

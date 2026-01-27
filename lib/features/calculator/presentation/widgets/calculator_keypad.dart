@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'calculator_widgets.dart';
+
+import 'calculator_button.dart';
 
 /// Widget du clavier de la calculatrice
 /// Contient tous les boutons et délègue les actions aux callbacks

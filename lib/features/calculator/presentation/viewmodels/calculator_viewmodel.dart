@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/calculator_state.dart';
-import '../views/calculator_history.dart';
-import '../repositories/hive_service.dart';
+import '../../domain/entity/calculator_state_model.dart';
+import '../../presentation/views/calculator_history_view.dart';
+import '../../data/repositories/hive_service.dart';
 
 /// ViewModel de la calculatrice - Gère toute la logique métier
 class CalculatorViewModel extends ChangeNotifier {
@@ -21,7 +21,7 @@ class CalculatorViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Gère l'appui sur un chiffre ou le point décimal
+  /// Gère l'appui sur un chiffre ou le point
   void onNumberPressed(String value) {
     // Si on vient de calculer un résultat, recommencer à zéro avec ce chiffre
     if (_state.justCalculated) {
@@ -35,17 +35,21 @@ class CalculatorViewModel extends ChangeNotifier {
       return;
     }
 
+    // On ne peut pas mettre 2 points
     if (value == '.' && _state.current.contains('.')) return;
 
+    // Gestion des cas speciaux (0 ou . en premier)
     String newCurrent = (_state.current == '0' && value != '.')
         ? value
         : _state.current + value;
     if (newCurrent.isEmpty) newCurrent = '0';
 
+    // Expression a afficher
     String newDisplay = _state.expression.isNotEmpty
         ? '${_state.expression}$newCurrent'
         : newCurrent;
 
+    // Mise a jour de l'affichage
     _updateState(_state.copyWith(
       current: newCurrent,
       display: newDisplay,
@@ -78,7 +82,7 @@ class CalculatorViewModel extends ChangeNotifier {
 
     String newExpression = _state.expression;
 
-    // Ajouter la saisie courante à l'expression
+    // Ajouter la saisie à l'expression
     if (_state.current.isNotEmpty) {
       newExpression += _state.current;
     }
@@ -91,6 +95,7 @@ class CalculatorViewModel extends ChangeNotifier {
       newExpression += op;
     }
 
+    // Mise a jour de l'affichage
     _updateState(_state.copyWith(
       expression: newExpression,
       current: '',
@@ -119,7 +124,7 @@ class CalculatorViewModel extends ChangeNotifier {
     String fullExpr = _state.expression + _state.current;
     if (fullExpr.isEmpty) return;
 
-    // Ne pas évaluer si l'expression se termine par un opérateur
+    // Ne pas calculer si l'expression se termine par un opérateur
     if (['+', '-', '×', '÷'].contains(fullExpr[fullExpr.length - 1])) return;
 
     // Évaluer l'expression
@@ -128,7 +133,7 @@ class CalculatorViewModel extends ChangeNotifier {
     // Ajouter à l'historique dans Hive
     _historyService.saveEntry('$fullExpr = ${_formatResult(result)}');
 
-    // Mettre à jour l'état
+    // Mise a jour de l'affichage
     _updateState(_state.copyWith(
       display: result.isNaN ? 'Erreur' : _formatResult(result),
       current: '',
@@ -151,24 +156,27 @@ class CalculatorViewModel extends ChangeNotifier {
 
   /// Supprime le dernier caractère (backspace)
   void onBackspacePressed() {
+    // Si il y'a un nombre
     if (_state.current.isNotEmpty) {
-      String newCurrent = _state.current.substring(0, _state.current.length - 1);
+      String newCurrent = _state.current.substring(0, _state.current.length - 1); //On enleve le dernier chiffre
       String newDisplay;
-      if (newCurrent.isEmpty) {
+      if (newCurrent.isEmpty) { // Si vide on affiche 0
         newDisplay = _state.expression.isNotEmpty ? _state.expression : '0';
-      } else {
+      } else { // Sinon le nouveau nombre
         newDisplay = _state.expression.isNotEmpty
             ? '${_state.expression}$newCurrent'
             : newCurrent;
       }
 
+      // Mise a jour de l'affichage
       _updateState(_state.copyWith(
         current: newCurrent,
         display: newDisplay,
       ));
-    } else if (_state.expression.isNotEmpty) {
+    } else if (_state.expression.isNotEmpty) { //Si le calcul contient operateur ou point
       String newExpression =
-          _state.expression.substring(0, _state.expression.length - 1);
+          _state.expression.substring(0, _state.expression.length - 1); // On enleve le dernier caractere
+      //Mise a jour de l'affichage
       _updateState(_state.copyWith(
         expression: newExpression,
         display: newExpression.isNotEmpty ? newExpression : '0',
@@ -177,8 +185,7 @@ class CalculatorViewModel extends ChangeNotifier {
   }
 
   /// Évalue une expression arithmétique
-  /// avec respect des règles de priorité
-  /// × et ÷ avant + et -
+  /// et règles de priorité (× et ÷)
   double _evaluateExpression(String expr) {
     try {
       // Extraire tous les nombres et opérateurs

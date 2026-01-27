@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/calculator_viewmodel.dart';
-import 'calculator_display.dart';
-import 'calculator_keypad.dart';
+import '../widgets/calculator_display.dart';
+import '../widgets/calculator_keypad.dart';
 
-/// Vue principale de la calculatrice (architecture MVVM)
-/// Cette classe ne contient que l'UI et délègue toute la logique au ViewModel
+/// Vue principale (architecture MVVM)
+/// Initialisation de la calculatrice
 class CalculatorView extends StatefulWidget {
   const CalculatorView({super.key});
   static const route = '/calculator';
@@ -15,16 +15,18 @@ class CalculatorView extends StatefulWidget {
   State<CalculatorView> createState() => _CalculatorViewState();
 }
 
+///Initialisation Hive
 class _CalculatorViewState extends State<CalculatorView> {
   bool _isBoxInitialized = false;
 
+  //Initialisation Hive
   @override
   void initState() {
     super.initState();
     _initBox();
   }
 
-  /// Initialise la box Hive au démarrage
+  // Initialisation Hive
   Future<void> _initBox() async {
     await Hive.openBox<String>('calculator_history');
     if (mounted) {
@@ -36,7 +38,7 @@ class _CalculatorViewState extends State<CalculatorView> {
 
   @override
   Widget build(BuildContext context) {
-    // Afficher un loader pendant l'initialisation de la box
+    // Afficher un loader pendant l'initialisation de la box (si besoin)
     if (!_isBoxInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -50,8 +52,9 @@ class _CalculatorViewState extends State<CalculatorView> {
   }
 }
 
+/// Vue principale
 class _CalculatorContent extends StatelessWidget {
-  const _CalculatorContent({Key? key}) : super(key: key);
+  const _CalculatorContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +70,7 @@ class _CalculatorContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            // Zone d'affichage (écran de la calculatrice)
+            // Ecran de la calculatrice
             ConstrainedBox(
               constraints: const BoxConstraints(
                 minHeight: 80,
@@ -78,7 +81,7 @@ class _CalculatorContent extends StatelessWidget {
               ),
             ),
 
-            // Pavé de boutons
+            // Boutons
             Expanded(
               child: CalculatorKeypad(
                 onNumberPressed: viewModel.onNumberPressed,
