@@ -8,7 +8,6 @@ class AppFeature {
   final bool requiresInternet;
   final bool requiresAuth;
   final bool isAvailable;
-  final Color color;
   final String? description;
 
   const AppFeature({
@@ -18,7 +17,6 @@ class AppFeature {
     this.requiresInternet = false,
     this.requiresAuth = false,
     this.isAvailable = true,
-    this.color = Colors.blue,
     this.description,
   });
 

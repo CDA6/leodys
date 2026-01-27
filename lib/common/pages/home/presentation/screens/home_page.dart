@@ -1,9 +1,10 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:leodys/common/widget/connection_warning.dart';
 import 'package:leodys/common/widget/global_appbar.dart';
-import 'package:provider/provider.dart';
-import '../viewmodels/home_viewmodel.dart';
-import '../widgets/feature_list.dart';
+import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
+import 'package:leodys/common/pages/home/presentation/widgets/welcome_section.dart';
+import 'package:leodys/common/pages/home/presentation/widgets/feature_list.dart';
 
 /// Page d'accueil de l'application.
 ///
@@ -32,17 +33,17 @@ class HomePage extends StatelessWidget {
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // En-tête de bienvenue
-                    _buildWelcomeSection(viewModel),
+                    WelcomeSection(),
                     const SizedBox(height: 24),
 
                     // Avertissement si pas de connexion
                     if (!viewModel.isConnected) ...[
-                      ConnectionWarning('Pas de connexion Internet. Certaines fonctionnalités sont limitées.'),
+                      ConnectionWarning(message: 'Pas de connexion Internet. Certaines fonctionnalités sont limitées.'),
                       const SizedBox(height: 16),
                     ],
 
@@ -54,43 +55,6 @@ class HomePage extends StatelessWidget {
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildWelcomeSection(HomeViewModel viewModel) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue.shade400, Colors.blue.shade600],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Bienvenue',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            viewModel.isAuthenticated
-                ? 'Toutes vos fonctionnalités à portée de main !'
-                : 'Connectez-vous pour accéder à toutes les fonctionnalités',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.white70,
-            ),
-          ),
-        ],
       ),
     );
   }
