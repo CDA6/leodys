@@ -6,6 +6,8 @@ import 'package:leodys/common/theme/app_themes.dart';
 import 'package:leodys/common/theme/theme_provider.dart';
 import 'package:leodys/features/accessibility/domain/entities/settings.dart';
 
+import '../../../../common/utils/app_logger.dart';
+
 class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
   final UseCaseMixin<Settings, NoParams> getSettingsUseCase;
   final UseCaseMixin<void, Settings> updateSettingsUseCase;
@@ -16,6 +18,7 @@ class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
   Settings _settings = const Settings();
   bool _isLoading = false;
   String? _errorMessage;
+  static bool isAvailable = true;
 
   Settings get settings => _settings;
   bool get isLoading => _isLoading;
@@ -45,14 +48,20 @@ class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
     _errorMessage = null;
     notifyListeners();
 
-    final result = await getSettingsUseCase(NoParams());
-    result.fold(
-          (failure) {
-        _errorMessage = failure.message;
-        _settings = const Settings();
-      },
-          (settings) => _settings = settings,
-    );
+    try {
+      final result = await getSettingsUseCase(NoParams());
+      result.fold(
+            (failure) {
+          _errorMessage = failure.message;
+          _settings = const Settings();
+        },
+            (settings) => _settings = settings,
+      );
+    } catch (e) {
+      AppLogger().error('❌ Erreur lors du chargement des paramètres: $e');
+      _errorMessage = 'Erreur lors du chargement des paramètres: $e';
+      _settings = const Settings();
+    }
 
     _isLoading = false;
     notifyListeners();
@@ -108,10 +117,15 @@ class SettingsViewModel extends ChangeNotifier implements ThemeProvider {
   ThemeData getTheme() => getThemeData();
 
   ThemeData getThemeData() {
-    final baseTheme = _getBaseTheme();
-    return baseTheme.copyWith(
-      textTheme: _applyTextSettings(baseTheme.textTheme),
-    );
+    try {
+      final baseTheme = _getBaseTheme();
+      return baseTheme.copyWith(
+        textTheme: _applyTextSettings(baseTheme.textTheme),
+      );
+    } catch (e) {
+      AppLogger().error('❌ Erreur lors de la génération du thème: $e');
+      return AppThemes.lightTheme;
+    }
   }
 
   ThemeData _getBaseTheme() {
