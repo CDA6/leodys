@@ -59,6 +59,8 @@ import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart'
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 
+import 'features/calculator/presentation/views/calculator_view.dart';
+
 /// Global navigator key pour accéder au context depuis les services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

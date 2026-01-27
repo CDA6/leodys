@@ -12,6 +12,7 @@ import '../../../../../features/ocr-reader/presentation/screens/printed_text_rea
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
+import 'package:leodys/features/calculator/presentation/views/calculator_view.dart';
 
 import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
 import 'package:leodys/common/pages/home/domain/entities/app_feature.dart';
@@ -115,6 +116,17 @@ class FeatureList extends StatelessWidget {
       requiresAuth: true,
       isAvailable: true,
       description: 'Scan de cartes de fidélité.',
+    ),
+
+    AppFeature(
+      name: 'Calculette',
+      icon: Icons.calculate,
+      route: CalculatorView.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Calculette pour dyscalculique.',
     ),
 
     AppFeature(
