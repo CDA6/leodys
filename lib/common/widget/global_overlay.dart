@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/app_theme_manager.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
+
+import 'package:leodys/features/accessibility/accessibility_injection.dart' as accessibility;
 
 import '../../features/accessibility/presentation/screens/settings_screen.dart';
 import '../../main.dart';
@@ -95,10 +99,52 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
                       bgColor: context.colorScheme.primaryContainer,
                       onTap: () {
                         _closeMenu();
-                        navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                          SettingsScreen.route,
-                              (route) => false,
-                        );
+
+                        if (SettingsViewModel.isAvailable) {
+                          navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                            SettingsScreen.route,
+                                (route) => false,
+                          );
+                        } else {
+                          showDialog(
+                            context: navigatorKey.currentContext!,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Erreur de chargement"),
+                                content: const Text("Les préférences n'ont pas pu être chargées correctement. Souhaitez-vous réessayer ?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text("Non"),
+                                    onPressed: () => Navigator.of(context).pop(),
+                                  ),
+                                  TextButton(
+                                    child: const Text("Réessayer"),
+                                    onPressed: () async {
+                                      Navigator.of(context).pop();
+                                      try {
+                                        await accessibility.init(AppThemeManager());
+                                        if (SettingsViewModel.isAvailable) {
+                                          navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                                            SettingsScreen.route,
+                                                (route) => false,
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Center(child: Text("La réinitialisation a échoué."))),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Center(child: Text("La réinitialisation a échoué."))),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
                       },
                     ),
                     const SizedBox(height: 8),
@@ -119,7 +165,7 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
 
         // Le bouton flottant principal
         Positioned(
-          right: 16,
+          left: 16,
           bottom: 16,
           child: FloatingActionButton(
             onPressed: _toggleMenu,

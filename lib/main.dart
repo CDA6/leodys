@@ -135,11 +135,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
-         ChangeNotifierProvider(
+
+        ChangeNotifierProvider(
           create: (_) {
-            final viewModel = accessibility.sl<SettingsViewModel>();
-            Future.microtask(() => viewModel.init());
-            return viewModel;
+            if (SettingsViewModel.isAvailable) {
+              final viewModel = accessibility.sl<SettingsViewModel>();
+              Future.microtask(() => viewModel.init());
+              return viewModel;
+            } else {
+              throw Exception("SettingsViewModel non disponible");
+            }
           },
         ),
 
