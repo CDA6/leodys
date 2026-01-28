@@ -1,3 +1,4 @@
+import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
@@ -40,43 +41,80 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Navigation Piéton")),
-      body: StreamBuilder<GeoPosition>(
-        initialData: widget.viewModel.currentPosition,
-        stream: widget.viewModel.positionStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return MapWidget(position: snapshot.data!);
-          }
+    return Scaffold(appBar: _buildAppbar(), body: _buildMap());
+  }
 
-          if (snapshot.hasError) {
-            final error = snapshot.error.toString();
-
-            //PostFrameCallback to display Popup without breaking the build
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                showGpsDialog(context, error);
-              }
-            });
-
-            return const Center(
-              child: Icon(Icons.location_off, size: 80, color: Colors.grey),
+  AppBar _buildAppbar() {
+    return AppBar(
+      title: const Text("Navigation Piéton"),
+      actions: [
+        SearchAnchor(
+          builder: (context, controller) {
+            return IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                AppLogger().info("Opening search location");
+                controller.openView();
+              },
             );
-          }
+          },
+
+          suggestionsBuilder: (context, controller) async {
+            final results = await widget.viewModel.onSearch(controller.text);
+            return results.map(
+              (res) => ListTile(
+                leading: const Icon(Icons.location_on, color: Colors.blue),
+                title: Text(res.name),
+                onTap: () {
+                  AppLogger().info(
+                    "Closing search location, result choice : ${res.position.toString()}",
+                  );
+                  controller.closeView(res.name);
+                  widget.viewModel.moveToLocation(res);
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  StreamBuilder _buildMap() {
+    return StreamBuilder<GeoPosition>(
+      initialData: widget.viewModel.currentPosition,
+      stream: widget.viewModel.positionStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return MapWidget(position: snapshot.data!);
+        }
+
+        if (snapshot.hasError) {
+          final error = snapshot.error.toString();
+
+          //PostFrameCallback to display Popup without breaking the build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              showGpsDialog(context, error);
+            }
+          });
 
           return const Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text("Recherche de position..."),
-              ],
-            ),
+            child: Icon(Icons.location_off, size: 80, color: Colors.grey),
           );
-        },
-      ),
+        }
+
+        return const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Recherche de position..."),
+            ],
+          ),
+        );
+      },
     );
   }
 }

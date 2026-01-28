@@ -1,10 +1,17 @@
 import 'dart:async';
 
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/domain/entities/location_search_result.dart';
+import 'package:leodys/features/map/domain/useCases/search_location_usecase.dart';
 import 'package:leodys/features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'package:leodys/common/utils/app_logger.dart';
 
 class MapViewModel {
+  final SearchLocationUseCase searchAddress;
+
+  // <editor-fold desc="Attributes">
+
+  // <editor-fold desc="GeoLocator">
   final WatchUserLocationUseCase watchUserLocation;
 
   GeoPosition? _lastKnownPosition;
@@ -16,9 +23,17 @@ class MapViewModel {
       StreamController<GeoPosition>.broadcast();
 
   Stream<GeoPosition> get positionStream => _positionController.stream;
+  // </editor-fold>
 
-  MapViewModel(this.watchUserLocation);
+  // <editor-fold desc="Location research">
+  List<LocationSearchResult> _searchResults = [];
+  List<LocationSearchResult> get searchResults => _searchResults;
+  // </editor-fold>
+  // </editor-fold>
 
+  MapViewModel(this.watchUserLocation, this.searchAddress);
+
+  // <editor-fold desc="Lifecycle">
   void handleLeaving() {
     AppLogger().info("Leaving map page, stop GPS listener");
     stopGpsStreamListener();
@@ -35,7 +50,9 @@ class MapViewModel {
     );
     _positionController.close();
   }
+  // </editor-fold>
 
+  // <editor-fold desc="GeoLocator">
   void stopGpsStreamListener() {
     _locationSubscription?.cancel();
     _locationSubscription = null;
@@ -47,5 +64,18 @@ class MapViewModel {
       _lastKnownPosition = pos;
       _positionController.add(pos); // Transmission to the widget
     }, onError: (error) => _positionController.addError(error));
+  }
+  // </editor-fold>
+
+  // <editor-fold desc="Location research">
+  Future<List<LocationSearchResult>> onSearch(String query) async {
+    if (query.isEmpty) return [];
+    _searchResults = await searchAddress(query);
+    return _searchResults;
+  }
+  // </editor-fold>
+
+  void moveToLocation(LocationSearchResult destination) {
+    _positionController.add(destination.position);
   }
 }
