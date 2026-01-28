@@ -33,11 +33,19 @@ class MapViewModel {
   // <editor-fold desc="Location research">
   List<LocationSearchResult> _searchResults = [];
   List<LocationSearchResult> get searchResults => _searchResults;
+
+  Timer? _searchWaitingTimer;
+
+  LocationSearchResult? _selectedDestination;
+  LocationSearchResult? get selectedDestination => _selectedDestination;
+
+  static const double searchRadiusInKm = 5;
   // </editor-fold>
   // </editor-fold>
 
   MapViewModel(this.watchUserLocation, this.searchAddress);
 
+  // <editor-fold desc="Methods">
   // <editor-fold desc="Lifecycle">
   void handleLeaving() {
     AppLogger().info("Leaving map page, stop GPS listener");
@@ -74,14 +82,36 @@ class MapViewModel {
 
   // <editor-fold desc="Location research">
   Future<List<LocationSearchResult>> onSearch(String query) async {
-    if (query.isEmpty) return [];
-    _searchResults = await searchAddress(query);
-    return _searchResults;
+    if (query.isEmpty) {
+      return [];
+    }
+
+    _searchWaitingTimer?.cancel();
+    final completer = Completer<List<LocationSearchResult>>();
+
+    _searchWaitingTimer = Timer(const Duration(milliseconds: 500), () async {
+      try {
+        _searchResults = await searchAddress(
+          query,
+          _lastKnownPosition!,
+          searchRadiusInKm,
+        );
+        completer.complete(_searchResults);
+      } catch (e) {
+        AppLogger().error(
+          "An error occurred while retrieving location data: $e",
+        );
+        completer.complete([]);
+      }
+    });
+
+    return completer.future;
   }
   // </editor-fold>
 
   void moveToLocation(LocationSearchResult destination) {
     disableAutoFollowing();
+    _selectedDestination = destination;
     _positionController.add(destination.position);
   }
 
@@ -95,4 +125,6 @@ class MapViewModel {
   void disableAutoFollowing() {
     _isAutoFollowingUser = false;
   }
+
+  // </editor-fold>
 }
