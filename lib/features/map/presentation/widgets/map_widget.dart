@@ -6,11 +6,23 @@ import 'package:leodys/features/map/domain/entities/geo_position.dart';
 
 class MapWidget extends StatefulWidget {
   final GeoPosition position;
+  final GeoPosition? destination;
+  final bool isAutoFollowing;
+  final VoidCallback onRecenter;
+  final VoidCallback onMapDragged;
+
   final double _initZoom = 18.0;
   final double _minZoom = 1.0;
   final double _maxZoom = 20.0;
 
-  const MapWidget({super.key, required this.position});
+  const MapWidget({
+    super.key,
+    required this.position,
+    this.destination,
+    required this.isAutoFollowing,
+    required this.onRecenter,
+    required this.onMapDragged,
+  });
 
   @override
   State<MapWidget> createState() => _MapWidgetState();
@@ -24,12 +36,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void didUpdateWidget(MapWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.position != widget.position) {
-      _animatedMapMove(
-        LatLng(widget.position.latitude, widget.position.longitude),
-        _mapController.camera.zoom,
-      );
+    if (!widget.isAutoFollowing) {
+      return;
     }
+    // if (oldWidget.position == widget.position) {
+    //   return;
+    // }
+
+    _animatedMapMove(
+      LatLng(widget.position.latitude, widget.position.longitude),
+      _mapController.camera.zoom,
+    );
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
@@ -65,56 +82,85 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: LatLng(
-          widget.position.latitude,
-          widget.position.longitude,
-        ),
-        initialZoom: widget._initZoom,
-        minZoom: widget._minZoom,
-        maxZoom: widget._maxZoom,
-      ),
+    return Stack(
       children: [
-        //Background map
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          minZoom: widget._minZoom,
-          maxZoom: widget._maxZoom,
-        ),
+        FlutterMap(
+          mapController: _mapController,
+          options: MapOptions(
+            initialCenter: LatLng(
+              widget.position.latitude,
+              widget.position.longitude,
+            ),
+            initialZoom: widget._initZoom,
+            minZoom: widget._minZoom,
+            maxZoom: widget._maxZoom,
+            onPositionChanged: (position, hasGesture) {
+              if (hasGesture) widget.onMapDragged();
+            },
+          ),
+          children: [
+            //Background map
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              minZoom: widget._minZoom,
+              maxZoom: widget._maxZoom,
+            ),
 
-        //Trajectory dot
-        // PolylineLayer(
-        //   polylines: [
-        //     Polyline(points: [], color: Colors.blue, strokeWidth: 4.0),
-        //   ],
-        // ),
-
-        //Fixed points
-        MarkerLayer(
-          markers: [
-            // Marker(
-            //   point: LatLng(
-            //     widget.position.latitude,
-            //     widget.position.longitude,
-            //   ),
-            //   child: const Icon(Icons.my_location, color: Colors.blue),
+            //Trajectory dot
+            // PolylineLayer(
+            //   polylines: [
+            //     Polyline(points: [], color: Colors.blue, strokeWidth: 4.0),
+            //   ],
             // ),
+
+            //Fixed points
+            MarkerLayer(
+              markers: [
+                if (widget.destination != null)
+                  Marker(
+                    point: LatLng(
+                      widget.destination!.latitude,
+                      widget.destination!.longitude,
+                    ),
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 40,
+                    ),
+                  ),
+              ],
+            ),
+
+            //User location
+            CurrentLocationLayer(
+              alignPositionOnUpdate: AlignOnUpdate.never,
+              alignDirectionOnUpdate: AlignOnUpdate.never,
+              style: LocationMarkerStyle(
+                marker: DefaultLocationMarker(color: Colors.blue),
+                markerSize: const Size.square(20),
+                accuracyCircleColor: const Color(0x182196F3),
+                showHeadingSector: true,
+                headingSectorRadius: 60,
+                headingSectorColor: const Color(0xCC2196F3),
+              ),
+            ),
           ],
         ),
 
-        //User location
-        CurrentLocationLayer(
-          alignPositionOnUpdate: AlignOnUpdate.never,
-          alignDirectionOnUpdate: AlignOnUpdate.never,
-          style: LocationMarkerStyle(
-            marker: DefaultLocationMarker(color: Colors.blue),
-            markerSize: const Size.square(20),
-            accuracyCircleColor: const Color(0x182196F3),
-            showHeadingSector: true,
-            headingSectorRadius: 60,
-            headingSectorColor: const Color(0xCC2196F3),
+        Positioned(
+          bottom: 16,
+          right: 72,
+          child: FloatingActionButton(
+            onPressed: widget.onRecenter,
+            backgroundColor: widget.isAutoFollowing
+                ? Colors.blue
+                : Colors.white,
+            child: Icon(
+              widget.isAutoFollowing ? Icons.gps_fixed : Icons.gps_not_fixed,
+              color: widget.isAutoFollowing ? Colors.white : Colors.blue,
+            ),
           ),
         ),
       ],

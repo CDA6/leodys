@@ -86,7 +86,25 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       stream: widget.viewModel.positionStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return MapWidget(position: snapshot.data!);
+          return MapWidget(
+            position: snapshot.data!,
+            destination: widget.viewModel.searchResults.isNotEmpty
+                ? widget.viewModel.searchResults.first.position
+                : null,
+            isAutoFollowing: widget.viewModel.isFollowingUser,
+            onRecenter: () {
+              setState(() {
+                widget.viewModel.resumeAutoFollowing();
+              });
+            },
+            onMapDragged: () {
+              if (widget.viewModel.isFollowingUser) {
+                setState(() {
+                  widget.viewModel.disableAutoFollowing();
+                });
+              }
+            },
+          );
         }
 
         if (snapshot.hasError) {
