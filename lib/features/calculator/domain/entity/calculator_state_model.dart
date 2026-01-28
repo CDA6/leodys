@@ -1,0 +1,45 @@
+/// Modèle représentant l'état complet de la calculatrice
+class CalculatorState {
+  // Texte affiché à l'écran
+  final String display;
+
+  // Nombre en cours de saisie
+  final String current;
+
+  // Expression en cours de construction
+  final String expression;
+
+  // État d'erreur
+  final bool hasError;
+
+  // Indique si on vient de calculer un résultat
+  final bool justCalculated;
+
+  const CalculatorState({
+    this.display = '0',
+    this.current = '',
+    this.expression = '',
+    this.hasError = false,
+    this.justCalculated = false,
+  });
+
+  // Crée une copie de l'état avec des modifications
+  CalculatorState copyWith({
+    String? display,
+    String? current,
+    String? expression,
+    bool? hasError,
+    bool? justCalculated,
+  }) {
+    return CalculatorState(
+      display: display ?? this.display,
+      current: current ?? this.current,
+      expression: expression ?? this.expression,
+      hasError: hasError ?? this.hasError,
+      justCalculated: justCalculated ?? this.justCalculated,
+    );
+  }
+
+  /// État initial de la calculatrice
+  static const initial = CalculatorState();
+}

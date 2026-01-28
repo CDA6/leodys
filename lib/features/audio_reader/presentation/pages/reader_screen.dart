@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../domain/models/reader_config.dart';
-import '../../domain/models/reading_progress.dart';
 import '../../injection.dart';
 import '../controllers/reader_controller.dart';
-import '../controllers/reading_progess_controller.dart';
 import '../widgets/audio_controls.dart';
 import '../widgets/scan_button.dart';
 import '../widgets/text_preview.dart';
@@ -13,7 +10,7 @@ import '../widgets/text_preview.dart';
 /// Classe UI qui représente l'écran qui permet de réaliser le scan du
 /// document et la lecture de ce dernier
 /// Elle prend en charge également l'initiation des contrôleurs, la synchronistion
-/// entre la loqigue métier et l'interface.
+/// entre la loqigue métier et l'interfaces.
 class ReaderScreen extends StatefulWidget {
   const ReaderScreen({super.key});
 
@@ -26,14 +23,8 @@ class ReaderScreen extends StatefulWidget {
 class _ReaderScreenState extends State<ReaderScreen> {
   /// initiation des contrôleurs
   late final ReaderController readerController;
-  late final ReadingProgressController readingProgressController;
-
   ///Configuration de lecture avec des parametres par défaut
   final ReaderConfig defaultConfig = ReaderConfig.defaultConfig;
-
-  /// Index des pages et des blocs de textes
-  int currentPageIndex = 0;
-  int currentBlocIndex = 0;
 
   /// Méthode de gestion de vie de l'écran
   /// Initialisation des controleurs
@@ -41,14 +32,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void initState() {
     super.initState();
     readerController = createReaderController();
-    readingProgressController = createReadingProgressController();
   }
 
   /// Nettoyage et libération des ressources
   @override
   void dispose() {
     readerController.dispose();
-    readingProgressController.dispose();
     super.dispose();
   }
 
@@ -56,10 +45,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       // Écoute des ChangeNotifier utilisés par l’écran
-      animation: Listenable.merge([
-        readerController,
-        readingProgressController,
-      ]),
+      animation: readerController,
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
@@ -98,6 +84,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     Navigator.pushNamed(context, '/documents');
                   },
                 ),
+                ListTile(
+                  leading: const Icon(Icons.exit_to_app),
+                  title: const Text('Accueil'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/');
+                  },
+                ),
               ],
             ),
           ),
@@ -126,20 +120,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     },
                     onPause: () {
                       readerController.pause();
-                      readingProgressController.saveProgress(
-                        ReadingProgress(
-                          pageIndex: currentPageIndex,
-                          blocIndex: currentBlocIndex,
-                        ),
-                      );
-                    },
-                    onResume: () {
-                      readingProgressController.loadProgress();
-                      readerController.resume(defaultConfig);
                     },
                     onStop: () {
                       readerController.stop();
-                      readingProgressController.resetProgress();
                     },
                   ),
                 ],

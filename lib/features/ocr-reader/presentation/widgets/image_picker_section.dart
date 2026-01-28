@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class ImagePickerSection extends StatelessWidget {
   final File? selectedImage;
@@ -20,25 +21,25 @@ class ImagePickerSection extends StatelessWidget {
     return Column(
       children: [
         if (selectedImage == null) ...[
-          _buildEmptyState(),
+          _buildEmptyState(context),
           const SizedBox(height: 24),
         ] else ...[
           _buildImagePreview(),
           const SizedBox(height: 16),
         ],
-        _buildActionButtons(),
+        _buildActionButtons(context),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: context.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey.shade300,
+          color: context.colorScheme.outline,
           style: BorderStyle.solid,
           width: 2,
         ),
@@ -50,7 +51,7 @@ class ImagePickerSection extends StatelessWidget {
             Icon(
               Icons.image_outlined,
               size: 64,
-              color: Colors.grey.shade400,
+              color: Colors.grey.shade600,
             ),
             const SizedBox(height: 12),
             Text(
@@ -91,33 +92,33 @@ class ImagePickerSection extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Row(
+  Widget _buildActionButtons(BuildContext context) {
+    return Column(
       children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: isProcessing ? null : onCameraPressed,
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Appareil photo'),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+        ElevatedButton.icon(
+          onPressed: isProcessing ? null : onCameraPressed,
+          icon: Icon(Icons.camera_alt, color: context.colorScheme.onPrimaryContainer),
+          label: Text('Appareil photo', style: TextStyle(fontSize: context.baseFontSize, color: context.colorScheme.onPrimaryContainer)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.colorScheme.primaryContainer,
+            minimumSize: const Size(double.infinity, 52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: isProcessing ? null : onGalleryPressed,
-            icon: const Icon(Icons.image),
-            label: const Text('Galerie'),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+
+        const SizedBox(height: 24),
+
+        ElevatedButton.icon(
+          onPressed: isProcessing ? null : onGalleryPressed,
+          icon: Icon(Icons.image, color: context.colorScheme.onPrimaryContainer),
+          label: Text('Galerie', style: TextStyle(fontSize: context.baseFontSize, color: context.colorScheme.onPrimaryContainer)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.colorScheme.primaryContainer,
+            minimumSize: const Size(double.infinity, 52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
