@@ -61,6 +61,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                     ReaderConfig.defaultConfig,
                   );
                 },
+                onPause: (){
+                  readerController.pause();
+                },
+                onStop: (){readerController.stop();
+                  },
                 onDelete: () {
                   documentController
                       .deleteDocument(document.idText);
