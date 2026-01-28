@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:image/image.dart' as img; // Nécessite package:image dans pubspec.yaml
+import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 // Imports relatifs vers votre dossier common
-import '../../../common/ai/interfaces/ai_repository.dart';
-import '../../../common/ai/utils/yolo_post_processor.dart';
-import '../../../common/ai/entities/detection_result.dart';
+import '../../../../common/ai/interfaces/ai_repository.dart';
+import '../../../../common/ai/utils/yolo_post_processor.dart';
+import '../../../../common/ai/entities/detection_result.dart';
 
-class CardModelService implements AIRepository {
+class CardModelDatasource implements AIRepository {
   Interpreter? _interpreter;
 
   // --- CONFIGURATION ---
