@@ -4,7 +4,6 @@ import 'package:leodys/features/ocr-ticket-caisse/domain/entities/receipt.dart';
 class ReceiptParser {
   Receipt parse(Map<String, dynamic> json) {
     final text = json["document"]["text"] as String? ?? "";
-    debugPrint(text);
     return fromText(text);
   }
 
@@ -38,14 +37,11 @@ class ReceiptParser {
       total = double.tryParse(totalLine.replaceAll(',', '.')) ?? 0.0;
     }
 
-    final receipt = Receipt(
+    return Receipt(
       shopName: shop,
       date: date,
       items: items,
       total: total,
     );
-
-    debugPrint(receipt.toString());
-    return receipt;
   }
 }
