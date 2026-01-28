@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'data/datasources/notification_local_datasource.dart';
 import 'data/datasources/notification_remote_datasource.dart';
 import 'data/datasources/email_sender_datasource.dart';
@@ -39,4 +40,5 @@ Future<void> init() async {
   sl.registerLazySingleton<NotificationRemoteDataSource>(
         () => NotificationRemoteDataSourceImpl(),
   );
+
 }

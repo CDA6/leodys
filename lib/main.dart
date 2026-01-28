@@ -6,6 +6,7 @@ import 'package:leodys/common/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,9 @@ import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/left_right/presentation/real_time_yolo_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
+import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
+import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
@@ -45,10 +49,8 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  await Hive.initFlutter();
-
-  // 1. Initialisation des services de base
-  // await DatabaseService.init();
+  // Initialisation des services de base
+  await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
   await InternetUtil.init();
 
   await Supabase.initialize(
@@ -58,21 +60,22 @@ void main() async {
 
   // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
   final client = Supabase.instance.client;
-  await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
+  await client.auth.signInWithPassword(
+    email: 'coleen@test.com',
+    password: 'leodys123',
+  );
 
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
   await cards.init();
   await pose_detection.init();
-
-  runApp(
-      MyApp()
-  );
+  await voice_clock.init();
+  
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   @override
@@ -89,14 +92,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
+
       ],
+
       child: MaterialApp(
         navigatorKey: navigatorKey,
         title: 'Leodys',
         debugShowCheckedModeBanner: false,
         initialRoute: HomePage.route,
         routes: {
-          HomePage.route: (context) => const HomePage(),
+          HomePage.route: (context) => 
+            const HomePage(),
+          
           MapScreen.route: (context) {
             final dataSource = GeolocatorDatasource();
             final repository = LocationRepositoryImpl(dataSource);
@@ -105,18 +112,40 @@ class MyApp extends StatelessWidget {
 
             return MapScreen(viewModel: viewModel);
           },
-          RealTimeYoloScreen.route: (context) => const RealTimeYoloScreen(),
+            
+          RealTimeYoloScreen.route: (context) => 
+            const RealTimeYoloScreen(),
+          
+          PrintedTextReaderScreen.route: (context) =>
+              const PrintedTextReaderScreen(),
+          
+          HandwrittenTextReaderScreen.route: (context) =>
+              const HandwrittenTextReaderScreen(),
 
-          PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
-          HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
-          NotificationDashboard.route: (context) =>
-          const NotificationDashboard(),
-          VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
+          NotificationDashboard.route: (context) => ChangeNotifierProvider(
+            create: (_) => messagerie.sl<NotificationController>(),
+            child: const NotificationDashboard(),
+          ),
+
+          VocalNotesListScreen.route: (context) => 
+            const VocalNotesListScreen(),
+          
           VocalNoteEditorScreen.route: (context) =>
-          const VocalNoteEditorScreen(),
-          ReaderScreen.route: (context) => const ReaderScreen(),
-          DocumentsScreen.route: (context) => const DocumentsScreen(),
-          DisplayCardsScreen.route: (context) => const DisplayCardsScreen()
+              const VocalNoteEditorScreen(),
+
+          VoiceClockScreen.route: (context) => ChangeNotifierProvider(
+            create: (_) => voice_clock.sl<VoiceClockViewModel>(),
+            child: const VoiceClockScreen(),
+          ),
+
+          ReaderScreen.route: (context) => 
+            const ReaderScreen(),
+          
+          DocumentsScreen.route: (context) => 
+            const DocumentsScreen(),
+          
+          DisplayCardsScreen.route: (context) => 
+            const DisplayCardsScreen(),
         },
       ),
     );

@@ -14,7 +14,7 @@ class HistoryDetailDialog extends StatelessWidget {
       title: Row(
         children: [
           Expanded(child: Text(message.subject)),
-          TtsReaderWidget(text: message.body), // Réutilisation du widget common
+          TtsReaderWidget(text: message.body, size: 32),
         ],
       ),
       content: SingleChildScrollView(
