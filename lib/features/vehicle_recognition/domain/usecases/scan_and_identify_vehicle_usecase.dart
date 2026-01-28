@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:leodys/features/vehicle_recognition/domain/models/plate_scan.dart';
 import 'package:leodys/features/vehicle_recognition/domain/repositories/plate_history_repository.dart';
 import 'package:leodys/features/vehicle_recognition/domain/repositories/vehicle_repository.dart';
