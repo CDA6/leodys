@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:image/image.dart' as img; // Nécessite package:image dans pubspec.yaml
+import 'package:image/image.dart' as img; // Nécessite package:image
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-// Imports relatifs vers votre dossier common
 import '../../../common/ai/interfaces/ai_repository.dart';
 import '../../../common/ai/utils/yolo_post_processor.dart';
 import '../../../common/ai/entities/detection_result.dart';
@@ -15,7 +14,7 @@ class CardModelService implements AIRepository {
   static const String _modelPath = 'assets/models/best_float32.tflite';
   static const int _inputSize = 640;
 
-  // Liste exacte issue de votre data.yaml
+  // Votre liste de labels (identique à avant)
   static const List<String> _labels = [
     '10C', '10D', '10H', '10S', '2C', '2D', '2H', '2S',
     '3C', '3D', '3H', '3S', '4C', '4D', '4H', '4S',
@@ -30,10 +29,8 @@ class CardModelService implements AIRepository {
   Future<void> loadModel() async {
     try {
       final options = InterpreterOptions();
-      // options.addDelegate(GpuDelegateV2()); // Décommentez pour tester sur GPU
-
       _interpreter = await Interpreter.fromAsset(_modelPath, options: options);
-      print("✅ Modèle Cartes chargé avec succès.");
+      print("✅ Modèle Cartes chargé (Mode Letterbox activé).");
     } catch (e) {
       print("❌ Erreur chargement modèle Cartes: $e");
     }
@@ -42,23 +39,38 @@ class CardModelService implements AIRepository {
   @override
   Future<List<DetectionResult>> predict(dynamic input) async {
     if (_interpreter == null) throw Exception("Modèle non chargé");
-    if (input is! File) throw Exception("CardModelService attend un fichier (File) en entrée");
+    if (input is! File) throw Exception("CardModelService attend un fichier (File)");
 
-    // 1. Lecture et décodage
+    // 1. Lecture
     final bytes = await input.readAsBytes();
     final img.Image? originalImage = img.decodeImage(bytes);
     if (originalImage == null) return [];
 
-    // 2. Redimensionnement (Resize) vers 640x640
-    final img.Image resizedImage = img.copyResize(
+    // 2. LETTERBOXING
+    // On crée une image carrée remplie de gris moyen (114, 114, 114) comme YOLO aime
+    final img.Image inputImage = img.Image(width: _inputSize, height: _inputSize);
+    img.fill(inputImage, color: img.ColorRgb8(114, 114, 114));
+
+    // Calcul du ratio pour garder les proportions
+    double ratio = _inputSize / (originalImage.width > originalImage.height ? originalImage.width : originalImage.height);
+    int newWidth = (originalImage.width * ratio).round();
+    int newHeight = (originalImage.height * ratio).round();
+
+    // On redimensionne l'original proprement
+    final img.Image scaledImage = img.copyResize(
         originalImage,
-        width: _inputSize,
-        height: _inputSize,
+        width: newWidth,
+        height: newHeight,
         interpolation: img.Interpolation.linear
     );
 
-    // 3. Conversion Tensor
-    final inputTensor = _imageToFloat32List(resizedImage);
+    // On colle l'image redimensionnée au centre du carré gris
+    int dstX = (_inputSize - newWidth) ~/ 2;
+    int dstY = (_inputSize - newHeight) ~/ 2;
+    img.compositeImage(inputImage, scaledImage, dstX: dstX, dstY: dstY);
+
+    // 3. Conversion en Tensor
+    final inputTensor = _imageToFloat32List(inputImage);
 
     // 4. Inférence
     final outputShape = _interpreter!.getOutputTensor(0).shape;
@@ -66,6 +78,9 @@ class CardModelService implements AIRepository {
     _interpreter!.run(inputTensor, outputBuffer);
 
     // 5. Post-Processing
+    // Note : Les coordonnées reçues incluent les bandes grises.
+    // Idéalement, on devrait les "un-scale" ici, mais pour l'affichage simple, ça suffit souvent.
+    // Si les cadres sont légèrement décalés sur l'écran, c'est à cause de ça.
     return YoloPostProcessor.process(outputBuffer, _labels);
   }
 
