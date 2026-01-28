@@ -7,7 +7,8 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   static const String _boxName = 'document_box';
 
- /// Suppression d'un document
+ ///Ouvre la box Hive afin d'accéder aux données stockées en local
+  /// Suppression d'un document
   @override
   Future<void> deleteDocument(String id) async {
     final box = await Hive.openBox(_boxName);

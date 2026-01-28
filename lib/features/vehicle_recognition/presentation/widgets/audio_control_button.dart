@@ -1,14 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AudioControls extends StatelessWidget {
+class AudioControlButton extends StatelessWidget {
   final VoidCallback onPlay;
-  final VoidCallback onPause;
   final VoidCallback onStop;
 
-  const AudioControls({
+  const AudioControlButton({
     super.key,
     required this.onPlay,
-    required this.onPause,
     required this.onStop,
   });
 
@@ -27,18 +26,11 @@ class AudioControls extends StatelessWidget {
         const SizedBox(height: 16,),
 
         ElevatedButton.icon(
-            onPressed: onPause,
-            icon: Icon(Icons.pause),
-            label: Text('Pause'),
-        ),
-
-        const SizedBox(height: 16,),
-
-        ElevatedButton.icon(
             onPressed: onStop,
             icon: Icon(Icons.stop),
             label: Text('Arrêter'),
         ),
+
       ],
     );
   }
