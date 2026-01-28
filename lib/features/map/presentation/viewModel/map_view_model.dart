@@ -11,11 +11,16 @@ class MapViewModel {
 
   // <editor-fold desc="Attributes">
 
-  // <editor-fold desc="GeoLocator">
-  final WatchUserLocationUseCase watchUserLocation;
-
+  // <editor-fold desc="General values">
   GeoPosition? _lastKnownPosition;
   GeoPosition? get currentPosition => _lastKnownPosition;
+
+  bool _isAutoFollowingUser = true;
+  bool get isFollowingUser => _isAutoFollowingUser;
+  // </editor-fold>
+
+  // <editor-fold desc="GeoLocator">
+  final WatchUserLocationUseCase watchUserLocation;
 
   StreamSubscription<GeoPosition>? _locationSubscription;
 
@@ -76,6 +81,18 @@ class MapViewModel {
   // </editor-fold>
 
   void moveToLocation(LocationSearchResult destination) {
+    disableAutoFollowing();
     _positionController.add(destination.position);
+  }
+
+  void resumeAutoFollowing() {
+    _isAutoFollowingUser = true;
+    if (_lastKnownPosition != null) {
+      _positionController.add(_lastKnownPosition!);
+    }
+  }
+
+  void disableAutoFollowing() {
+    _isAutoFollowingUser = false;
   }
 }
