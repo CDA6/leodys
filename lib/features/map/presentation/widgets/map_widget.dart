@@ -146,7 +146,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
         Positioned(
           bottom: 16,
-          right: 72,
+          right: 88,
           child: FloatingActionButton(
             onPressed: widget.onRecenter,
             backgroundColor: widget.isAutoFollowing

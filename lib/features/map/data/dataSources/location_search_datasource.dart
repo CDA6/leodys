@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:leodys/features/map/data/models/geo_position_model.dart';
 import 'package:leodys/features/map/data/models/location_box_model.dart';
 import 'package:leodys/features/map/data/models/location_search_result_model.dart';
-import 'package:leodys/features/map/domain/entities/geo_position.dart';
 
 class LocationSearchDatasource {
   Future<List<LocationSearchResultModel>> searchAddressAround(
