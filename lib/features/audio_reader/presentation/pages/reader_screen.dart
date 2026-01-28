@@ -121,6 +121,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     onPause: () {
                       readerController.pause();
                     },
+                    onStop: () {
+                      readerController.stop();
+                    },
                   ),
                 ],
               ),
