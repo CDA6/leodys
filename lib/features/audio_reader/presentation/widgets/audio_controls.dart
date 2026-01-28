@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class AudioControls extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onPause;
+  final VoidCallback onStop;
 
   const AudioControls({
     super.key,
     required this.onPlay,
     required this.onPause,
+    required this.onStop,
   });
 
   @override
@@ -30,6 +32,13 @@ class AudioControls extends StatelessWidget {
             label: Text('Pause'),
         ),
 
+        const SizedBox(height: 16,),
+
+        ElevatedButton.icon(
+            onPressed: onStop,
+            icon: Icon(Icons.stop),
+            label: Text('Arrêter'),
+        ),
       ],
     );
   }
