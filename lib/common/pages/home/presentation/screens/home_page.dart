@@ -49,6 +49,7 @@ class HomePage extends StatelessWidget {
 
                     // Liste des fonctionnalités
                     const FeatureList(),
+                    const SizedBox(height: 60),
                   ],
                 ),
               ),
