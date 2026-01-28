@@ -75,7 +75,7 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
 
                 if (!viewModel.hasConnection) ...[
                   const SizedBox(height: 20),
-                  ConnectionWarning('Aucune connexion Internet.'),
+                  ConnectionWarning(message: 'Aucune connexion Internet.'),
                 ],
 
                 // Messages d'erreur

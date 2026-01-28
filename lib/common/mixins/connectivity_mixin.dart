@@ -9,6 +9,8 @@ mixin ConnectivityMixin on ChangeNotifier {
   StreamSubscription<InternetConnectionStatus>? _connectivitySubscription;
 
   void initConnectivity() {
+    _hasConnection = InternetUtil.isConnected;
+
     _connectivitySubscription = InternetUtil.onStatusChange.listen((status) {
       _hasConnection = status == InternetConnectionStatus.connected;
       notifyListeners();
