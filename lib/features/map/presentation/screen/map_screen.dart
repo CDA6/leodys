@@ -60,7 +60,15 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           },
 
           suggestionsBuilder: (context, controller) async {
+            if (controller.text.length < 3) {
+              return [const ListTile(title: Text("Trois caractères minimum"))];
+            }
+
             final results = await widget.viewModel.onSearch(controller.text);
+            if (results.isEmpty) {
+              return [const ListTile(title: Text("Aucun résultat trouvé"))];
+            }
+
             return results.map(
               (res) => ListTile(
                 leading: const Icon(Icons.location_on, color: Colors.blue),
@@ -88,9 +96,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         if (snapshot.hasData) {
           return MapWidget(
             position: snapshot.data!,
-            destination: widget.viewModel.searchResults.isNotEmpty
-                ? widget.viewModel.searchResults.first.position
-                : null,
+            destination: widget.viewModel.selectedDestination?.position,
             isAutoFollowing: widget.viewModel.isFollowingUser,
             onRecenter: () {
               setState(() {
