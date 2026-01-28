@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:leodys/features/profile/presentation/profile_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
@@ -30,6 +33,7 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
+      color: Colors.blue,
       description: 'Reconnaissance de texte simple',
     ),
 
@@ -40,6 +44,7 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
+      color: Colors.blue,
       description: 'Reconnaissance de texte complexe',
     ),
 
@@ -78,6 +83,7 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
+      color: Colors.blue,
       description: "Ecouter l'heure",
     ),
 
@@ -108,7 +114,19 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: true,
       isAvailable: true,
+      color: Colors.blue,
       description: 'Scan de cartes de fidélité.',
+    ),
+
+    AppFeature(
+      name: 'Mon profil',
+      icon: Icons.person,
+      route: ProfileScreen.route,
+      requiresInternet: false,
+      requiresAuth: true,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Personnalisez votre profil.',
     ),
 
     AppFeature(
@@ -150,7 +168,7 @@ class FeatureList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_features.isNotEmpty) ...[
-              _buildSectionTitle(context, 'Fonctionnalités'),
+              _buildSectionTitle('Fonctionnalités'),
               const SizedBox(height: 12),
               _buildFeaturesGrid(context, viewModel, _features),
             ],
@@ -301,4 +319,5 @@ class FeatureList extends StatelessWidget {
       ),
     );
   }
+
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/features/profile/domain/models/user_profile_model.dart';
 
-class ProfileScreen extends StatelessWidget {
-  static const String route = '/profile';
-  const ProfileScreen({super.key});
+class ProfileView extends StatelessWidget {
+  final UserProfileModel profile;
+  const ProfileView({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +18,13 @@ class ProfileScreen extends StatelessWidget {
             // Avatar
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/avatar_placeholder.png'),
+              backgroundImage: AssetImage(profile.avatarPath ?? 'assets/images/avatar_placeholder.jpg'),
             ),
             const SizedBox(height: 12),
 
-            // Nom complet
-            const Text(
-              'Coleen Conte',
+            // nom complet
+            Text(
+              '${profile.firstName} ${profile.lastName}',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -32,32 +33,32 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Infos
+            // infos du profil
             Card(
               child: Column(
-                children: const [
+                children:  [
                   ListTile(
                     leading: Icon(Icons.person),
                     title: Text('Nom'),
-                    subtitle: Text('Coleen'),
+                    subtitle: Text(profile.lastName),
                   ),
                   Divider(height: 1),
                   ListTile(
                     leading: Icon(Icons.person_outline),
                     title: Text('Prénom'),
-                    subtitle: Text('Conte'),
+                    subtitle: Text(profile.firstName),
                   ),
                   Divider(height: 1),
                   ListTile(
                     leading: Icon(Icons.email),
                     title: Text('Email'),
-                    subtitle: Text('xxx@mail.com'),
+                    subtitle: Text(profile.email),
                   ),
                   Divider(height: 1),
                   ListTile(
                     leading: Icon(Icons.phone),
                     title: Text('Téléphone'),
-                    subtitle: Text('06 xx xx xx xx'),
+                    subtitle: Text(profile.phone),
                   ),
                 ],
               ),
@@ -65,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
 
             const Spacer(),
 
-            // Bouton modifier
+            // bouton de modification
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
