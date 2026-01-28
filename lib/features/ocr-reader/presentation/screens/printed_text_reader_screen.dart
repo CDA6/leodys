@@ -4,6 +4,7 @@ import 'package:leodys/features/ocr-reader/presentation/viewmodels/printed_text_
 import 'package:leodys/features/ocr-reader/presentation/widgets/analyze_button.dart';
 import 'package:leodys/features/ocr-reader/presentation/widgets/build_error_message.dart';
 import 'package:leodys/features/ocr-reader/presentation/widgets/image_picker_section.dart';
+import '../../../../common/widget/global_appbar.dart';
 import 'ocr_result_screen.dart';
 
 class PrintedTextReaderScreen extends StatelessWidget {
@@ -13,8 +14,9 @@ class PrintedTextReaderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Texte numérique'),
+      appBar: GlobalAppBar(
+        title: 'Texte numérique',
+        showAuthActions: false,
         actions: [
           Consumer<PrintedTextViewModel>(
             builder: (context, viewModel, _) {
@@ -53,6 +55,8 @@ class PrintedTextReaderScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                const SizedBox(height: 24),
+
                 // Section de sélection d'image
                 ImagePickerSection(
                   selectedImage: viewModel.selectedImage,
