@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/profile/presentation/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -115,7 +116,8 @@ class MyApp extends StatelessWidget {
           ReaderScreen.route: (context) => const ReaderScreen(),
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
-          DisplayCardsScreen.route: (context) => const DisplayCardsScreen()
+          DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+          ProfileScreen.route: (context) => const ProfileScreen(),
         },
       ),
     );
