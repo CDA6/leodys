@@ -9,6 +9,7 @@ import 'package:leodys/features/notification/presentation/pages/notification_das
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
@@ -95,17 +96,17 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      description: 'TODO',
+      description: 'Lecture vocal d\'un texte scanné à partir d\'une photo',
     ),
 
     AppFeature(
-      name: 'Lecteur de plaque d\'immatriculation',
-      icon: Icons.directions_car_rounded,
-      route: ReaderScreen.route,
-      requiresInternet: false,
+      name: 'Reconnaissance d\'immatriculation',
+      icon: Icons.directions_car,
+      route: ScanImmatriculationScreen.route,
+      requiresInternet: true,
       requiresAuth: false,
-      isAvailable: false,
-      description: 'TODO',
+      isAvailable: true,
+      description: 'Afficher les informations d\'un véhicule à partir d\'une plaque d\'immatriculation',
     ),
 
     AppFeature(
@@ -169,7 +170,11 @@ class FeatureList extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesGrid(BuildContext context, HomeViewModel viewModel, List<AppFeature> features) {
+  Widget _buildFeaturesGrid(
+    BuildContext context,
+    HomeViewModel viewModel,
+    List<AppFeature> features,
+  ) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -187,18 +192,18 @@ class FeatureList extends StatelessWidget {
         return FeatureItem(
           feature: feature,
           isAccessible: isAccessible,
-          onTap: () => _handleFeatureTap(
-            context,
-            viewModel,
-            feature,
-            isAccessible,
-          ),
+          onTap: () =>
+              _handleFeatureTap(context, viewModel, feature, isAccessible),
         );
       },
     );
   }
 
-  Widget _buildRequirement({required IconData icon, required String label, required Color color}) {
+  Widget _buildRequirement({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -206,21 +211,22 @@ class FeatureList extends StatelessWidget {
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 13, color: color),
-            ),
+            child: Text(label, style: TextStyle(fontSize: 13, color: color)),
           ),
         ],
       ),
     );
   }
 
-  void _handleFeatureTap(BuildContext context, HomeViewModel viewModel, AppFeature feature, bool isAccessible) {
+  void _handleFeatureTap(
+    BuildContext context,
+    HomeViewModel viewModel,
+    AppFeature feature,
+    bool isAccessible,
+  ) {
     if (isAccessible) {
       Navigator.pushNamed(context, feature.route);
-    }
-    else {
+    } else {
       _showBlockedFeatureDialog(context, feature);
     }
   }
@@ -233,10 +239,7 @@ class FeatureList extends StatelessWidget {
         backgroundColor: context.colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: context.colorScheme.outline,
-            width: 1.0,
-          ),
+          side: BorderSide(color: context.colorScheme.outline, width: 1.0),
         ),
         title: Row(
           children: [
@@ -285,14 +288,16 @@ class FeatureList extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
               ),
               child: const Text('Compris'),
             ),
-          )
+          ),
         ],
       ),
     );
   }
-
 }

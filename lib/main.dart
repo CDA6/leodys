@@ -11,26 +11,18 @@ import 'package:leodys/features/notification/presentation/pages/notification_das
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
 import 'common/pages/home/presentation/screens/home_page.dart';
 import 'common/utils/app_logger.dart';
-import 'constants/auth_constants.dart';
-
-import 'common/utils/internet_util.dart';
 import 'common/services/database_service.dart';
 import 'common/theme/app_theme_manager.dart';
 import 'common/widget/global_overlay.dart';
-import 'common/pages/home/presentation/screens/home_page.dart';
-
 import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
-
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
-
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/left_right/presentation/real_time_yolo_screen.dart';
-import 'features/ocr-reader/injection_container.dart' as ocr_reader;
+import 'features/vehicle_recognition/presentation/pages/historicals_scan.dart';
+import 'features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
 import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
 import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
@@ -39,22 +31,14 @@ import 'features/cards/providers.dart' as cards;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
-import 'features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
-
-import 'features/notification/notification_injection.dart' as messagerie;
-import 'features/notification/presentation/pages/notification_dashboard_page.dart';
-
+import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
+import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
 import 'features/left_right/injection_container.dart' as pose_detection;
-
 import 'features/authentication/domain/services/auth_service.dart';
-
-import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
@@ -110,8 +94,10 @@ void main() async {
   await cards.init();
   await pose_detection.init();
   await voice_clock.init();
-  
+
   runApp(MyApp(themeManager: themeManager));
+  initVehicleRecognition();
+  runApp(MyApp(themeManager: themeManager,));
 }
 
 class MyApp extends StatelessWidget {
@@ -208,8 +194,16 @@ class MyApp extends StatelessWidget {
 
               DisplayCardsScreen.route: (context) =>
                 const DisplayCardsScreen(),
+
+              ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
+              HistoricalsScan.route: (context) => const HistoricalsScan(),
             },
           );
+
+
+
+
+
         },
       ),
     );
