@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
-import 'package:leodys/common/utils/internet_util.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
-import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
@@ -14,13 +12,6 @@ import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
 import 'package:leodys/features/calculator/presentation/views/calculator_view.dart';
-
-import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
-import 'package:leodys/common/pages/home/domain/entities/app_feature.dart';
-
-import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
-import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
-import 'package:leodys/features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 
 /// Widget affichant la liste des fonctionnalités disponibles.
 ///
