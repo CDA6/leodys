@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
 import 'package:leodys/features/confidential_document/data/local_storage_repository.dart';
 import 'package:leodys/features/confidential_document/data/storage_repository.dart';
 import 'package:leodys/features/confidential_document/data/sync_registry_repository.dart';
 import 'package:leodys/features/confidential_document/domain/entity/status_enum.dart';
 
-import 'entity/fileMetadata.dart';
-import 'entity/sunc_success.dart';
+import '../entity/fileMetadata.dart';
+import '../entity/sunc_success.dart';
 
 class SynchronisationUsecase {
   final LocalStorageRepository _localStorageRepository =
@@ -24,7 +23,6 @@ class SynchronisationUsecase {
     final Set<String> processedTitles = {}; //gestion des fichiers orphelins
 
     try {
-      final List<String> listLocalTitle =  await _localStorageRepository.getAllTitlesEnc();
       final List<String> listRemoteTitle = await _remoteStorageRepository
           .getListTitle();
       final Map<String, FileMetadata> metadata = await _syncRegistryRepository
@@ -122,7 +120,7 @@ class SynchronisationUsecase {
 
   //Permet de nettoyer les fichiers qui ne sont pas référencer - transformer en opération de maintenance
   Future<void> cleanFilePhone() async{
-    //TODO nettoyer le dossier du téléphone
+
     try{
       final List<String> listLocalTitle =  await _localStorageRepository.getAllTitlesEnc();
       final Map<String, FileMetadata> metadata = await _syncRegistryRepository
@@ -134,7 +132,7 @@ class SynchronisationUsecase {
       for(String title in metadata.keys){
         indexFileJson[title] = "enc";
       }
-      //TODO récupérer le count pour informer les log
+
       _localStorageRepository.cleanUnwantedFile(indexFileJson);
 
     //Supprimer les enregistrement json qui ne corresponde plus à rien
