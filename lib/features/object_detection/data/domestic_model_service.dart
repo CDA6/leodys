@@ -1,8 +1,6 @@
 import 'dart:typed_data';
-import 'package:camera/camera.dart'; // Nécessite package:camera
+import 'package:camera/camera.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
-
-// Imports relatifs vers votre dossier common
 import '../../../common/ai/interfaces/ai_repository.dart';
 import '../../../common/ai/utils/yolo_post_processor.dart';
 import '../../../common/ai/entities/detection_result.dart';
@@ -11,7 +9,7 @@ class DomesticModelService implements AIRepository {
   Interpreter? _interpreter;
 
   // --- CONFIGURATION ---
-  static const String _modelPath = 'assets/models/yolo26n_float32.tflite'; // Votre modèle 'yolo26'
+  static const String _modelPath = 'assets/models/yolo26n_float32.tflite';
   static const int _inputSize = 640;
 
   // Liste des 80 classes COCO (issue de coco.yaml)
