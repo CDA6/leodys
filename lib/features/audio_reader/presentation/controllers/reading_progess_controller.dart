@@ -5,7 +5,7 @@ import '../../domain/usecases/reading_progress_usecase.dart';
 ///Classe controller de la fonctionnalité de lecture audio avec gestion
 /// de la pause, de la reprise et de la sauvegarde de la progression.
 ///
-/// Elle étend la classe ChangeNotifier afin de notifier l’interface utilisateur
+/// Elle étend la classe ChangeNotifier afin de notifier l’interfaces utilisateur
 /// à chaque changement d’état grâce à la méthode notifyListeners().
 class ReadingProgressController extends ChangeNotifier {
 
@@ -15,7 +15,7 @@ class ReadingProgressController extends ChangeNotifier {
   ReadingProgressController({required this.readingProgressUsecase});
 
   //état
-  bool isLoading = false; // prevenir d'une action longue est en cours. Evite que l'interface se fige
+  bool isLoading = false; // prevenir d'une action longue est en cours. Evite que l'interfaces se fige
   String message = '';
   ReadingProgress? currentProgress;
 
@@ -23,7 +23,7 @@ class ReadingProgressController extends ChangeNotifier {
   /// depuis la derniere sauvegarde
   Future<void> loadProgress() async {
     isLoading = true;
-    notifyListeners(); // informe l'interface d'un changement d'état
+    notifyListeners(); // informe l'interfaces d'un changement d'état
 
     currentProgress = await readingProgressUsecase.getSaveProgress();
 
