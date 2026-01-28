@@ -117,12 +117,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             //   ],
             // ),
 
-            //Fixed points
-            MarkerLayer(
-              markers: [
-                if (widget.destination != null) _buildDestinationMarker(),
-              ],
-            ),
+            //Fixed poi
+            _buildMarkerLayer(),
 
             //User location
             CurrentLocationLayer(
@@ -178,7 +174,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     setupCameraListener(widget.cameraStream);
   }
 
-  StreamBuilder<GeoPosition?> _buildMarkerLayer() {
+  Widget _buildMarkerLayer() {
     return StreamBuilder<GeoPosition?>(
       stream: widget.markerStream,
       builder: (context, snapshot) {
@@ -189,6 +185,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           markers: [
             Marker(
               point: LatLng(pos.latitude, pos.longitude),
+              width: 50,
+              height: 50,
               child: Icon(Icons.location_on, color: Colors.red),
             ),
           ],
