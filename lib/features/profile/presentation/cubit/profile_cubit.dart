@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/models/user_profile_model.dart';
 import '../../domain/usecases/load_profile_usecase.dart';
 import 'profile_state.dart';
 
@@ -25,5 +26,9 @@ class ProfileCubit extends Cubit<ProfileState> {
         }
       },
     );
+  }
+
+  void updateLocalProfile(UserProfileModel profile) {
+    emit(ProfileLoaded(profile));
   }
 }

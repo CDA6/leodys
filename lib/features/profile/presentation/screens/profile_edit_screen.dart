@@ -29,6 +29,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     lastNameController = TextEditingController(text: widget.profile.lastName);
     phoneController = TextEditingController(text: widget.profile.phone);
     emailController = TextEditingController(text: widget.profile.email);
+    avatarPath = widget.profile.avatarPath;
   }
 
   @override
@@ -90,13 +91,35 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               children: [
                 GestureDetector(
                   onTap: pickAvatar,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: avatarPath != null
-                        ? FileImage(File(avatarPath!))
-                        : widget.profile.avatarUrl != null
-                        ? NetworkImage(widget.profile.avatarUrl!) as ImageProvider
-                        : const AssetImage('assets/images/avatar_placeholder.jpg'),
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: avatarPath != null
+                            ? FileImage(File(avatarPath!))
+                            : const AssetImage('assets/images/avatar_placeholder.jpg'),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),

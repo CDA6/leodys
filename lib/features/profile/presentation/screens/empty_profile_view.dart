@@ -4,7 +4,6 @@ import 'package:leodys/features/profile/domain/models/user_profile_model.dart';
 import 'package:leodys/features/profile/presentation/screens/profile_edit_screen.dart';
 
 import '../../../cards/providers.dart';
-import '../../domain/usecases/save_profile_usecase.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_edit_cubit.dart';
 import '../cubit/profile_state.dart';
@@ -50,7 +49,7 @@ class EmptyProfileView extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => BlocProvider(
-                      create: (_) => ProfileEditCubit(getIt<SaveProfileUsecase>()),
+                      create: (_) => getIt<ProfileEditCubit>(),
                       child: ProfileEditScreen(profile: profile!), // profil en pré remplissage
                     ),
                   ),
