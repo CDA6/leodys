@@ -4,7 +4,7 @@ import '../../domain/usecases/document_usecase.dart';
 
 /// Controller responsable de la gestion de l'état des documents scannés.
 /// Cette classe fait le lien entre la couche présentation et domain(usecases).
-/// Elle utilise changeNotifier pour prévenir l'interface d'un changement d'état
+/// Elle utilise changeNotifier pour prévenir l'interfaces d'un changement d'état
 class DocumentController extends ChangeNotifier {
 
   final DocumentUsecase documentUsecase;
