@@ -9,19 +9,24 @@ class GeoLocationRepositoryImpl implements GeoLocationRepository {
   final GeolocatorDatasource dataSource;
 
   GeoLocationRepositoryImpl(this.dataSource);
+  GeoPosition? _lastKnowPosition;
+
+  @override
+  GeoPosition? getLastCachedPosition() => _lastKnowPosition;
 
   @override
   Stream<Either<GpsFailure, GeoPosition>> watchPosition() {
     Stream<Either<GpsFailure, GeoPosition>> createStream() async* {
       try {
         await for (final pos in dataSource.getPositionStream()) {
-          yield Right(
-            GeoPosition(
-              latitude: pos.latitude,
-              longitude: pos.longitude,
-              accuracy: pos.accuracy,
-            ),
+          final geoPos = GeoPosition(
+            latitude: pos.latitude,
+            longitude: pos.longitude,
+            accuracy: pos.accuracy,
           );
+
+          _lastKnowPosition = geoPos;
+          yield Right(geoPos);
         }
       } catch (error) {
         if (error is GpsServiceException) {
