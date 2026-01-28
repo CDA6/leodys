@@ -1,5 +1,6 @@
 import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
 import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
@@ -24,7 +25,15 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
     widget.viewModel.positionStream.listen(
       (_) {},
-      onError: (error) => showGpsDialog(context, error.toString()),
+      onError: (error) {
+        if (error is GpsFailure) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              showGpsDialog(context, error);
+            }
+          });
+        }
+      },
     );
   }
 
@@ -119,53 +128,4 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       },
     );
   }
-
-  // StreamBuilder _buildMap() {
-  //   return MapWidget(
-  //     position: widget.viewModel.currentPosition ?? const GeoPosition(latitude: 0, longitude: 0),
-  //     destination: widget.viewModel.selectedDestination?.position,
-  //     isAutoFollowing: widget.viewModel.isFollowingUser,
-  //     onRecenter: () {
-  //       setState(() {
-  //         widget.viewModel.resumeAutoFollowing();
-  //       });
-  //     },
-  //     onMapDragged: () {
-  //       if (widget.viewModel.isFollowingUser) {
-  //         setState(() {
-  //           widget.viewModel.disableAutoFollowing();
-  //         });
-  //       }
-  //     },
-  //     cameraStream: widget.viewModel.cameraCommandStream,
-  //   );
-  // }
-  //
-  //       if (snapshot.hasError) {
-  //         final error = snapshot.error.toString();
-  //
-  //         //PostFrameCallback to display Popup without breaking the build
-  //         WidgetsBinding.instance.addPostFrameCallback((_) {
-  //           if (mounted) {
-  //             showGpsDialog(context, error);
-  //           }
-  //         });
-  //
-  //         return const Center(
-  //           child: Icon(Icons.location_off, size: 80, color: Colors.grey),
-  //         );
-  //       }
-  //
-  //       return const Center(
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             CircularProgressIndicator(),
-  //             SizedBox(height: 16),
-  //             Text("Recherche de position..."),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
 }

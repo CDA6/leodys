@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
 import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
+import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/domain/useCases/search_location_usecase.dart';
 import 'package:leodys/features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'package:leodys/common/utils/app_logger.dart';
@@ -32,7 +34,7 @@ class MapViewModel {
   // <editor-fold desc="GeoLocator">
   final WatchUserLocationUseCase watchUserLocation;
 
-  StreamSubscription<GeoPosition>? _locationSubscription;
+  StreamSubscription<Either<GpsFailure, GeoPosition>>? _locationSubscription;
 
   final StreamController<GeoPosition> _positionController =
       StreamController<GeoPosition>.broadcast();
@@ -79,14 +81,22 @@ class MapViewModel {
   // <editor-fold desc="GeoLocator">
   void startGpsStreamListener() {
     _locationSubscription?.cancel();
-    _locationSubscription = watchUserLocation().listen((pos) {
-      _lastKnownPosition = pos;
-      _positionController.add(pos); // Transmission to the widget
+    _locationSubscription = watchUserLocation().listen((either) {
+      either.fold(
+        (failure) {
+          AppLogger().error("Erreur GPS : ${failure.message}");
+          _positionController.addError(failure);
+        },
+        (pos) {
+          _lastKnownPosition = pos;
+          _positionController.add(pos);
 
-      if (_isAutoFollowingUser) {
-        _cameraCommandController.add(MapCameraCommand(position: pos));
-      }
-    }, onError: (error) => _positionController.addError(error));
+          if (_isAutoFollowingUser) {
+            _cameraCommandController.add(MapCameraCommand(position: pos));
+          }
+        },
+      );
+    });
   }
 
   void stopGpsStreamListener() {
