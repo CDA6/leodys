@@ -110,6 +110,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                 });
               }
             },
+            cameraStream: widget.viewModel.cameraCommandStream,
           );
         }
 
