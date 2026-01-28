@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:leodys/features/gamecards-reader/data/datasource/card_model_datasource.dart';
 import 'package:path_provider/path_provider.dart';
 
 // Imports de tes modules
-import 'features/card_recognition/data/card_model_service.dart';
 import 'features/object_detection/data/domestic_model_service.dart';
 
 void main() {
@@ -21,9 +21,9 @@ class AITesterPage extends StatefulWidget {
 class _AITesterPageState extends State<AITesterPage> {
   String _logs = "Prêt à tester...";
 
-  // Instance de tes services
-  final _cardService = CardModelService();
-  final _objectService = DomesticModelService();
+  // Instance de tes datasource
+  final _cardService = CardModelDatasource();
+  final _objectService = DomesticModelService(); // on se fiche de ce model, concentrons nous sur CardModelService
 
   void log(String message) {
     setState(() {

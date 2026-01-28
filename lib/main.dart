@@ -19,6 +19,8 @@ import 'common/widget/global_overlay.dart';
 import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
+import 'features/gamecards-reader/presentation/screens/gamecard_reader_screen.dart';
+import 'features/gamecards-reader/presentation/viewmodels/gamecard_reader_viewmodel.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/left_right/presentation/real_time_yolo_screen.dart';
 import 'features/vehicle_recognition/presentation/pages/historicals_scan.dart';
@@ -42,10 +44,9 @@ import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
+import 'features/gamecards-reader/injection_container.dart' as gamecard_reader;
 
-import 'features/calculator/presentation/views/calculator_view.dart';
-
-/// Global navigator key pour accéder au context depuis les services
+/// Global navigator key pour accéder au context depuis les datasource
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
@@ -53,7 +54,7 @@ void main() async {
   await initializeDateFormatting('fr_FR');
   await dotenv.load(fileName: ".env");
 
-  // Initialisation des services de base
+  // Initialisation des datasource de base
   await InternetUtil.init();
   await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
 
@@ -94,6 +95,7 @@ void main() async {
   await cards.init();
   await pose_detection.init();
   await voice_clock.init();
+  await gamecard_reader.init();
 
   runApp(MyApp(themeManager: themeManager));
   initVehicleRecognition();
@@ -136,6 +138,8 @@ class MyApp extends StatelessWidget {
           },
         ),
 
+        ChangeNotifierProvider(create: (_) => gamecard_reader.sl<GamecardReaderViewModel>()),
+
      ],
       child: Consumer<AppThemeManager>(
         builder: (context, themeManager, _) {
@@ -166,14 +170,9 @@ class MyApp extends StatelessWidget {
                 return MapScreen(viewModel: viewModel);
               },
 
-              RealTimeYoloScreen.route: (context) =>
-                const RealTimeYoloScreen(),
-
-              PrintedTextReaderScreen.route: (context) =>
-                  const PrintedTextReaderScreen(),
-
-              HandwrittenTextReaderScreen.route: (context) =>
-                  const HandwrittenTextReaderScreen(),
+              RealTimeYoloScreen.route: (context) =>  const RealTimeYoloScreen(),
+              PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
+              HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
 
               NotificationDashboard.route: (context) => ChangeNotifierProvider(
                 create: (_) => messagerie.sl<NotificationController>(),
@@ -191,24 +190,14 @@ class MyApp extends StatelessWidget {
                 child: const VoiceClockScreen(),
               ),
 
-              ReaderScreen.route: (context) =>
-                const ReaderScreen(),
-
-              DocumentsScreen.route: (context) =>
-                const DocumentsScreen(),
-
-              DisplayCardsScreen.route: (context) =>
-                const DisplayCardsScreen(),
-
+              ReaderScreen.route: (context) => const ReaderScreen(),
+              DocumentsScreen.route: (context) => const DocumentsScreen(),
+              DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+              GamecardReaderScreen.route: (context) => const GamecardReaderScreen(),
               ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
               HistoricalsScan.route: (context) => const HistoricalsScan(),
             },
           );
-
-
-
-
-
         },
       ),
     );
