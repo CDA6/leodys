@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:leodys/features/vehicle_recognition/domain/models/plate_scan.dart';
 import '../../domain/models/vehicle_info.dart';
 
 /// Service chargé de communiquer avec l’API Plate Recognizer
@@ -90,6 +88,7 @@ class VehicleRecognizerService {
       model: model,
       label: label,
     );
+
 
 
   }

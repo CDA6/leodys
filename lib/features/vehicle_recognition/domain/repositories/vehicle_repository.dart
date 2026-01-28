@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:leodys/features/vehicle_recognition/domain/models/plate_scan.dart';
 import 'package:leodys/features/vehicle_recognition/domain/models/vehicle_info.dart';
 
 /// Classe abstraite de la couche domaine
