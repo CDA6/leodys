@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
 
 class OcrResultScreen extends StatelessWidget {
@@ -39,9 +40,9 @@ class OcrResultScreen extends StatelessWidget {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: context.colorScheme.outline),
                 boxShadow: [
                   BoxShadow(
                     color: const Color.fromRGBO(0, 0, 0, 0.05),
@@ -53,10 +54,10 @@ class OcrResultScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: SelectableText(
                   ocrResult.text,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    height: 1.6,
-                    color: Colors.black87,
+                  style: TextStyle(
+                    fontSize: context.baseFontSize,
+                    height: context.lineHeight,
+                    color: context.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -75,7 +76,7 @@ class OcrResultScreen extends StatelessWidget {
                       // TODO: Implémenter ttf
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Fonctionnalité à venir...'),
+                          content: Center(child: Text('Fonctionnalité à venir...')),
                           duration: Duration(seconds: 2),
                         ),
                       );
@@ -84,8 +85,8 @@ class OcrResultScreen extends StatelessWidget {
                     label: const Text('Lire le texte'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 54),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
+                      backgroundColor: context.colorScheme.primaryContainer,
+                      foregroundColor: context.colorScheme.onPrimaryContainer,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -106,14 +107,21 @@ class OcrResultScreen extends StatelessWidget {
                     label: const Text('Nouvelle analyse'),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 54),
-                      side: BorderSide(color: Colors.blue),
-                      foregroundColor: Colors.blue,
+                      backgroundColor: context.colorScheme.surfaceContainerHighest,
+                      foregroundColor: context.colorScheme.onSurfaceVariant,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: context.colorScheme.outline,
+                          width: 2.0,
+                        ),
                       ),
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 72),
+
               ],
             ),
           ),
