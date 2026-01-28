@@ -11,4 +11,6 @@ class WatchUserLocationUseCase {
   Stream<Either<GpsFailure, GeoPosition>> call() {
     return repository.watchPosition();
   }
+
+  GeoPosition? getLastKnownPosition() => repository.getLastCachedPosition();
 }

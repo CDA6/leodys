@@ -66,15 +66,21 @@ class MapViewModel {
 
   void handleLanding() {
     AppLogger().info("Landing on map page, start GPS listener");
+
+    final cachedPos = watchUserLocation.getLastKnownPosition();
+    if (cachedPos != null) {
+      _lastKnownPosition = cachedPos;
+      _positionController.add(cachedPos);
+      _cameraCommandController.add(
+        MapCameraCommand(position: cachedPos, zoom: 18),
+      );
+    }
+
     startGpsStreamListener();
   }
 
   void dispose() {
-    AppLogger().info(
-      "Abrupt closing of the application : closing the different stream controller",
-    );
-    _positionController.close();
-    _cameraCommandController.close();
+    stopGpsStreamListener();
   }
   // </editor-fold>
 
