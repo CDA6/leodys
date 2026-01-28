@@ -16,6 +16,8 @@ class MapWidget extends StatefulWidget {
   final VoidCallback onMapDragged;
 
   final Stream<MapCameraCommand> cameraStream;
+  final Stream<GeoPosition> currentPositionStream;
+  final Stream<GeoPosition?> markerStream;
 
   final double _initZoom = 18.0;
   final double _minZoom = 1.0;
@@ -29,6 +31,8 @@ class MapWidget extends StatefulWidget {
     required this.onRecenter,
     required this.onMapDragged,
     required this.cameraStream,
+    required this.currentPositionStream,
+    required this.markerStream,
   });
 
   @override
@@ -116,25 +120,20 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             //Fixed points
             MarkerLayer(
               markers: [
-                if (widget.destination != null)
-                  Marker(
-                    point: LatLng(
-                      widget.destination!.latitude,
-                      widget.destination!.longitude,
-                    ),
-                    width: 50,
-                    height: 50,
-                    child: const Icon(
-                      Icons.location_on,
-                      color: Colors.red,
-                      size: 40,
-                    ),
-                  ),
+                if (widget.destination != null) _buildDestinationMarker(),
               ],
             ),
 
             //User location
             CurrentLocationLayer(
+              positionStream: widget.currentPositionStream.map(
+                (geoPos) => LocationMarkerPosition(
+                  latitude: geoPos.latitude,
+                  longitude: geoPos.longitude,
+                  accuracy: geoPos.accuracy,
+                ),
+              ),
+
               alignPositionOnUpdate: AlignOnUpdate.never,
               alignDirectionOnUpdate: AlignOnUpdate.never,
               style: LocationMarkerStyle(
@@ -177,5 +176,36 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     setupCameraListener(widget.cameraStream);
+  }
+
+  StreamBuilder<GeoPosition?> _buildMarkerLayer() {
+    return StreamBuilder<GeoPosition?>(
+      stream: widget.markerStream,
+      builder: (context, snapshot) {
+        final pos = snapshot.data;
+        if (pos == null) return const SizedBox.shrink();
+
+        return MarkerLayer(
+          markers: [
+            Marker(
+              point: LatLng(pos.latitude, pos.longitude),
+              child: Icon(Icons.location_on, color: Colors.red),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Marker _buildDestinationMarker() {
+    return Marker(
+      point: LatLng(
+        widget.destination!.latitude,
+        widget.destination!.longitude,
+      ),
+      width: 50,
+      height: 50,
+      child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+    );
   }
 }

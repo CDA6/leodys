@@ -21,6 +21,11 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     widget.viewModel.handleLanding();
+
+    widget.viewModel.positionStream.listen(
+      (_) {},
+      onError: (error) => showGpsDialog(context, error.toString()),
+    );
   }
 
   @override
@@ -88,58 +93,79 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     );
   }
 
-  StreamBuilder _buildMap() {
-    return StreamBuilder<GeoPosition>(
-      initialData: widget.viewModel.currentPosition,
-      stream: widget.viewModel.positionStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return MapWidget(
-            position: snapshot.data!,
-            destination: widget.viewModel.selectedDestination?.position,
-            isAutoFollowing: widget.viewModel.isFollowingUser,
-            onRecenter: () {
-              setState(() {
-                widget.viewModel.resumeAutoFollowing();
-              });
-            },
-            onMapDragged: () {
-              if (widget.viewModel.isFollowingUser) {
-                setState(() {
-                  widget.viewModel.disableAutoFollowing();
-                });
-              }
-            },
-            cameraStream: widget.viewModel.cameraCommandStream,
-          );
-        }
+  MapWidget _buildMap() {
+    return MapWidget(
+      position:
+          widget.viewModel.currentPosition ??
+          const GeoPosition(latitude: 0, longitude: 0),
+      cameraStream: widget.viewModel.cameraCommandStream,
+      currentPositionStream: widget.viewModel.positionStream,
+      markerStream: widget.viewModel.markerStream,
 
-        if (snapshot.hasError) {
-          final error = snapshot.error.toString();
+      isAutoFollowing: widget.viewModel.isFollowingUser,
 
-          //PostFrameCallback to display Popup without breaking the build
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              showGpsDialog(context, error);
-            }
+      onRecenter: () {
+        setState(() {
+          widget.viewModel.resumeAutoFollowing();
+        });
+      },
+
+      onMapDragged: () {
+        if (widget.viewModel.isFollowingUser) {
+          setState(() {
+            widget.viewModel.disableAutoFollowing();
           });
-
-          return const Center(
-            child: Icon(Icons.location_off, size: 80, color: Colors.grey),
-          );
         }
-
-        return const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text("Recherche de position..."),
-            ],
-          ),
-        );
       },
     );
   }
+
+  // StreamBuilder _buildMap() {
+  //   return MapWidget(
+  //     position: widget.viewModel.currentPosition ?? const GeoPosition(latitude: 0, longitude: 0),
+  //     destination: widget.viewModel.selectedDestination?.position,
+  //     isAutoFollowing: widget.viewModel.isFollowingUser,
+  //     onRecenter: () {
+  //       setState(() {
+  //         widget.viewModel.resumeAutoFollowing();
+  //       });
+  //     },
+  //     onMapDragged: () {
+  //       if (widget.viewModel.isFollowingUser) {
+  //         setState(() {
+  //           widget.viewModel.disableAutoFollowing();
+  //         });
+  //       }
+  //     },
+  //     cameraStream: widget.viewModel.cameraCommandStream,
+  //   );
+  // }
+  //
+  //       if (snapshot.hasError) {
+  //         final error = snapshot.error.toString();
+  //
+  //         //PostFrameCallback to display Popup without breaking the build
+  //         WidgetsBinding.instance.addPostFrameCallback((_) {
+  //           if (mounted) {
+  //             showGpsDialog(context, error);
+  //           }
+  //         });
+  //
+  //         return const Center(
+  //           child: Icon(Icons.location_off, size: 80, color: Colors.grey),
+  //         );
+  //       }
+  //
+  //       return const Center(
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             CircularProgressIndicator(),
+  //             SizedBox(height: 16),
+  //             Text("Recherche de position..."),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
 }
