@@ -7,7 +7,7 @@ import '../../domain/usecases/scan_document_usecase.dart';
 
 ///Classe controller de la fonctionnalité lecture audio.
 ///Il étend la classe ChangeNotifier
-///afin de notifier l'interface utilisateur qu'il y a un changement d'état,
+///afin de notifier l'interfaces utilisateur qu'il y a un changement d'état,
 ///grace à la classe notifyListeners()
 
 class ReaderController extends ChangeNotifier {
@@ -24,7 +24,7 @@ class ReaderController extends ChangeNotifier {
   });
 
   // état
-  bool isLoading = false; // prevenir d'une action longue est en cours. Evite que l'interface se fige
+  bool isLoading = false; // prevenir d'une action longue est en cours. Evite que l'interfaces se fige
   String recognizedText = ''; // Variable qui doit contenir le texte après le scan.
   String message = '';
 
@@ -32,7 +32,7 @@ class ReaderController extends ChangeNotifier {
   Future<void> scanDocument(String imagePath) async {
     isLoading = true;
     message = '';
-    notifyListeners(); // informe l'interface d'un changement d'état
+    notifyListeners(); // informe l'interfaces d'un changement d'état
 
     final text = await scanDocumentUsecase.scanDocument(imagePath);
 
