@@ -37,11 +37,11 @@ Future<void> init(AppThemeManager themeManager) async {
         themeManager: themeManager,
       ),
     );
-    AppLogger().info("✅ Accessibility initialized");
+    AppLogger().info("Accessibility initialized successfully");
 
     SettingsViewModel.isAvailable = true;
   } catch (e) {
-    AppLogger().error("❌ Failed to initialize Accessibility: $e");
+    AppLogger().error("Failed to initialize Accessibility: $e");
     SettingsViewModel.isAvailable = false;
   }
 }
