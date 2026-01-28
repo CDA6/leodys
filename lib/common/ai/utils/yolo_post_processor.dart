@@ -8,9 +8,9 @@ class YoloPostProcessor {
   // Taille d'entrée du modèle (doit correspondre à l'entraînement)
   static const int _inputSize = 640;
   // Seuil de confiance minimal pour garder une détection
-  static const double _confThreshold = 0.60;
+  static const double _confThreshold = 0.70;
   // Seuil de superposition pour le NMS
-  static const double _iouThreshold = 0.30;
+  static const double _iouThreshold = 0.15;
 
   /// Méthode principale de traitement.
   /// [output] : Le tensor brut sorti de l'interpréteur [1, Channels, Anchors]
