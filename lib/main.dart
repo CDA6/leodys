@@ -9,11 +9,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/pages/home/presentation/screens/home_page.dart';
-import 'constants/auth_constants.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
@@ -22,13 +22,13 @@ import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
 import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
+import 'features/profile/providers.dart' as profile;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'common/services/database_service.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
@@ -68,6 +68,7 @@ void main() async {
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
   await cards.init();
+  await profile.init();
   await voice_clock.init();
 
   runApp(MyApp());
@@ -132,6 +133,7 @@ class MyApp extends StatelessWidget {
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
           DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+          ProfileScreen.route: (context) => const ProfileScreen(),
         },
       ),
     );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leodys/features/profile/presentation/screens/profile_view.dart';
 
-import '../../providers.dart';
+import '../../../cards/providers.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
 import 'empty_profile_view.dart';
@@ -16,7 +16,6 @@ class ProfileScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<ProfileCubit>()..loadProfile(),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Mon profil")),
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
             return switch (state) {

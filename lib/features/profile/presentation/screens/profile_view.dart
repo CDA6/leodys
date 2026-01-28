@@ -1,9 +1,34 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leodys/features/profile/domain/models/user_profile_model.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_edit_screen.dart';
+
+import '../../../cards/providers.dart';
+import '../cubit/profile_cubit.dart';
+import '../cubit/profile_edit_cubit.dart';
 
 class ProfileView extends StatelessWidget {
   final UserProfileModel profile;
   const ProfileView({super.key, required this.profile});
+
+  // permet de gérer les exceptions si l'image du profil a été supprimée localement par ex
+  ImageProvider<Object> getProfileImage(UserProfileModel profile) {
+    if (profile.avatarPath != null && profile.avatarPath!.isNotEmpty) {
+      final file = File(profile.avatarPath!);
+      if (file.existsSync() && file.lengthSync() > 0) {
+        return FileImage(file);
+      }
+    }
+
+    if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+      return NetworkImage(profile.avatarUrl!);
+    }
+
+    // fallback si pas d'image
+    return const AssetImage('assets/images/avatar_placeholder.jpg');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +43,7 @@ class ProfileView extends StatelessWidget {
             // Avatar
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage(profile.avatarPath ?? 'assets/images/avatar_placeholder.jpg'),
+              backgroundImage: getProfileImage(profile)
             ),
             const SizedBox(height: 12),
 
@@ -73,7 +98,19 @@ class ProfileView extends StatelessWidget {
                 icon: const Icon(Icons.edit),
                 label: const Text('Modifier le profil'),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/edit-profile');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) => getIt<ProfileEditCubit>(),
+                        child: ProfileEditScreen(profile: profile),
+                      ),
+                    ),
+                  );
+
+                  if (context.mounted) {
+                    context.read<ProfileCubit>().loadProfile();
+                  }
                 },
               ),
             ),
