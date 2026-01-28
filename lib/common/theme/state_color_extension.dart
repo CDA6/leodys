@@ -18,9 +18,17 @@ class StateColorScheme extends ThemeExtension<StateColorScheme> {
   final Color warning;
   final Color onWarning;
 
-  static const Color success50 = Color(0xFF2E8B57);
+  static const Color success30 = Color(0xFF267348);
+  static const Color success40 = Color(0xFF339960);
+  static const Color success50 = Color(0xFF3FC078);
+
+  static const Color warning30 = Color(0xFF8E570B);
+  static const Color warning40 = Color(0xFFBD740F);
   static const Color warning50 = Color(0xFFEC9213);
-  static const Color error50 = Color(0xFF951111);
+
+  static const Color error30 = Color(0xFF891010);
+  static const Color error40 = Color(0xFFB71515);
+  static const Color error50 = Color(0xFFE51A1A);
 
   const StateColorScheme({
     required this.error,
@@ -32,11 +40,20 @@ class StateColorScheme extends ThemeExtension<StateColorScheme> {
   });
 
   static const light = StateColorScheme(
-    error: error50,
+    error: error30,
     onError: Colors.white,
-    success: success50,
+    success: success30,
     onSuccess: Colors.white,
-    warning: warning50,
+    warning: warning30,
+    onWarning: Colors.black,
+  );
+
+  static const dark = StateColorScheme(
+    error: error40,
+    onError: Colors.white,
+    success: success40,
+    onSuccess: Colors.white,
+    warning: warning40,
     onWarning: Colors.black,
   );
 

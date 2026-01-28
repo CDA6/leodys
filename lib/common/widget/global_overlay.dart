@@ -101,10 +101,7 @@ class _GlobalFloatingButtonState extends State<GlobalOverlay> {
                         _closeMenu();
 
                         if (SettingsViewModel.isAvailable) {
-                          navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                            SettingsScreen.route,
-                                (route) => false,
-                          );
+                          navigatorKey.currentState!.pushNamed(SettingsScreen.route);
                         } else {
                           showDialog(
                             context: navigatorKey.currentContext!,
