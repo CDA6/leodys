@@ -1,15 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
 
 class MapWidget extends StatefulWidget {
   final GeoPosition position;
   final GeoPosition? destination;
   final bool isAutoFollowing;
+
   final VoidCallback onRecenter;
   final VoidCallback onMapDragged;
+
+  final Stream<MapCameraCommand> cameraStream;
 
   final double _initZoom = 18.0;
   final double _minZoom = 1.0;
@@ -22,6 +28,7 @@ class MapWidget extends StatefulWidget {
     required this.isAutoFollowing,
     required this.onRecenter,
     required this.onMapDragged,
+    required this.cameraStream,
   });
 
   @override
@@ -30,23 +37,16 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
+  StreamSubscription<MapCameraCommand>? _cameraSubscription;
 
-  //Call if position is updated
-  @override
-  void didUpdateWidget(MapWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (!widget.isAutoFollowing) {
-      return;
-    }
-    // if (oldWidget.position == widget.position) {
-    //   return;
-    // }
-
-    _animatedMapMove(
-      LatLng(widget.position.latitude, widget.position.longitude),
-      _mapController.camera.zoom,
-    );
+  void setupCameraListener(Stream<MapCameraCommand> stream) {
+    _cameraSubscription?.cancel();
+    _cameraSubscription = stream.listen((command) {
+      _animatedMapMove(
+        LatLng(command.position.latitude, command.position.longitude),
+        command.zoom ?? _mapController.camera.zoom,
+      );
+    });
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
@@ -165,5 +165,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _cameraSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setupCameraListener(widget.cameraStream);
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
+import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
 import 'package:leodys/features/map/domain/useCases/search_location_usecase.dart';
 import 'package:leodys/features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'package:leodys/common/utils/app_logger.dart';
@@ -17,6 +18,12 @@ class MapViewModel {
 
   bool _isAutoFollowingUser = true;
   bool get isFollowingUser => _isAutoFollowingUser;
+
+  final StreamController<MapCameraCommand> _cameraCommandController =
+      StreamController<MapCameraCommand>.broadcast();
+
+  Stream<MapCameraCommand> get cameraCommandStream =>
+      _cameraCommandController.stream;
   // </editor-fold>
 
   // <editor-fold desc="GeoLocator">
@@ -59,24 +66,29 @@ class MapViewModel {
 
   void dispose() {
     AppLogger().info(
-      "Abrupt closing of the application : closing the GPS stream controller",
+      "Abrupt closing of the application : closing the different stream controller",
     );
     _positionController.close();
+    _cameraCommandController.close();
   }
   // </editor-fold>
 
   // <editor-fold desc="GeoLocator">
-  void stopGpsStreamListener() {
-    _locationSubscription?.cancel();
-    _locationSubscription = null;
-  }
-
   void startGpsStreamListener() {
     _locationSubscription?.cancel();
     _locationSubscription = watchUserLocation().listen((pos) {
       _lastKnownPosition = pos;
       _positionController.add(pos); // Transmission to the widget
+
+      if (_isAutoFollowingUser) {
+        _cameraCommandController.add(MapCameraCommand(position: pos));
+      }
     }, onError: (error) => _positionController.addError(error));
+  }
+
+  void stopGpsStreamListener() {
+    _locationSubscription?.cancel();
+    _locationSubscription = null;
   }
   // </editor-fold>
 
@@ -112,13 +124,18 @@ class MapViewModel {
   void moveToLocation(LocationSearchResult destination) {
     disableAutoFollowing();
     _selectedDestination = destination;
-    _positionController.add(destination.position);
+
+    _cameraCommandController.add(
+      MapCameraCommand(position: destination.position, zoom: 18),
+    );
   }
 
   void resumeAutoFollowing() {
     _isAutoFollowingUser = true;
     if (_lastKnownPosition != null) {
-      _positionController.add(_lastKnownPosition!);
+      _cameraCommandController.add(
+        MapCameraCommand(position: _lastKnownPosition!),
+      );
     }
   }
 
