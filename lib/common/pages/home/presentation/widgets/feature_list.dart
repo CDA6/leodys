@@ -117,7 +117,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: false,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Calculette pour dyscalculique.',
     ),
 

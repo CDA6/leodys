@@ -1,4 +1,4 @@
-/// Classe abstraite OcrRepository représente une interface.
+/// Classe abstraite OcrRepository représente une interfaces.
 /// Elle définit un contrat que les classes de la couche data devront implémenter
 abstract class OcrRepository {
 
