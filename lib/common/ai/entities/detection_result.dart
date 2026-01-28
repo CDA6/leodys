@@ -24,17 +24,3 @@ class DetectionResult {
     return 'DetectionResult(label: $label, confidence: ${confidence.toStringAsFixed(2)}, box: $boundingBox)';
   }
 }
-
-/// Interface (Contrat) que tous vos Services d'IA doivent implémenter.
-/// Cela permet de changer de modèle sans casser l'interface utilisateur.
-abstract class AIModelRepository {
-  /// Charge le modèle en mémoire (TFLite Interpreter)
-  Future<void> loadModel();
-
-  /// Lance la prédiction sur une entrée donnée.
-  /// [input] est 'dynamic' pour accepter soit un File (Photo), soit une CameraImage (Stream)
-  Future<List<DetectionResult>> predict(dynamic input);
-
-  /// Libère les ressources (ferme l'interpréteur)
-  void dispose();
-}

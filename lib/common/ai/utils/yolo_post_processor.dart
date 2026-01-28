@@ -1,16 +1,16 @@
 import 'dart:math';
-import 'dart:ui'; // Pour Rect
-import '../services/ai_handler.dart'; // Import de votre entité DetectionResult
+import 'dart:ui';
+import '../entities/detection_result.dart';
 
 /// Utilitaire pour décoder la sortie brute (Tensor) de YOLOv8.
 class YoloPostProcessor {
   // --- CONFIGURATION ---
   // Taille d'entrée du modèle (doit correspondre à l'entraînement)
   static const int _inputSize = 640;
-  // Seuil de confiance minimal pour garder une détection (45%)
-  static const double _confThreshold = 0.45;
-  // Seuil de superposition pour le NMS (45%)
-  static const double _iouThreshold = 0.45;
+  // Seuil de confiance minimal pour garder une détection
+  static const double _confThreshold = 0.60;
+  // Seuil de superposition pour le NMS
+  static const double _iouThreshold = 0.30;
 
   /// Méthode principale de traitement.
   /// [output] : Le tensor brut sorti de l'interpréteur [1, Channels, Anchors]
@@ -18,20 +18,16 @@ class YoloPostProcessor {
   static List<DetectionResult> process(List<dynamic> output, List<String> labels) {
     List<DetectionResult> detections = [];
 
-    // YOLOv8 Structure de sortie standard : [Batch, Channels, Anchors]
-    // Batch = 1
-    // Channels = 4 (coords x,y,w,h) + nombre_de_classes
-    // Anchors = 8400 (pour une image 640x640)
-
-    // Vérification de sécurité dimensionnelle
+    // Structure standard YOLOv8 exportée : [Batch, Channels, Anchors]
     // output[0] accède au batch unique
-    final int numAttributes = output[0].length; // Devrait être (4 + nb_classes)
-    final int numAnchors = output[0][0].length; // Devrait être 8400
+    // output[0].length devrait être (4 coords + nb_classes)
+    // output[0][0].length devrait être 8400 (nombre d'ancres)
 
+    final int numAttributes = output[0].length;
+    final int numAnchors = output[0][0].length;
     final int numClasses = labels.length;
 
     // 1. Extraction des candidats
-    // On boucle sur chaque ancre (colonne)
     for (int i = 0; i < numAnchors; i++) {
 
       // A. Trouver la classe dominante pour cette ancre
@@ -39,9 +35,7 @@ class YoloPostProcessor {
       int maxClassIndex = -1;
 
       // Les probabilités commencent à l'index 4 (après cx, cy, w, h)
-      // Note : output[0][c][i] -> Batch 0, Attribut c, Ancre i
       for (int c = 0; c < numClasses; c++) {
-        // +4 car les 4 premiers attributs sont les coordonnées
         double score = output[0][4 + c][i];
 
         if (score > maxClassScore) {
@@ -86,21 +80,17 @@ class YoloPostProcessor {
   }
 
   /// Algorithme NMS (Non-Maximum Suppression)
-  /// Élimine les boîtes qui se chevauchent trop pour ne garder que la meilleure.
   static List<DetectionResult> _nonMaxSuppression(List<DetectionResult> boxes) {
     List<DetectionResult> finalBoxes = [];
 
-    // On trie les boîtes par confiance décroissante (la plus sûre en premier)
+    // On trie les boîtes par confiance décroissante
     boxes.sort((a, b) => b.confidence.compareTo(a.confidence));
 
     while (boxes.isNotEmpty) {
-      // On prend la meilleure boîte restante
       DetectionResult current = boxes.first;
       finalBoxes.add(current);
       boxes.removeAt(0);
 
-      // On compare cette boîte avec toutes les autres restantes
-      // Si une autre boîte se superpose trop (IoU > seuil), on la supprime
       boxes.removeWhere((other) {
         double iou = _calculateIoU(current.boundingBox, other.boundingBox);
         return iou > _iouThreshold;
@@ -110,7 +100,7 @@ class YoloPostProcessor {
     return finalBoxes;
   }
 
-  /// Calcul de l'Intersection over Union (IoU) entre deux rectangles
+  /// Calcul de l'Intersection over Union (IoU)
   static double _calculateIoU(Rect boxA, Rect boxB) {
     final double intersectionLeft = max(boxA.left, boxB.left);
     final double intersectionTop = max(boxA.top, boxB.top);
@@ -118,15 +108,12 @@ class YoloPostProcessor {
     final double intersectionBottom = min(boxA.bottom, boxB.bottom);
 
     if (intersectionRight < intersectionLeft || intersectionBottom < intersectionTop) {
-      return 0.0; // Pas d'intersection
+      return 0.0;
     }
 
     final double intersectionArea = (intersectionRight - intersectionLeft) * (intersectionBottom - intersectionTop);
-
     final double boxAArea = boxA.width * boxA.height;
     final double boxBArea = boxB.width * boxB.height;
-
-    // Union = Surface A + Surface B - Surface Intersection
     final double unionArea = boxAArea + boxBArea - intersectionArea;
 
     if (unionArea == 0) return 0.0;
