@@ -19,7 +19,7 @@ dependencies:
   connectivity_plus: ^6.1.5 #https://pub.dev/packages/connectivity_plus
   get_it: ^9.2.0 #https://pub.dev/packages/get_it
   dartz: ^0.10.1 #https://pub.dev/packages/dartz
-  camera: ^0.11.0
+  camera: ^0.11.3
   url_launcher: ^6.3.2
   internet_connection_checker: ^3.0.1
   flutter_map: ^8.2.2
@@ -57,8 +57,25 @@ dev_dependencies:
   build_runner: ^2.4.13
 
 flutter:
+  fonts:
+    - family: OpenDyslexic
+      fonts:
+        - asset: assets/fonts/OpenDyslexic-Regular.otf
+        - asset: assets/fonts/OpenDyslexic-Bold.otf
+          weight: 700
+        - asset: assets/fonts/OpenDyslexic-Italic.otf
+          style: italic
+        - asset: assets/fonts/OpenDyslexic-BoldItalic.otf
+          weight: 700
+          style: italic
+
+    - family: Lexend
+      fonts:
+        - asset: assets/fonts/Lexend-VariableFont_wght.ttf
+
   uses-material-design: true
 
   assets:
     - assets/images/logo.jpeg
     - .env
+    - assets/yolo11n-pose.tflite

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/models/document.dart';
@@ -7,11 +6,15 @@ class DocumentTile extends StatelessWidget {
   final Document document;
   final VoidCallback onRead;
   final VoidCallback onDelete;
+  final VoidCallback onStop;
+  final VoidCallback onPause;
 
-  const DocumentTile({
+  const DocumentTile({super.key,
     required this.document,
     required this.onRead,
     required this.onDelete,
+    required this.onStop,
+    required this.onPause,
   });
 
   @override
@@ -31,9 +34,18 @@ class DocumentTile extends StatelessWidget {
               onPressed: onRead,
             ),
             IconButton(
+              icon: const Icon(Icons.pause),
+              onPressed: onPause,
+            ),
+            IconButton(
+              icon: const Icon(Icons.stop),
+              onPressed: onStop,
+            ),
+            IconButton(
               icon: const Icon(Icons.delete),
               onPressed: onDelete,
             ),
+
           ],
         ),
       ),

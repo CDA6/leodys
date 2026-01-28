@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/authentication/presentation/pages/auth/signin_page.dart';
 import 'package:leodys/features/authentication/presentation/pages/auth/register_page.dart';
 import 'package:provider/provider.dart';
@@ -19,11 +20,15 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
         final isAuthenticated = authService.isAuthenticated;
 
         return AppBar(
-          title: Text(title),
+          backgroundColor: context.colorScheme.primaryContainer,
+          title: Text(
+            title,
+            style: TextStyle(color: context.colorScheme.onPrimaryContainer),
+          ),
           actions: [
             if (isAuthenticated) ...[
               IconButton(
-                icon: const Icon(Icons.logout),
+                icon: Icon(Icons.logout, color: context.colorScheme.onPrimaryContainer),
                 tooltip: 'Déconnexion',
                 onPressed: () async {
                   await authService.signOut();
@@ -50,10 +55,10 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.login, color: Colors.black),
-                label: const Text(
+                icon: Icon(Icons.login, color: context.colorScheme.onPrimaryContainer),
+                label: Text(
                   'Se connecter',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: context.colorScheme.onPrimaryContainer),
                 ),
               ),
 
@@ -67,10 +72,10 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.person_add, color: Colors.black),
-                label: const Text(
+                icon: Icon(Icons.person_add, color: context.colorScheme.onPrimaryContainer),
+                label: Text(
                   's\'inscrire',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: context.colorScheme.onPrimaryContainer),
                 ),
               ),
             ],
