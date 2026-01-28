@@ -4,10 +4,8 @@ import 'package:leodys/features/confidential_document/data/local_storage_reposit
 import 'package:leodys/features/confidential_document/data/storage_repository.dart';
 import 'package:leodys/features/confidential_document/data/sync_registry_repository.dart';
 import 'package:leodys/features/confidential_document/domain/encrypted_session.dart';
-import 'package:leodys/features/confidential_document/domain/encryption_service.dart';
-import 'package:leodys/features/confidential_document/domain/entity/decryption_result.dart';
+import 'package:leodys/features/confidential_document/domain/services/encryption_service.dart';
 import 'package:leodys/features/confidential_document/domain/entity/fileMetadata.dart';
-import 'package:leodys/features/confidential_document/domain/entity/picture_download.dart';
 import 'package:leodys/features/confidential_document/domain/entity/save_result.dart';
 import 'package:leodys/features/confidential_document/domain/entity/status_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,6 +18,7 @@ class SaveDocumentUsecase {
   final EncryptionService _encryptionService = EncryptionService();
   EncryptionSession session = EncryptionSession();
   final SyncRegistryRepository _syncRegistryRepository = SyncRegistryRepository();
+
 
   //Get the actual user
   User? get user => Supabase.instance.client.auth.currentUser;
@@ -81,61 +80,5 @@ class SaveDocumentUsecase {
     }
   }
 
-  Future<DecryptionResult?> getAllImages(bool hasConnection) async {
-    print("Lancement recherhce image dans usecase"); //TODO ça bloque là
-    final SecretKey? key = session.key;
-    int errorCount = 0;
-    List<PictureDownload> listPicture = [];
 
-    //Récupération du local hors-ligne
-    if (!hasConnection) {
-      print("Has Connection : {$hasConnection}");
-      final Map<String, Uint8List> listFile = await _localStorageRepository
-          .getAllEncryptedFiles();
-      if (listFile.isEmpty) {
-        return null;
-      }
-      for (var file in listFile.entries) {
-        final String title = file.key;
-        final Uint8List encryptedData = file.value;
-        Uint8List? byte = await _encryptionService.decryptData(
-          encryptedData,
-          key!,
-        );
-        if (byte != null) {
-          PictureDownload image = PictureDownload(byte, title);
-          listPicture.add(image);
-        } else {
-          errorCount++;
-        }
-      }
-    }
-    ///Récupération seulement sur le remote storage et pas de local
-    if (hasConnection) {
-      final List<String> listTitles = await _remoteStorageRepository
-          .getListTitle();
-      if (listTitles.isEmpty) {
-        return null;
-      }
-      for (String title in listTitles) {
-        print("boucle en cours");
-        Uint8List? encryptedData = await _remoteStorageRepository.getImage(
-          title,
-        );
-        if (encryptedData != null && encryptedData.isNotEmpty) {
-          Uint8List? byte = await _encryptionService.decryptData(
-            encryptedData,
-            key!,
-          );
-          if (byte != null) {
-            PictureDownload image = PictureDownload(byte, title);
-            listPicture.add(image);
-          } else {
-            errorCount++;
-          }
-        }
-      }
-    }
-    return DecryptionResult(listPicture, errorCount);
-  }
 }

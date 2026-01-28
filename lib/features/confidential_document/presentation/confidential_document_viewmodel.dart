@@ -4,22 +4,27 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leodys/common/mixins/connectivity_mixin.dart';
-import 'package:leodys/features/confidential_document/domain/KeyStorageService.dart';
-import 'package:leodys/features/confidential_document/domain/encryption_service.dart';
+import 'package:leodys/features/confidential_document/domain/services/key_storage_service.dart';
+import 'package:leodys/features/confidential_document/domain/services/encryption_service.dart';
 import 'package:leodys/features/confidential_document/domain/entity/decryption_result.dart';
 import 'package:leodys/features/confidential_document/domain/entity/picture_download.dart';
 import 'package:leodys/features/confidential_document/domain/entity/save_result.dart';
 import 'package:leodys/features/confidential_document/domain/entity/sunc_success.dart';
-import 'package:leodys/features/confidential_document/domain/synchronisation_usecase.dart';
+import 'package:leodys/features/confidential_document/domain/usecase/get_document_usecase.dart';
+import 'package:leodys/features/confidential_document/domain/usecase/synchronisation_usecase.dart';
 
 import '../data/auth_repository.dart';
+import '../domain/usecase/delete_document_usecase.dart';
 import '../domain/encrypted_session.dart';
-import '../domain/save_document_usecase.dart';
+import '../domain/entity/delete_result.dart';
+import '../domain/usecase/save_document_usecase.dart';
 
 class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixin {
 
   //usecase
+  final GetDocumentUsecase _getDoc = GetDocumentUsecase();
   final SaveDocumentUsecase _saveDoc = SaveDocumentUsecase();
+  final DeleteDocumentUseCase _deleteDoc = DeleteDocumentUseCase();
   final EncryptionService _encryptionService = EncryptionService();
   final EncryptionSession session = EncryptionSession();
   final AuthRepository _authRepo = AuthRepository();
@@ -46,6 +51,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
   //Snack bar
   int errorCount = 0;
   String? infoSaveImg;
+  String? infoDeleteImg;
   //Synch
   String? alerteSync;
 
@@ -55,9 +61,6 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
 
   // Initialization for screen
   Future<void> i65nit() async {
-    //voir si récupère la connexion
-    // final AuthRepository authRepo = AuthRepository();
-    // await authRepo.login();
     initConnectivity();
     print("Has Connection ? $hasConnection");
 
@@ -73,6 +76,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
     notifyListeners(); // On prévient l'UI que c'est bon
     await sync();
   }
+
   Future<void> sync() async {
     isLoading = true;
     notifyListeners();
@@ -147,7 +151,11 @@ Future<void> clearAlerte() async {
         source: ImageSource.camera,
       );
       if (pickedFile == null) return;
-
+      final Uint8List bytes = await pickedFile.readAsBytes();
+      print("Image présente  ??? ${bytes.isNotEmpty}");
+      // imageFile = bytes;
+      // await Future.delayed(Duration(milliseconds: 500));
+      // notifyListeners();
       _showChosenPicture(pickedFile);
     } catch(e) {
       print("Erreur lors de la prise de la photo : $e");
@@ -155,10 +163,19 @@ Future<void> clearAlerte() async {
   }
 
   Future<void> _showChosenPicture(XFile pickedFile) async {
+    // Affiche un indicateur de chargement
+    isLoading = true;
+    notifyListeners();
+
     final Uint8List bytes = await pickedFile.readAsBytes();
+
+    // Cache l'indicateur de chargement
+    isLoading = false;
+    notifyListeners();
     imageFile = bytes;
     notifyListeners();
   }
+
 
   Future<void> cancelImageFile() async {
     imageFile = null;
@@ -188,10 +205,11 @@ Future<void> clearAlerte() async {
 
     isSaving = true;
     notifyListeners();
+    String title = titleController.text.trim();
     try {
       SaveResult res = await _saveDoc.saveImage(
         imageFile!,
-        titleController.text,
+        title,
         session.key!,
       );
 
@@ -223,10 +241,8 @@ Future<void> clearAlerte() async {
     Future<void> getAllPicture() async {
       lookingForPicture = true;
       notifyListeners();
-      print("Lancement recherche image dans viewmodel");
       if (!session.isLocked) {
-        print("session déverouiller lancement recherche");
-        DecryptionResult? result = await _saveDoc.getAllImages(checkConnection());
+        DecryptionResult? result = await _getDoc.getAllImages(checkConnection());
         if(result != null) {
           pictures = result.pictures;
           errorCount = result.errorCount;
@@ -241,8 +257,20 @@ Future<void> clearAlerte() async {
     }
 
     Future<void> deletePicture(String title) async {
-    //TODO delete picture selected
+      DeleteResult res = await _deleteDoc.deleteDocument(title, hasConnection);
+      infoDeleteImg = switch(res){
+      DeleteResult.deletedAll =>"L'image a été complètement supprimée",
+      DeleteResult.deletedLocal =>"L'image supprimée en local",
+      DeleteResult.deletedRemote =>"L'image supprimée en base de donnée",
+      DeleteResult.failure =>"Échec de la suppression",
+      };
+      notifyListeners();
     }
+
+  Future<void> clearInfoDelete() async {
+    infoDeleteImg = null;
+    notifyListeners();
+  }
 
 
     //TODO modifier cette méthode pour la création de la clé et la récupération de la clé

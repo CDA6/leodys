@@ -1,14 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:leodys/features/confidential_document/presentation/widget/photo_card.dart';
+import 'package:leodys/features/confidential_document/presentation/utils/no_accents_input_formater.dart';
 import 'package:provider/provider.dart';
 
-import '../domain/entity/picture_download.dart';
 import 'confidential_document_viewmodel.dart';
 
 class ConfidentialDocumentScreen extends StatelessWidget {
   static const String route = '/document_confidentiel';
-
   const ConfidentialDocumentScreen({super.key});
 
   @override
@@ -29,23 +27,28 @@ class _ConfidentialDocumentContent extends StatelessWidget {
       appBar: AppBar(title: Text("Document confidentiel")),
       body: Consumer<ConfidentialDocumentViewmodel>(
         builder: (context, vm, child) {
-
           //LISTENER UI (SnackBars)
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
 
             if (vm.infoSaveImg != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(vm.infoSaveImg!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(vm.infoSaveImg!)));
               vm.clearInfoSave();
             }
 
             if (vm.alerteSync != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(vm.alerteSync!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(vm.alerteSync!)));
               vm.clearAlerte();
+            }
+            if (vm.infoDeleteImg != null) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(vm.infoDeleteImg!)));
+              vm.clearInfoDelete();
             }
           });
 
@@ -124,10 +127,16 @@ class _ActionButtons extends StatelessWidget {
       children: [
         // --- BOUTON SYNCHRONISATION (Nouveau) ---
         ElevatedButton.icon(
-          onPressed: (vm.isLoading || !vm.hasConnection) ? null : () => vm.sync(),
+          onPressed: (vm.isLoading || !vm.hasConnection)
+              ? null
+              : () => vm.sync(),
           style: _buttonStyle(Colors.orangeAccent),
           icon: vm.isLoading
-              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Icon(Icons.sync),
           label: const Text("Synchro"),
         ),
@@ -151,7 +160,9 @@ class _ActionButtons extends StatelessWidget {
 
         // --- BOUTON GALERIE ---
         ElevatedButton.icon(
-          onPressed: vm.isLoading ? null : () async => _handleGalleryAccess(context, vm),
+          onPressed: vm.isLoading
+              ? null
+              : () async => _handleGalleryAccess(context, vm),
           style: _buttonStyle(Colors.teal),
           icon: const Icon(Icons.collections),
           label: const Text("Ma Galerie"),
@@ -170,7 +181,10 @@ class _ActionButtons extends StatelessWidget {
   }
 
   // --- LOGIQUE EXTRAITE (Plus lisible) ---
-  Future<void> _handleGalleryAccess(BuildContext context, ConfidentialDocumentViewmodel vm) async {
+  Future<void> _handleGalleryAccess(
+    BuildContext context,
+    ConfidentialDocumentViewmodel vm,
+  ) async {
     if (vm.session.isLocked) {
       final String? password = await showDialog<String>(
         context: context,
@@ -185,14 +199,10 @@ class _ActionButtons extends StatelessWidget {
     if (!vm.session.isLocked) {
       vm.maskGallery(false);
       await vm.getAllPicture();
-
     }
   }
-
-  void _showSnack(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
 }
+
 class _NewImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -201,6 +211,23 @@ class _NewImage extends StatelessWidget {
     return Wrap(
       spacing: 10,
       children: [
+        // Preview de l'image sélectionnée (si présente)
+        if (vm.imageFile != null)
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  child: ClipRRect(
+                    // Optionnel: bords arrondis pour le style
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(vm.imageFile!, fit: BoxFit.scaleDown),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
         TextField(
           controller: vm.titleController,
           decoration: InputDecoration(
@@ -212,31 +239,34 @@ class _NewImage extends StatelessWidget {
               borderSide: BorderSide(color: Colors.red),
             ),
           ),
+          inputFormatters: [
+            NoAccentsInputFormatter(), // Applique le filtre
+          ],
         ),
         ElevatedButton.icon(
           onPressed: vm.isSaving
               ? null
               : () async {
-            if (vm.session.isLocked) {
-              final String? password = await showDialog<String>(
-                context: context,
-                builder: (context) => const _Alerte(),
-              );
-              if (password != null && password.isNotEmpty) {
-                bool success = await vm.saveKey(password);
-                if (!success) return;
-              } else {
-                return;
-              }
-            }
-            await vm.saveImage();
-          },
+                  if (vm.session.isLocked) {
+                    final String? password = await showDialog<String>(
+                      context: context,
+                      builder: (context) => const _Alerte(),
+                    );
+                    if (password != null && password.isNotEmpty) {
+                      bool success = await vm.saveKey(password);
+                      if (!success) return;
+                    } else {
+                      return;
+                    }
+                  }
+                  await vm.saveImage();
+                },
           icon: vm.isSaving
               ? const SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Icon(Icons.save),
           label: Text(vm.isSaving ? "Enregistrement..." : "Enregistrer"),
         ),
@@ -254,60 +284,7 @@ class _NewImage extends StatelessWidget {
 class _ShowGallery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<ConfidentialDocumentViewmodel>();
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isLargerScreen = screenWidth > 800;
-    if(vm.hideGallery) return const SizedBox.shrink();
-    return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (vm.lookingForPicture)
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: CircularProgressIndicator(),
-            ),
-          // Affichage de la galerie
-          if (vm.pictures != null && vm.pictures!.isNotEmpty)
-            SizedBox(
-              height: 600,
-              child: _buildGallery(context, vm.pictures!, vm.deletePicture()), // Appel de ta méthode de grille
-            )
-          else if (!vm.lookingForPicture) // On affiche "aucun" seulement si on ne charge pas
-            const SizedBox(
-              height: 200,
-              child: Center(child: Text("Aucun fichier enregistré")),
-            ),
-
-          // Preview de l'image sélectionnée (si présente)
-          if (vm.imageFile != null)
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: isLargerScreen ? screenWidth * 0.7 : screenWidth * 0.9,
-                    height: isLargerScreen ? 400 : 250,
-                    child: ClipRRect( // Optionnel: bords arrondis pour le style
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.memory(
-                        vm.imageFile!,
-                        fit: BoxFit.scaleDown,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ]
-    );
-  }
-
-  //TODO widget afficher galerie d'image
-  Widget _buildGallery(BuildContext context, List<PictureDownload> pictures, VoidCallback onDelete) {
     double width = MediaQuery.of(context).size.width;
-
-    // 2. On définit le nombre de colonnes selon la largeur
     int columns;
     if (width < 600) {
       columns = 1; // Téléphone
@@ -316,19 +293,130 @@ class _ShowGallery extends StatelessWidget {
     } else {
       columns = 3; // Grand écran / Web
     }
-    return GridView.builder(
-      padding: const EdgeInsets.all(10),
-      // shrinkWrap: true, // IMPORTANT : permet au GridView de ne prendre que l'espace nécessaire
-      // physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columns,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1.2,
-      ),
-      itemCount: pictures.length,
-      itemBuilder: (context, index) {
-        return PhotoCard(image: pictures[index], onDelete: onDelete);
-      },
+    final vm = context.watch<ConfidentialDocumentViewmodel>();
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isLargerScreen = screenWidth > 800;
+    if (vm.hideGallery) return const SizedBox.shrink();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (vm.lookingForPicture)
+          const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: CircularProgressIndicator(),
+          ),
+        // Affichage de la galerie
+        if (vm.pictures != null && vm.pictures!.isNotEmpty)
+          SizedBox(
+            height: 600,
+            child: GridView.builder(
+              padding: const EdgeInsets.all(10),
+              // shrinkWrap: true, // IMPORTANT : permet au GridView de ne prendre que l'espace nécessaire
+              // physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                mainAxisSpacing: 10,
+                childAspectRatio: 1.5,
+              ),
+              itemCount: vm.pictures!.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onDoubleTap: () {
+                          showDialog(
+                            context: context,
+                            barrierColor: Colors.black,
+                            builder: (_) => GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Dialog(
+                                backgroundColor: Colors.transparent,
+                                insetPadding: EdgeInsets.zero,
+                                child: InteractiveViewer(
+                                  child: Image.memory(
+                                    vm.pictures![index].byte,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 180,
+                          child: Image.memory(
+                            vm.pictures![index].byte,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                vm.pictures![index].title,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    titlePadding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                                    contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                                    actionsPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    buttonPadding: EdgeInsets.zero,
+                                    insetPadding: const EdgeInsets.all(24),
+                                    title: const Text("Suppression"),
+                                    content: Text(
+                                      'Etes-vous sûr de vouloir supprimer ${vm.pictures![index].title} ?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Annuler'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          vm.deletePicture(vm.pictures![index].title);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Oui'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          )
+        else if (!vm
+            .lookingForPicture) // On affiche "aucun" seulement si on ne charge pas
+          const SizedBox(
+            height: 200,
+            child: Center(child: Text("Aucun fichier enregistré")),
+          ),
+
+
+      ],
     );
   }
 }
