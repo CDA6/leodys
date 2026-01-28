@@ -21,9 +21,12 @@ class MapViewModel {
 
   final StreamController<MapCameraCommand> _cameraCommandController =
       StreamController<MapCameraCommand>.broadcast();
-
   Stream<MapCameraCommand> get cameraCommandStream =>
       _cameraCommandController.stream;
+
+  final StreamController<GeoPosition?> _destinationController =
+      StreamController.broadcast();
+  Stream<GeoPosition?> get markerStream => _destinationController.stream;
   // </editor-fold>
 
   // <editor-fold desc="GeoLocator">
@@ -124,6 +127,8 @@ class MapViewModel {
   void moveToLocation(LocationSearchResult destination) {
     disableAutoFollowing();
     _selectedDestination = destination;
+
+    _destinationController.add(destination.position);
 
     _cameraCommandController.add(
       MapCameraCommand(position: destination.position, zoom: 18),
