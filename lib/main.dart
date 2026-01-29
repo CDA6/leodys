@@ -1,3 +1,4 @@
+import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -53,6 +54,8 @@ import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+
 import 'features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'features/vocal_chat/presentation/viewmodels/vocal_chat_viewmodel.dart';
 import 'features/gamecards-reader/injection_container.dart' as gamecard_reader;
@@ -100,6 +103,9 @@ void main() async {
   } else {
     AppLogger().warning("No internet connection. Skipping authentication.");
   }
+  // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
+  final client = Supabase.instance.client;
+  await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
 
   //ThemeManager
   final themeManager = AppThemeManager();
@@ -115,9 +121,13 @@ void main() async {
   await voice_clock.init();
   await gamecard_reader.init();
 
-  runApp(MyApp(themeManager: themeManager));
   initVehicleRecognition();
-  runApp(MyApp(themeManager: themeManager));
+  runApp(
+    riverpod.ProviderScope(
+      child: MyApp(themeManager: themeManager,),
+    ),
+  );
+
 }
 
 class MyApp extends StatelessWidget {
@@ -244,6 +254,7 @@ class MyApp extends StatelessWidget {
                 );
                 return WebReaderScreen(controller: controller);
               },
+              ForumScreen.route: (context) => const ForumScreen(),
             },
           );
         },
