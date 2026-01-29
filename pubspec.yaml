@@ -101,8 +101,8 @@ flutter:
     - assets/models/best_float32.tflite
     - assets/models/yolo26n_float32.tflite
     - assets/
-    - lib/features/money_manager/assets/images/bills/
-    - lib/features/money_manager/assets/images/coins/
+    - assets/images/bills/
+    - assets/images/coins/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

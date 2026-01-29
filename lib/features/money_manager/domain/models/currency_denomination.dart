@@ -27,13 +27,13 @@ class CurrencyDenomination {
   String get imagePath {
     if (isBill) {
       // Billets : 5e.png, 10e.png, 20e.png, 50e.png, 100e.png, 200e.png, 500e.png
-      return 'lib/features/money_manager/assets/images/bills/${value.toInt()}e.png';
+      return 'assets/images/bills/${value.toInt()}e.png';
     } else {
       // Pièces : pour les euros (1e.png, 2e.png) et centimes (1c.png, 2c.png, etc.)
       if (value >= 1) {
-        return 'lib/features/money_manager/assets/images/coins/${value.toInt()}e.png';
+        return 'assets/images/coins/${value.toInt()}e.png';
       } else {
-        return 'lib/features/money_manager/assets/images/coins/${(value * 100).toInt()}c.png';
+        return 'assets/images/coins/${(value * 100).toInt()}c.png';
       }
     }
   }
