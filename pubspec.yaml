@@ -52,6 +52,7 @@ dependencies:
   googleapis_auth: ^1.4.0
   webview_flutter: ^4.4.1
   html: ^0.15.4
+  flutter_riverpod: ^2.5.1
 
 dev_dependencies:
   flutter_test:

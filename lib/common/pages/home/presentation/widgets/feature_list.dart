@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
+import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
@@ -157,15 +158,6 @@ class FeatureList extends StatelessWidget {
       description: 'Aide à la latéralisation via la caméra.',
     ),
     AppFeature(
-      name: 'Web age',
-      icon: Icons.accessibility_new,
-      route: RealTimeYoloScreen.route,
-      requiresInternet: false,
-      requiresAuth: false,
-      isAvailable: true,
-      description: 'Aide à la latéralisation via la caméra.',
-    ),
-    AppFeature(
       name: 'Lecteur Web',
       icon: Icons.chrome_reader_mode,
       route: WebReaderScreen.route,
@@ -183,6 +175,16 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: "Scan de ticket de caisse"
     ),
+
+    AppFeature(
+        name: "Forum",
+        icon: Icons.chat,
+        route: ForumScreen.route,
+        requiresAuth: false,
+        requiresInternet: true,
+        isAvailable: true,
+        description: 'Espace de discussion pour échanger des messages avec les utilisateurs.',
+    )
   ];
 
   @override
