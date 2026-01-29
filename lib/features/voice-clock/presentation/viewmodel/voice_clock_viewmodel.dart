@@ -1,10 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../../../vocal_notes/data/services/speech_service.dart';
 import '../../domain/repositories/clock_repository.dart';
 import '../../domain/entities/clock_config.dart';
-import '../../../vocal_notes/data/services/speech_service.dart';
-import '../../../vocal_notes/injection_container.dart';
 
 class VoiceClockViewModel extends ChangeNotifier {
   final IClockRepository _repository;
@@ -12,9 +9,11 @@ class VoiceClockViewModel extends ChangeNotifier {
   ClockType _selectedType = ClockType.digital;
   DateTime _currentTime = DateTime.now();
 
+  StreamSubscription<DateTime>? _timeSubscription;
+
 
   VoiceClockViewModel(this._repository) {
-    _repository.getCurrentTime().listen((time) {
+    _timeSubscription = _repository.getCurrentTime().listen((time) {
       _currentTime = time;
       notifyListeners();
     });
@@ -26,6 +25,12 @@ class VoiceClockViewModel extends ChangeNotifier {
   void setClockType(ClockType type) {
     _selectedType = type;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _timeSubscription?.cancel();
+    super.dispose();
   }
 
 }

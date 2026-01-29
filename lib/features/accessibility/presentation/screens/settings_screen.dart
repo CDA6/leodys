@@ -10,6 +10,8 @@ import 'package:leodys/features/accessibility/presentation/widgets/theme_card.da
 import 'package:leodys/features/accessibility/presentation/widgets/font_family_card.dart';
 import 'package:leodys/features/accessibility/presentation/widgets/section_title.dart';
 
+import '../../../../common/widget/global_appbar.dart';
+
 
 class SettingsScreen extends StatelessWidget {
   static const String route = '/accessibility-settings';
@@ -19,22 +21,9 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paramètres d\'accessibilité'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<SettingsViewModel>().resetToDefaults();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Paramètres réinitialisés'),
-                ),
-              );
-            },
-            tooltip: 'Réinitialiser',
-          ),
-        ],
+      appBar: GlobalAppBar(
+        title: 'Préférences',
+        showAuthActions: false,
       ),
       body: Consumer<SettingsViewModel>(
         builder: (context, viewModel, child) {
@@ -50,6 +39,23 @@ class SettingsScreen extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    // Section Thème
+                    const SectionTitle(
+                      icon: Icons.palette,
+                      title: 'Thème et couleurs',
+                    ),
+                    const SizedBox(height: 8),
+                    ThemeCard(
+                      themeMode: settings.themeMode,
+                      onUpdateThemeMode: (String? value) async {
+                        if (value != null) {
+                          await viewModel.updateThemeMode(value);
+                        }
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+
                     // Section Typographie
                     const SectionTitle(
                       icon: Icons.font_download,
@@ -100,23 +106,8 @@ class SettingsScreen extends StatelessWidget {
                       maxLineHeight: SettingsViewModel.maxLineHeight,
                       onUpdateLineHeight: viewModel.updateLineHeight,
                     ),
-                    const SizedBox(height: 24),
 
-                    // Section Thème
-                    const SectionTitle(
-                      icon: Icons.palette,
-                      title: 'Thème et couleurs',
-                    ),
-                    const SizedBox(height: 8),
-                    ThemeCard(
-                      themeMode: settings.themeMode,
-                      onUpdateThemeMode: (String? value) async {
-                        if (value != null) {
-                          await viewModel.updateThemeMode(value);
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 72),
                   ],
                 ),
               ),

@@ -13,6 +13,7 @@ class WelcomeSection extends StatelessWidget {
     return Consumer<HomeViewModel>(
       builder: (context, viewmodel, child) {
         return Container(
+          width: double.maxFinite,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: context.colorScheme.primaryContainer,

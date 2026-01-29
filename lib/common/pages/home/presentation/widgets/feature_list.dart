@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
-import 'package:leodys/common/utils/internet_util.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
-import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
@@ -13,13 +11,7 @@ import '../../../../../features/vehicle_recognition/presentation/pages/scan_imma
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
-
-import 'package:leodys/common/pages/home/presentation/viewmodels/home_viewmodel.dart';
-import 'package:leodys/common/pages/home/domain/entities/app_feature.dart';
-
-import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
-import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
-import 'package:leodys/features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import 'package:leodys/features/calculator/presentation/views/calculator_view.dart';
 
 /// Widget affichant la liste des fonctionnalités disponibles.
 ///
@@ -116,6 +108,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: true,
       isAvailable: true,
       description: 'Scan de cartes de fidélité.',
+    ),
+
+    AppFeature(
+      name: 'Calculette',
+      icon: Icons.calculate,
+      route: CalculatorView.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Calculette pour dyscalculique.',
     ),
 
     AppFeature(

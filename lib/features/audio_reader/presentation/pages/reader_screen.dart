@@ -10,7 +10,7 @@ import '../widgets/text_preview.dart';
 /// Classe UI qui représente l'écran qui permet de réaliser le scan du
 /// document et la lecture de ce dernier
 /// Elle prend en charge également l'initiation des contrôleurs, la synchronistion
-/// entre la loqigue métier et l'interface.
+/// entre la loqigue métier et l'interfaces.
 class ReaderScreen extends StatefulWidget {
   const ReaderScreen({super.key});
 
