@@ -3,9 +3,9 @@ import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
-import 'package:leodys/features/ocr-reader/presentation/widgets/analyze_button.dart';
+import 'package:leodys/common/widget/button_action.dart';
 import 'package:leodys/features/ocr-reader/presentation/widgets/build_error_message.dart';
-import 'package:leodys/features/ocr-reader/presentation/widgets/image_picker_section.dart';
+import 'package:leodys/common/widget/image_picker_section.dart';
 import '../../../../common/widget/connection_warning.dart';
 import '../../../../common/widget/global_appbar.dart';
 import '../viewmodels/printed_text_viewmodel.dart';
@@ -72,10 +72,11 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Bouton d'analyse
-                AnalyzeButton(
+                ButtonAction(
                     canAnalyze: viewModel.canAnalyze,
                     isProcessing: viewModel.isProcessing,
                     onPressed: viewModel.analyzeImage,
+                    defaultText: 'Analyser',
                     processingText: 'Analyse en cours...'
                 ),
 

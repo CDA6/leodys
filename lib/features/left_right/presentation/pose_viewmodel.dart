@@ -32,7 +32,7 @@ class PoseViewModel extends ChangeNotifier {
           ? "Points: ${result.length} (${(result[0].confidence * 100).toInt()}%)"
           : "Recherche...";
 
-      // previent la vue (le screen) qu'il faut se redessiner avec les nouveaux points
+      // previent la vue (le screens) qu'il faut se redessiner avec les nouveaux points
       notifyListeners();
     } catch (e) {
       debugText = "Erreur: $e";
