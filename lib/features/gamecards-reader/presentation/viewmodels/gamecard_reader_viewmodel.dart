@@ -70,7 +70,16 @@ class GamecardReaderViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _detectedCards = await _detectCardsUseCase(_selectedImage!);
+      final result = await _detectCardsUseCase(_selectedImage!);
+      result.fold(
+            (failure) {
+          _errorMessage = 'Erreur analyse: $failure';
+          _detectedCards = [];
+        },
+            (cards) {
+          _detectedCards = cards;
+        },
+      );
 
       if (_detectedCards.isEmpty) {
         _errorMessage = 'Aucune carte détectée';
