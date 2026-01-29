@@ -9,6 +9,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/web_audio_reader/data/datasources/web_page_datasource.dart';
+import 'package:leodys/features/web_audio_reader/domain/usecases/read_webpage_usecase.dart';
+import 'package:leodys/features/web_audio_reader/presentation/controllers/web_reader_controller.dart';
 import 'package:leodys/features/ocr-ticket-caisse/data/datasources/receipt_remote_datasource.dart';
 import 'package:leodys/features/ocr-ticket-caisse/data/repositories/receipt_repository_impl.dart';
 import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
@@ -41,9 +44,6 @@ import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart'
 import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 import 'features/vocal_chat/injection_container.dart' as vocal_chat;
-
-import 'package:hive_flutter/hive_flutter.dart';
-
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
@@ -56,7 +56,13 @@ import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart'
 import 'features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'features/vocal_chat/presentation/viewmodels/vocal_chat_viewmodel.dart';
 import 'features/gamecards-reader/injection_container.dart' as gamecard_reader;
+import 'features/web_audio_reader/data/repositories/tts_repository_impl.dart';
+import 'features/web_audio_reader/data/repositories/web_reader_repository_impl.dart';
+import 'features/web_audio_reader/data/services/tts_service.dart';
+import 'features/web_audio_reader/domain/usecases/read_text_usecase.dart';
+import 'features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 
+/// Global navigator key pour accéder au context depuis les services
 /// Global navigator key pour accéder au context depuis les datasource
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -147,9 +153,10 @@ class MyApp extends StatelessWidget {
           },
         ),
 
-        ChangeNotifierProvider(create: (_) => gamecard_reader.sl<GamecardReaderViewModel>()),
-
-     ],
+        ChangeNotifierProvider(
+          create: (_) => gamecard_reader.sl<GamecardReaderViewModel>(),
+        ),
+      ],
       child: Consumer<AppThemeManager>(
         builder: (context, themeManager, _) {
           return MaterialApp(
@@ -175,9 +182,11 @@ class MyApp extends StatelessWidget {
                 return MapScreen(viewModel: viewModel);
               },
 
-              RealTimeYoloScreen.route: (context) =>  const RealTimeYoloScreen(),
-              PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
-              HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
+              RealTimeYoloScreen.route: (context) => const RealTimeYoloScreen(),
+              PrintedTextReaderScreen.route: (context) =>
+                  const PrintedTextReaderScreen(),
+              HandwrittenTextReaderScreen.route: (context) =>
+                  const HandwrittenTextReaderScreen(),
 
               NotificationDashboard.route: (context) => ChangeNotifierProvider(
                 create: (_) => messagerie.sl<NotificationController>(),
@@ -189,11 +198,11 @@ class MyApp extends StatelessWidget {
 
               VocalNoteEditorScreen.route: (context) =>
                   const VocalNoteEditorScreen(),
-              
+
               VocalChatScreen.route: (context) => ChangeNotifierProvider(
-                  create: (_) => vocal_chat.sl<VocalChatViewModel>(),
-                  child: const VocalChatScreen(),
-          ),
+                create: (_) => vocal_chat.sl<VocalChatViewModel>(),
+                child: const VocalChatScreen(),
+              ),
 
               VoiceClockScreen.route: (context) => ChangeNotifierProvider(
                 create: (_) => voice_clock.sl<VoiceClockViewModel>(),
@@ -203,11 +212,14 @@ class MyApp extends StatelessWidget {
               ReaderScreen.route: (context) => const ReaderScreen(),
               DocumentsScreen.route: (context) => const DocumentsScreen(),
               DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
-              GamecardReaderScreen.route: (context) => const GamecardReaderScreen(),
-              ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
+              GamecardReaderScreen.route: (context) =>
+                  const GamecardReaderScreen(),
+              ScanImmatriculationScreen.route: (context) =>
+                  const ScanImmatriculationScreen(),
               HistoricalsScan.route: (context) => const HistoricalsScan(),
               ReceiptPage.route: (context) {
-                const String endpoint = "https://eu-documentai.googleapis.com/v1/projects/663203358287/locations/eu/processors/b0a1bf5c3d83919e:process";
+                const String endpoint =
+                    "https://eu-documentai.googleapis.com/v1/projects/663203358287/locations/eu/processors/b0a1bf5c3d83919e:process";
                 final remoteDataSource = ReceiptRemoteDataSource(endpoint);
                 final repository = ReceiptRepositoryImpl(remoteDataSource);
                 final scanReceiptUseCase = ScanReceiptUseCase(repository);
@@ -216,7 +228,22 @@ class MyApp extends StatelessWidget {
                   child: const ReceiptPage(),
                 );
               },
+              WebReaderScreen.route: (context) {
+                final webDataSource = WebPageDataSource();
+                final webRepo = WebReaderRepositoryImpl(webDataSource);
 
+                final ttsService = TtsService();
+                final ttsRepo = TtsRepositoryImpl(ttsService);
+
+                final readWebUseCase = ReadWebPageUseCase(webRepo);
+                final readTextUseCase = ReadTextUseCase(ttsRepo);
+
+                final controller = WebReaderController(
+                  readWebPageUseCase: readWebUseCase,
+                  readTextUseCase: readTextUseCase,
+                );
+                return WebReaderScreen(controller: controller);
+              },
             },
           );
         },
