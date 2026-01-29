@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../controllers/notification_controller.dart';
 import '../../domain/entities/message_entity.dart';
 import '../widgets/history_detail_dialog.dart';
+import '../../../../common/widget/global_appbar.dart';
 
 class EmailHistoryPage extends StatefulWidget {
   final NotificationController controller;
@@ -44,8 +45,8 @@ class _EmailHistoryPageState extends State<EmailHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Historique des messages"),
+      appBar: GlobalAppBar(
+        title: "Historique des messages",
         actions: [
           IconButton(
             icon: const Icon(Icons.sync, size: 30),

@@ -4,6 +4,7 @@ import 'notification_page.dart';
 import 'email_history_page.dart';
 import '../controllers/notification_controller.dart';
 import '../../../notification/notification_injection.dart';
+import '../../../../common/widget/global_appbar.dart';
 
 class NotificationDashboard extends StatefulWidget {
   const NotificationDashboard({super.key});
@@ -33,7 +34,10 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
     final controller = sl<NotificationController>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Ma Messagerie")),
+      appBar: GlobalAppBar(
+          title: "Ma Messagerie",
+          showAuthActions: false,
+          ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
