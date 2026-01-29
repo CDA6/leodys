@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/cards/domain/usecases/delete_card_usecase.dart';
 import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
 import 'package:leodys/features/cards/presentation/edit_card_screen.dart';
@@ -150,7 +149,6 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
           ],
         ),
       ),
-      backgroundColor: context.colorScheme.primaryContainer,
     );
   }
 
