@@ -158,15 +158,6 @@ class FeatureList extends StatelessWidget {
       description: 'Aide à la latéralisation via la caméra.',
     ),
     AppFeature(
-      name: 'Web age',
-      icon: Icons.accessibility_new,
-      route: RealTimeYoloScreen.route,
-      requiresInternet: false,
-      requiresAuth: false,
-      isAvailable: true,
-      description: 'Aide à la latéralisation via la caméra.',
-    ),
-    AppFeature(
       name: 'Lecteur Web',
       icon: Icons.chrome_reader_mode,
       route: WebReaderScreen.route,
