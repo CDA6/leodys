@@ -108,7 +108,7 @@ class _RealTimeYoloScreenState extends State<RealTimeYoloScreen> {
   @override
   void dispose() {
     _controller?.dispose();
-    // tres important : on remet l'orientation normale qd on quitte l'ecran
+    // tres important : on reautorise l'orientation normale qd on quitte l'ecran
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -129,6 +129,7 @@ class _RealTimeYoloScreenState extends State<RealTimeYoloScreen> {
     }
 
     return AnimatedBuilder(
+      //on ecoute les changements du notify
       animation: viewModel,
       builder: (context, child) {
         return Scaffold(

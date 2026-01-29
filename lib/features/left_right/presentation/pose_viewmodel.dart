@@ -15,6 +15,9 @@ class PoseViewModel extends ChangeNotifier {
 
   PoseViewModel(this._detectPoseUseCase);
 
+
+
+
   // Reçoit l'image ET l'orientation capteur depuis l'écran
   Future<void> onFrameReceived(CameraImage image, int sensorOrientation) async {
 
@@ -38,6 +41,9 @@ class PoseViewModel extends ChangeNotifier {
       _isDetecting = false;
     }
   }
+
+
+
 
   void reset() {
     // nettoie les données, utile quand on switch de camera pour ne pas garder un squelette figé
