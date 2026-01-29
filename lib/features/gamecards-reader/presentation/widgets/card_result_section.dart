@@ -255,8 +255,8 @@ class CardResultsSection extends StatelessWidget {
   }
 
   Color _getConfidenceColor(BuildContext context, double confidence) {
-    if (confidence >= 0.8) return context.stateColors.success;
-    if (confidence >= 0.6) return context.stateColors.warning;
+    if (confidence >= 0.75) return context.stateColors.success;
+    if (confidence >= 0.65) return context.stateColors.warning;
     return context.stateColors.error;
   }
 }
