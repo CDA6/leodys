@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../../../../common/widget/tts_reader_widget.dart';
 import '../viewmodel/voice_clock_viewmodel.dart';
 import '../../domain/entities/clock_config.dart';
+import '../../../../common/widget/global_appbar.dart';
+import '../widget/dys_analog_clock.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class VoiceClockScreen extends StatelessWidget {
   static const route = '/voice-clock';
@@ -18,7 +21,7 @@ class VoiceClockScreen extends StatelessWidget {
 
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Horloge Vocale")),
+      appBar: GlobalAppBar(title: ("Horloge Vocale")),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -37,16 +40,16 @@ class VoiceClockScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(40),
               decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: context.colorScheme.primary.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.blue, width: 4)
+                  border: Border.all(color: context.colorScheme.primary, width: 4)
               ),
               child: viewModel.selectedType == ClockType.digital
                   ? Text(
                 DateFormat('HH:mm').format(viewModel.currentTime),
                 style: const TextStyle(fontSize: 80, fontWeight: FontWeight.bold, letterSpacing: 4),
               )
-                  : const Icon(Icons.watch_later, size: 120, color: Colors.blue),
+                  :  DysAnalogClock(time: viewModel.currentTime, size: 250),
             ),
 
             // Bouton de lecture vocale massif
