@@ -1,6 +1,5 @@
 import '../entities/calendar_event.dart';
 
-/// Interface du Repository Calendar
 abstract class CalendarRepository {
   /// Récupère les événements pour un jour (local + Google si connecté)
   Future<List<CalendarEvent>> getEventsForDay(DateTime day);

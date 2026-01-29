@@ -21,13 +21,23 @@ class CalendarController extends ChangeNotifier {
   final SyncLocalToGoogle syncLocalToGoogleUseCase = SyncLocalToGoogle();
   final SyncGoogleToLocal syncGoogleToLocalUseCase = SyncGoogleToLocal();
 
-  List<CalendarEvent> _events = [];
+  // ✅ Cache des événements par jour
+  final Map<String, List<CalendarEvent>> _eventsCache = {};
+
   DateTime _selectedDay = DateTime.now();
   bool _isLoading = false;
   String? _errorMessage;
   bool _isGoogleSyncEnabled = false;
 
-  List<CalendarEvent> get events => _events;
+  // Récupère tous les événements en cache
+  List<CalendarEvent> get events {
+    final allEvents = <CalendarEvent>[];
+    _eventsCache.forEach((date, events) {
+      allEvents.addAll(events);
+    });
+    return allEvents;
+  }
+
   DateTime get selectedDay => _selectedDay;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -35,15 +45,18 @@ class CalendarController extends ChangeNotifier {
 
   /// Retourne les événements pour un jour spécifique (pour le calendrier)
   List<CalendarEvent> getEventsForDay(DateTime day) {
-    return _events.where((event) {
-      final eventDate = DateTime(
-        event.startTime.year,
-        event.startTime.month,
-        event.startTime.day,
-      );
-      final targetDate = DateTime(day.year, day.month, day.day);
-      return eventDate.isAtSameMomentAs(targetDate);
-    }).toList();
+    final key = _dateKey(day);
+    return _eventsCache[key] ?? [];
+  }
+
+  /// Génère une clé de cache pour une date
+  String _dateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Normalise une date en supprimant l'heure
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
   }
 
   /// Active/désactive la synchronisation Google Calendar
@@ -54,7 +67,7 @@ class CalendarController extends ChangeNotifier {
     if (enabled) {
       print('✅ Synchronisation Google Calendar activée');
       // Recharge les événements avec Google
-      loadEventsForDay(_selectedDay);
+      _reloadVisibleRange();
     } else {
       print('❌ Synchronisation Google Calendar désactivée');
     }
@@ -64,14 +77,25 @@ class CalendarController extends ChangeNotifier {
 
   /// Charge les événements pour un jour
   Future<void> loadEventsForDay(DateTime day) async {
+    // ✅ Normalise toujours la date
+    final normalizedDay = _normalizeDate(day);
+    _selectedDay = normalizedDay;
+
+    // Si déjà en cache, pas besoin de recharger
+    final key = _dateKey(normalizedDay);
+    if (_eventsCache.containsKey(key)) {
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _errorMessage = null;
-    _selectedDay = day;
     notifyListeners();
 
     try {
-      _events = await getEventsForDayUseCase(day);
-      print('✅ Événements chargés pour $day : ${_events.length} événements');
+      final events = await getEventsForDayUseCase(normalizedDay);
+      _eventsCache[key] = events;
+      print('✅ Événements chargés pour $normalizedDay : ${events.length} événements');
     } catch (e) {
       _errorMessage = 'Erreur lors du chargement des événements: $e';
       print('❌ Erreur : $e');
@@ -81,6 +105,49 @@ class CalendarController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Charge les événements pour une plage de dates (pour le mois visible)
+  Future<void> loadEventsForRange(DateTime start, DateTime end) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      DateTime currentDay = _normalizeDate(start);
+      final normalizedEnd = _normalizeDate(end);
+
+      while (currentDay.isBefore(normalizedEnd) || currentDay.isAtSameMomentAs(normalizedEnd)) {
+        final key = _dateKey(currentDay);
+
+        // Charge seulement si pas déjà en cache
+        if (!_eventsCache.containsKey(key)) {
+          final events = await getEventsForDayUseCase(currentDay);
+          _eventsCache[key] = events;
+        }
+
+        currentDay = currentDay.add(const Duration(days: 1));
+      }
+
+      print('✅ Événements chargés pour la période $start - $end');
+    } catch (e) {
+      _errorMessage = 'Erreur lors du chargement des événements: $e';
+      print('❌ Erreur : $e');
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Recharge la plage visible (mois courant +/- 1 mois)
+  Future<void> _reloadVisibleRange() async {
+    final now = _selectedDay;
+    final start = DateTime(now.year, now.month - 1, 1);
+    final end = DateTime(now.year, now.month + 2, 0);
+
+    // Vide le cache pour forcer le rechargement
+    _eventsCache.clear();
+
+    await loadEventsForRange(start, end);
+  }
+
   /// Ajoute un événement
   Future<void> addEvent(CalendarEvent event) async {
     try {
@@ -88,8 +155,16 @@ class CalendarController extends ChangeNotifier {
       await addEventUseCase(event);
       print('✅ Événement ajouté avec succès');
 
-      // Recharge les événements du jour sélectionné
-      await loadEventsForDay(_selectedDay);
+      // ✅ Normalise la date avant de recharger
+      final eventDate = _normalizeDate(event.startTime);
+      final key = _dateKey(eventDate);
+      _eventsCache.remove(key);
+      await loadEventsForDay(eventDate);
+
+      // Si le jour ajouté n'est pas le jour sélectionné, notifie quand même
+      if (!_isSameDay(event.startTime, _selectedDay)) {
+        notifyListeners();
+      }
     } catch (e) {
       _errorMessage = 'Erreur lors de l\'ajout de l\'événement: $e';
       print('❌ Erreur ajout : $e');
@@ -104,8 +179,11 @@ class CalendarController extends ChangeNotifier {
       await updateEventUseCase(event);
       print('✅ Événement mis à jour avec succès');
 
-      // Recharge les événements du jour sélectionné
-      await loadEventsForDay(_selectedDay);
+      // ✅ Normalise la date avant de recharger
+      final eventDate = _normalizeDate(event.startTime);
+      final key = _dateKey(eventDate);
+      _eventsCache.remove(key);
+      await loadEventsForDay(eventDate);
     } catch (e) {
       _errorMessage = 'Erreur lors de la mise à jour de l\'événement: $e';
       print('❌ Erreur mise à jour : $e');
@@ -117,11 +195,30 @@ class CalendarController extends ChangeNotifier {
   Future<void> deleteEvent(String eventId) async {
     try {
       print('🗑️ Suppression événement : $eventId');
+
+      // Trouve l'événement pour savoir quel jour invalider
+      CalendarEvent? eventToDelete;
+      for (var dayEvents in _eventsCache.values) {
+        try {
+          eventToDelete = dayEvents.firstWhere((e) => e.id == eventId);
+          break;
+        } catch (e) {
+          // Continue à chercher
+        }
+      }
+
       await deleteEventUseCase(eventId);
       print('✅ Événement supprimé avec succès');
 
-      // Recharge les événements du jour sélectionné
-      await loadEventsForDay(_selectedDay);
+      // ✅ Normalise la date et invalide le cache
+      if (eventToDelete != null) {
+        final eventDate = _normalizeDate(eventToDelete.startTime);
+        final key = _dateKey(eventDate);
+        _eventsCache.remove(key);
+        await loadEventsForDay(eventDate);
+      } else {
+        await loadEventsForDay(_selectedDay);
+      }
     } catch (e) {
       _errorMessage = 'Erreur lors de la suppression de l\'événement: $e';
       print('❌ Erreur suppression : $e');
@@ -136,6 +233,9 @@ class CalendarController extends ChangeNotifier {
       _isGoogleSyncEnabled = true;
       notifyListeners();
       print('✅ Google Calendar initialisé avec succès');
+
+      // Recharge les événements avec Google
+      await _reloadVisibleRange();
     } catch (e) {
       print('❌ Erreur initialisation Google Calendar: $e');
       rethrow;
@@ -159,7 +259,7 @@ class CalendarController extends ChangeNotifier {
       print('✅ Synchronisation local → Google terminée');
 
       // Recharge les événements
-      await loadEventsForDay(_selectedDay);
+      await _reloadVisibleRange();
     } catch (e) {
       _errorMessage = 'Erreur lors de la synchronisation: $e';
       print('❌ Erreur sync : $e');
@@ -194,8 +294,9 @@ class CalendarController extends ChangeNotifier {
       ));
       print('✅ Synchronisation Google → local terminée');
 
-      // Recharge les événements
-      await loadEventsForDay(_selectedDay);
+      // Vide le cache et recharge
+      _eventsCache.clear();
+      await _reloadVisibleRange();
     } catch (e) {
       _errorMessage = 'Erreur lors de la synchronisation: $e';
       print('❌ Erreur sync : $e');
@@ -203,5 +304,10 @@ class CalendarController extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// Vérifie si deux dates sont le même jour
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
