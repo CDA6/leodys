@@ -38,7 +38,7 @@ Future<void> init() async {
         () => ScanService(),
   );
 
-  // repository
+  // repositories
   getIt.registerLazySingleton<CardsRepository>(
         () => CardsRepository(
         getIt<CardsRemoteDatasource>(), getIt<CardsLocalDatasource>()
