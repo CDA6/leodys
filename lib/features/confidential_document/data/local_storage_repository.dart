@@ -8,6 +8,9 @@ import '../../../common/utils/app_logger.dart';
 
 class LocalStorageRepository {
   String? _cachedPath;
+
+  //Méthode pour récupérer le chemin de stockage en local
+  //utilisation d'un cache pour ne pas relencer toute la méthode
   Future<String> get _localPath async {
     if (_cachedPath != null) return _cachedPath!;
 
@@ -21,12 +24,14 @@ class LocalStorageRepository {
     return path;
   }
 
+// Enregistrer document
   Future<void> uploadDocument(Uint8List bytes, String title) async {
     final path = await _localPath;
     final localFile = File('$path/$title.enc');
     await localFile.writeAsBytes(bytes);
   }
 
+  //Récupécupération de tous les fichiers avec leur titre
   Future<Map<String, Uint8List>> getAllEncryptedFiles() async {
     Map<String, Uint8List> listFile = {};
     final path = await _localPath;
@@ -42,6 +47,7 @@ class LocalStorageRepository {
     return listFile;
   }
 
+  //Récupération de la liste des titres des fichiers en local - info indépendente du registre
   Future<List<String>> getAllTitlesEnc() async {
     List<String> listTitle = [];
     final path = await _localPath;
@@ -58,6 +64,7 @@ class LocalStorageRepository {
     return listTitle;
   }
 
+  //Récupérer un fichier avec .enc en extension par le titre
   Future<Uint8List?> getBytes(String title) async {
     final path = await _localPath;
     final dir = Directory(path);
@@ -71,6 +78,7 @@ class LocalStorageRepository {
     return null;
   }
 
+  //Supprimer un document à partir d'un titre
   Future<void> deleteDocument(String title) async {
     try {
       final path = await _localPath;
@@ -88,7 +96,7 @@ class LocalStorageRepository {
     }
   }
 
-  //TODO méthode pour supprimer les fichiers inutil ou devenu illisible
+  //Méthode pour supprimer les fichiers inutil ou devenu illisible
   Future<int> cleanUnwantedFile(Map<String, String> exception) async{
     final path = await _localPath;
     int count = 0;
