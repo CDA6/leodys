@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+import '../../domain/models/reader_config.dart';
+import '../../injection.dart';
+import '../controllers/document_controller.dart';
+import '../controllers/reader_controller.dart';
+import '../widgets/document_tile.dart';
+
+class DocumentsScreen extends StatefulWidget {
+  static const route = '/documents';
+
+  const DocumentsScreen({super.key});
+
+  @override
+  State<DocumentsScreen> createState() => _DocumentsScreenState();
+}
+
+class _DocumentsScreenState extends State<DocumentsScreen> {
+  late final DocumentController documentController;
+  late final ReaderController readerController;
+
+  @override
+  void initState() {
+    super.initState();
+    readerController = createReaderController();
+    documentController = createDocumentController();
+
+    documentController.getAllDocuments();
+  }
+
+  @override
+  void dispose() {
+    readerController.dispose();
+    documentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: documentController,
+      builder: (context, _) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Mes documents'),
+          ),
+          body: documentController.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : documentController.documents.isEmpty
+              ? const Center(child: Text('Aucun document enregistré'))
+              : ListView.builder(
+            itemCount: documentController.documents.length,
+            itemBuilder: (context, index) {
+              final document =
+              documentController.documents[index];
+
+              return DocumentTile(
+                document: document,
+                onRead: () {
+                  readerController.loadDocument(document);
+                  readerController.readText(
+                    ReaderConfig.defaultConfig,
+                  );
+                },
+                onPause: (){
+                  readerController.pause();
+                },
+                onStop: (){readerController.stop();
+                  },
+                onDelete: () {
+                  documentController
+                      .deleteDocument(document.idText);
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
