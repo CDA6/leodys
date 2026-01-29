@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pay/pay.dart';
 import '../../domain/models/payment_method.dart';
 import '../../domain/models/payment_transaction.dart';
-import '../../data/repositories/google_pay_repository.dart';
 import '../../data/repositories/payment_repository.dart';
 import 'payment_confirmation_view.dart';
 
@@ -16,7 +15,6 @@ class GooglePayView extends StatefulWidget {
 }
 
 class _GooglePayViewState extends State<GooglePayView> {
-  final GooglePayRepository _googlePayRepo = GooglePayRepository();
   final PaymentRepository _paymentRepo = PaymentRepository();
   late final Future<PaymentConfiguration> _gpayConfigFuture;  // Ajout 1
 
@@ -72,9 +70,17 @@ class _GooglePayViewState extends State<GooglePayView> {
     }
   }
 
+  PaymentItem _createPaymentItem(double amount) {
+    return PaymentItem(
+      label: 'Total',
+      amount: amount.toStringAsFixed(2),
+      status: PaymentItemStatus.final_price,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final paymentItem = _googlePayRepo.createPaymentItem(widget.amount);
+    final paymentItem = _createPaymentItem(widget.amount);
 
     return Scaffold(
       body: SafeArea(
