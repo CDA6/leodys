@@ -48,6 +48,8 @@ dependencies:
   google_sign_in: ^7.2.0
   tflite_flutter: ^0.11.0
   permission_handler: ^11.4.0
+  file_picker: ^10.3.9
+  googleapis_auth: ^1.4.0
   webview_flutter: ^4.4.1
   html: ^0.15.4
 
@@ -84,3 +86,5 @@ flutter:
 #    - assets/models/best_float32.tflite
 #    - assets/models/yolo26n_float32.tflite
 #    - assets/images/carte_test.jpg
+    - assets/models/best_float32.tflite
+    - assets/models/yolo26n_float32.tflite
