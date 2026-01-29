@@ -9,6 +9,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/web_audio_reader/data/datasources/web_page_datasource.dart';
+import 'package:leodys/features/web_audio_reader/domain/usecases/read_webpage_usecase.dart';
+import 'package:leodys/features/web_audio_reader/presentation/controllers/web_reader_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/pages/home/presentation/screens/home_page.dart';
@@ -44,6 +47,11 @@ import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 
 import 'features/calculator/presentation/views/calculator_view.dart';
+import 'features/web_audio_reader/data/repositories/tts_repository_impl.dart';
+import 'features/web_audio_reader/data/repositories/web_reader_repository_impl.dart';
+import 'features/web_audio_reader/data/services/tts_service.dart';
+import 'features/web_audio_reader/domain/usecases/read_text_usecase.dart';
+import 'features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 
 /// Global navigator key pour accéder au context depuis les services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -202,6 +210,22 @@ class MyApp extends StatelessWidget {
 
               ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
               HistoricalsScan.route: (context) => const HistoricalsScan(),
+              WebReaderScreen.route: (context) {
+                final webDataSource = WebPageDataSource();
+                final webRepo = WebReaderRepositoryImpl(webDataSource);
+
+                final ttsService = TtsService();
+                final ttsRepo = TtsRepositoryImpl(ttsService);
+
+                final readWebUseCase = ReadWebPageUseCase(webRepo);
+                final readTextUseCase = ReadTextUseCase(ttsRepo);
+
+                final controller = WebReaderController(
+                  readWebPageUseCase: readWebUseCase,
+                  readTextUseCase: readTextUseCase,
+                );
+                return WebReaderScreen(controller: controller);
+              }
             },
           );
 
