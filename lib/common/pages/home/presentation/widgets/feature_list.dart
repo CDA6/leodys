@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/internet_util.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
+import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:provider/provider.dart';
@@ -94,6 +95,16 @@ class FeatureList extends StatelessWidget {
       color: Colors.blue,
       description: 'Scan de cartes de fidélité.',
     ),
+
+    AppFeature(
+        name: "Forum",
+        icon: Icons.chat,
+        route: ForumScreen.route,
+        requiresAuth: false,
+        requiresInternet: true,
+        isAvailable: true,
+        description: 'Espace de discussion pour échanger des messages avec les utilisateurs.',
+    )
   ];
 
   @override
