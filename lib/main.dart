@@ -1,3 +1,4 @@
+import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
 import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
@@ -238,6 +239,7 @@ class MyApp extends StatelessWidget {
                   child: const ReceiptPage(),
                 );
               },
+              
               WebReaderScreen.route: (context) {
                 final webDataSource = WebPageDataSource();
                 final webRepo = WebReaderRepositoryImpl(webDataSource);
@@ -251,10 +253,18 @@ class MyApp extends StatelessWidget {
                 final controller = WebReaderController(
                   readWebPageUseCase: readWebUseCase,
                   readTextUseCase: readTextUseCase,
-                );
-                return WebReaderScreen(controller: controller);
+                  );
+                  return WebReaderScreen(controller: controller);
               },
+              
+              ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
+              HistoricalsScan.route: (context) => const HistoricalsScan(),
+
               ForumScreen.route: (context) => const ForumScreen(),
+              
+              
+              ConfidentialDocumentScreen.route : (context) =>
+                  const ConfidentialDocumentScreen(),
             },
           );
         },
