@@ -4,7 +4,7 @@ import 'payment_method.dart';
 part 'payment_transaction.g.dart';
 
 /// Modèle représentant une transaction de paiement
-@HiveType(typeId: 0)
+@HiveType(typeId: 7)
 class PaymentTransaction {
   @HiveField(0)
   final String id;

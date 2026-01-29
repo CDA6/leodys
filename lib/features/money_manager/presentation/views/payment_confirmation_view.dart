@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/payment_method.dart';
+import 'money_manager_view.dart';
 import 'payment_history_view.dart';
 
 class PaymentConfirmationView extends StatelessWidget {
@@ -104,8 +105,9 @@ class PaymentConfirmationView extends StatelessWidget {
                   const SizedBox(height: 12),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      Navigator.popUntil(context, ModalRoute.withName(MoneyManagerView.route));
                     },
+
                     icon: const Icon(Icons.home),
                     label: const Text('Retour à l\'accueil'),
                     style: OutlinedButton.styleFrom(

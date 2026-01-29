@@ -223,6 +223,7 @@ class MyApp extends StatelessWidget {
               ),
               // NOTE MERCI DE NE
               MoneyManagerView.route: (context) => const MoneyManagerView(),
+              PaymentHistoryView.route: (context) => const PaymentHistoryView(),
               CalculatorView.route: (context) => const CalculatorView(),
               // PAS EFFACER DE NOUVEAU
               ReaderScreen.route: (context) => const ReaderScreen(),
