@@ -20,13 +20,4 @@ class AuthRepository {
     }
   }
 
-  // Cette méthode sera appelée par ton ViewModel
-  // Future<void> login() async {
-  //   if (!isConnected) {
-  //     await _client.auth.signInWithPassword(
-  //       email: 'test-f8@mail.com',
-  //       password: 'test',
-  //     );
-  //   }
-  // }
 }
