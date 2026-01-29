@@ -59,4 +59,4 @@ app.*.map.json
 /android/app/.gradle/
 
 # Temporary/Editor files
-*.swo
+*.swo!/lib/features/money_manager/README.md
