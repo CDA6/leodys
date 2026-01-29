@@ -76,7 +76,7 @@ void main() async {
 
   // Initialisation des datasource de base
   await InternetUtil.init();
-  await DatabaseService.init(); // TODO : double initialisation de supabase ? garder dans le main ou dans DatabaseService mais aps les 2
+  await DatabaseService.init();
 
   try {
     await Supabase.initialize(
