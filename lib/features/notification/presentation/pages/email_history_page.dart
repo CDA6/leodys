@@ -29,7 +29,7 @@ class _EmailHistoryPageState extends State<EmailHistoryPage> {
   }
 
   Future<void> _performSync() async {
-    // Afficher un indicateur de chargement ou un SnackBar
+    // Afficher un indicateur de chargement
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Synchronisation en cours...")),
     );
