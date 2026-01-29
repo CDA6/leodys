@@ -26,9 +26,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    // Charge les événements du jour actuel
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CalendarController>().loadEventsForDay(_selectedDay!);
+      final controller = context.read<CalendarController>();
+
+      // ✅ Charge le mois courant au lieu d'un seul jour
+      final start = DateTime(_focusedDay.year, _focusedDay.month, 1);
+      final end = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
+      controller.loadEventsForRange(start, end);
     });
   }
 
@@ -140,7 +145,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 },
               ),
 
-              // Bouton ajouter sous le calendrier à droite
+              // Bouton ajouter un event
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
