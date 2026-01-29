@@ -44,23 +44,4 @@ class ReaderConfig {
     dysFriendlyMode: false,
   );
 
-  ///  Permet de créer une nouvelle configuration personnalisée à partir
-  ///   d'une configuration existante.
-  ///   Cette méthode prend des parametres nommés et nullable
-  ///   Elle retourne un nouvel objet ReaderConfig
-  ReaderConfig copyWith({
-    double? speechRate,
-    double? pitch,
-    String? languageCode,
-    String? voiceId,
-    bool? dysFriendlyMode,
-  }) {
-    return ReaderConfig(
-      speechRate: speechRate ?? this.speechRate,
-      pitch: pitch ?? this.pitch,
-      languageCode: languageCode ?? this.languageCode,
-      voiceId: voiceId ?? this.voiceId,
-      dysFriendlyMode: dysFriendlyMode ?? this.dysFriendlyMode,
-    );
-  }
 }

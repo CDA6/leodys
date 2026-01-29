@@ -43,9 +43,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Utilisation d'animatedBuilder pour écouter les notifications. C'est un observateur
+    //
     return AnimatedBuilder(
       // Écoute des ChangeNotifier utilisés par l’écran
+      // ici objet à écouter est le readerController
       animation: readerController,
+      // Builder une fonction qui construit UI. cette fonction est appelé à chaque notification
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
