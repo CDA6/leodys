@@ -9,6 +9,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
+import 'package:leodys/features/ocr-ticket-caisse/data/datasources/receipt_remote_datasource.dart';
+import 'package:leodys/features/ocr-ticket-caisse/data/repositories/receipt_repository_impl.dart';
+import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/pages/home/presentation/screens/home_page.dart';
@@ -23,6 +26,8 @@ import 'features/gamecards-reader/presentation/screens/gamecard_reader_screen.da
 import 'features/gamecards-reader/presentation/viewmodels/gamecard_reader_viewmodel.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/left_right/presentation/real_time_yolo_screen.dart';
+import 'package:leodys/features/ocr-ticket-caisse/domain/usecases/scan_receipt_usecase.dart';
+import 'package:leodys/features/ocr-ticket-caisse/presentation/controllers/receipt_controller.dart';
 import 'features/vehicle_recognition/presentation/pages/historicals_scan.dart';
 import 'features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
@@ -99,16 +104,13 @@ void main() async {
 
   runApp(MyApp(themeManager: themeManager));
   initVehicleRecognition();
-  runApp(MyApp(themeManager: themeManager,));
+  runApp(MyApp(themeManager: themeManager));
 }
 
 class MyApp extends StatelessWidget {
   final AppThemeManager themeManager;
 
-  const MyApp({
-    super.key,
-    required this.themeManager,
-  });
+  const MyApp({super.key, required this.themeManager});
 
   @override
   Widget build(BuildContext context) {
@@ -150,16 +152,12 @@ class MyApp extends StatelessWidget {
             theme: themeManager.currentTheme,
             initialRoute: HomePage.route,
             builder: (context, child) {
-              return GlobalOverlay(
-                child: child ?? const SizedBox(),
-              );
+              return GlobalOverlay(child: child ?? const SizedBox());
             },
             routes: {
-              HomePage.route: (context) =>
-                const HomePage(),
+              HomePage.route: (context) => const HomePage(),
 
-              SettingsScreen.route: (context) =>
-              const SettingsScreen(),
+              SettingsScreen.route: (context) => const SettingsScreen(),
 
               MapScreen.route: (context) {
                 final dataSource = GeolocatorDatasource();
@@ -180,7 +178,7 @@ class MyApp extends StatelessWidget {
               ),
 
               VocalNotesListScreen.route: (context) =>
-                const VocalNotesListScreen(),
+                  const VocalNotesListScreen(),
 
               VocalNoteEditorScreen.route: (context) =>
                   const VocalNoteEditorScreen(),
@@ -196,6 +194,17 @@ class MyApp extends StatelessWidget {
               GamecardReaderScreen.route: (context) => const GamecardReaderScreen(),
               ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
               HistoricalsScan.route: (context) => const HistoricalsScan(),
+              ReceiptPage.route: (context) {
+                const String endpoint = "https://eu-documentai.googleapis.com/v1/projects/663203358287/locations/eu/processors/b0a1bf5c3d83919e:process";
+                final remoteDataSource = ReceiptRemoteDataSource(endpoint);
+                final repository = ReceiptRepositoryImpl(remoteDataSource);
+                final scanReceiptUseCase = ScanReceiptUseCase(repository);
+                return ChangeNotifierProvider(
+                  create: (_) => ReceiptController(scanReceiptUseCase),
+                  child: const ReceiptPage(),
+                );
+              },
+
             },
           );
         },
