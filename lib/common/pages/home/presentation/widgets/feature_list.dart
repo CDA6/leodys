@@ -5,6 +5,7 @@ import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:provider/provider.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
@@ -81,6 +82,17 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       color: Colors.blue,
       description: 'TODO',
+    ),
+
+    AppFeature(
+      name: 'Agenda',
+      icon: Icons.calendar_today,
+      route: CalendarScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      color: Colors.blue,
+      description: 'Gestion du planning',
     ),
   ];
 
