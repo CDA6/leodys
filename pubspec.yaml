@@ -84,6 +84,7 @@ flutter:
     - assets/images/logo.jpeg
     - .env
     - assets/yolo11n-pose.tflite
-    - assets/images/carte_test.jpg
-    - assets/models/best_float32.tflite
-    - assets/models/yolo26n_float32.tflite
+    - assets/ledoys-738a4da4fb7c.json
+#    - assets/models/best_float32.tflite
+#    - assets/models/yolo26n_float32.tflite
+#    - assets/images/carte_test.jpg
