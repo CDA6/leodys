@@ -9,8 +9,7 @@ class SaveNoteUseCase {
 
   SaveNoteUseCase(this.repository);
 
-  @override
-  Future<Either<Failure, void>> call(VocalNoteEntity note) async {
+  Future<Either<Failure, void>> execute(VocalNoteEntity note) async {
     return await repository.saveNote(note);
   }
 }

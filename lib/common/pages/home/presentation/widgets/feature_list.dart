@@ -3,12 +3,18 @@ import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
+import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
+import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'package:leodys/features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
+import 'package:leodys/features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
+import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
 import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
+import '../../../../../features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'feature_item.dart';
@@ -112,6 +118,26 @@ class FeatureList extends StatelessWidget {
     ),
 
     AppFeature(
+      name: 'Notes Vocales',
+      icon: Icons.mic_none,
+      route: VocalNotesListScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Créer et gérer des notes vocales',
+    ),
+
+    AppFeature(
+      name: 'Chat Vocal',
+      icon: Icons.chat,
+      route: VocalChatScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Discuter avec un assistant vocal',
+  ),
+
+  AppFeature(
       name: 'Calculette',
       icon: Icons.calculate,
       route: CalculatorView.route,
@@ -140,6 +166,45 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Personnalisez votre profil',
     ),
+
+   //ajout bouton confidential document
+    AppFeature(name: 'Document confidentiel',
+        icon: Icons.file_download,
+        route: ConfidentialDocumentScreen.route,
+        requiresInternet : false,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Stocker et visualiser des photos de vos docuemnt confidentiel (carte ID, permis, ...)',
+     ),
+
+    AppFeature(
+      name: 'Lecteur Web',
+      icon: Icons.chrome_reader_mode,
+      route: WebReaderScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Accès aux sites gouvernementaux et lecture des informations par synthèse vocale.',
+    ),
+
+    AppFeature(name: "Scanner de ticket de caisse",
+      icon: Icons.document_scanner,
+      route: ReceiptPage.route,
+      requiresInternet: true,
+      requiresAuth: true,
+      isAvailable: true,
+      description: "Scan de ticket de caisse"
+    ),
+
+    AppFeature(
+        name: "Forum",
+        icon: Icons.chat,
+        route: ForumScreen.route,
+        requiresAuth: false,
+        requiresInternet: true,
+        isAvailable: true,
+        description: 'Espace de discussion pour échanger des messages avec les utilisateurs.',
+    )
   ];
 
   @override
@@ -301,5 +366,4 @@ class FeatureList extends StatelessWidget {
       ),
     );
   }
-
 }

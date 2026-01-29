@@ -8,7 +8,7 @@ class YoloPostProcessor {
   // Taille d'entrée du modèle (doit correspondre à l'entraînement)
   static const int _inputSize = 640;
   // Seuil de confiance minimal pour garder une détection
-  static const double _confThreshold = 0.70;
+  static const double _confThreshold = 0.50;
   // Seuil de superposition pour le NMS
   static const double _iouThreshold = 0.15;
 

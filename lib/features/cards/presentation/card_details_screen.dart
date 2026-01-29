@@ -34,9 +34,24 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
     // chemin actuel selon le cote de la carte
     String? currentPath = _isFront ? front : back;
 
-    // affichage d'un message si pas d'image
+    // affichage d'un message si pas d'image/problème de chargement
     if (currentPath == null || currentPath.trim().isEmpty) {
-      return const Text("Image indisponible");
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.image_not_supported,
+            size: 48,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Image indisponible",
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
+      );
+
     }
 
     return GestureDetector(
@@ -68,88 +83,97 @@ class _CardDetailsScreenState extends State<CardDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Carte ${widget.card!.name}"),
         leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/cards');
+            Navigator.pushNamed(context, DisplayCardsScreen.route);
           },
-          icon: Icon(Icons.arrow_back),
         ),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildCardImage(),
+            // carte image
+            Card(
+              color: colorScheme.surfaceContainerHighest,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: _buildCardImage(),
+              ),
+            ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
+            // recto verso
             Text(
               _isFront ? "Recto" : "Verso",
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: textTheme.labelLarge,
             ),
 
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: () async {
-                await deleteCardUseCase.call(widget.card!);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, DisplayCardsScreen.route);
-              },
-              icon: const Icon(Icons.delete_outline),
-              label: const Text(
-                'Supprimer la carte',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade600,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
+            const Spacer(),
+
+            // bouton de modification
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.edit),
+                label: const Text("Modifier la carte"),
+                onPressed: () async {
+                  final updatedCard = await Navigator.push<CardModel>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditCardScreen(card: widget.card!),
+                    ),
+                  );
+
+                  if (updatedCard != null) {
+                    setState(() {
+                      widget.card = updatedCard;
+                    });
+                  }
+                },
               ),
             ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: () async {
-                final updatedCard = await Navigator.push<CardModel>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditCardScreen(card: widget.card!),
-                  ),
-                );
 
-                // si carte mise à jour, affichage de la nouvelle + rafraichissement de la page
-                if (updatedCard != null) {
-                  setState(() {
-                    widget.card = updatedCard;
-                  });
-                }
-              },
-              icon: const Icon(Icons.update),
-              label: const Text(
-                'Modifier la carte',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow.shade500,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            const SizedBox(height: 12),
+
+            // bouton de suppression
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.delete_outline, color: colorScheme.error),
+                label: Text(
+                  "Supprimer la carte",
+                  style: TextStyle(color: colorScheme.error),
                 ),
-                elevation: 2,
+                onPressed: () async {
+                  await deleteCardUseCase.call(widget.card!);
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, DisplayCardsScreen.route);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: colorScheme.error),
+                ),
               ),
-            )
-
+            ),
           ],
         ),
       ),
     );
   }
+
 
 }
