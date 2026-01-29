@@ -13,14 +13,19 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return BlocProvider(
       create: (_) => getIt<ProfileCubit>()..loadProfile(),
       child: Scaffold(
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
             return switch (state) {
-              ProfileLoading() => const Center(
-                child: CircularProgressIndicator(),
+              ProfileLoading() => Center(
+                child: CircularProgressIndicator(
+                  color: colorScheme.primary,
+                ),
               ),
 
               ProfileEmpty() => const EmptyProfileView(),
@@ -29,7 +34,16 @@ class ProfileScreen extends StatelessWidget {
                   ProfileView(profile: profile),
 
               ProfileError(:final message) => Center(
-                child: Text(message),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    message,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
 
               _ => const SizedBox.shrink(),
@@ -40,3 +54,4 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
