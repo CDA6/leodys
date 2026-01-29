@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
-import 'package:leodys/features/ocr-reader/presentation/widgets/analyze_button.dart';
+import 'package:leodys/common/widget/button_action.dart';
 import 'package:leodys/features/ocr-reader/presentation/widgets/build_error_message.dart';
-import 'package:leodys/features/ocr-reader/presentation/widgets/image_picker_section.dart';
+import 'package:leodys/common/widget/image_picker_section.dart';
 import '../../../../common/widget/connection_warning.dart';
+import '../../../../common/widget/global_appbar.dart';
+import '../viewmodels/printed_text_viewmodel.dart';
 import 'ocr_result_screen.dart';
 
 class HandwrittenTextReaderScreen extends StatelessWidget {
@@ -15,15 +18,16 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Texte manuscrit'),
+      appBar: GlobalAppBar(
+        title: 'Texte manuscrit',
+        showAuthActions: false,
         actions: [
-          Consumer<HandwrittenTextViewModel>(
+          Consumer<PrintedTextViewModel>(
             builder: (context, viewModel, _) {
               if (viewModel.selectedImage != null) {
                 return IconButton(
                   icon: const Icon(Icons.refresh),
-                  tooltip: 'Recommencer',
+                  tooltip: 'Réinitialiser',
                   onPressed: viewModel.clearImage,
                 );
               }
@@ -56,6 +60,8 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                const SizedBox(height: 24),
+
                 // Section de sélection d'image
                 ImagePickerSection(
                   selectedImage: viewModel.selectedImage,
@@ -66,16 +72,17 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Bouton d'analyse
-                AnalyzeButton(
+                ButtonAction(
                     canAnalyze: viewModel.canAnalyze,
                     isProcessing: viewModel.isProcessing,
                     onPressed: viewModel.analyzeImage,
+                    defaultText: 'Analyser',
                     processingText: 'Analyse en cours...'
                 ),
 
                 if (!viewModel.hasConnection) ...[
                   const SizedBox(height: 20),
-                  ConnectionWarning('Aucune connexion Internet.'),
+                  ConnectionWarning(message: 'Aucune connexion Internet.'),
                 ],
 
                 // Messages d'erreur
@@ -92,7 +99,7 @@ class HandwrittenTextReaderScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: context.colorScheme.onSurface,
                     ),
                   ),
                 ],
