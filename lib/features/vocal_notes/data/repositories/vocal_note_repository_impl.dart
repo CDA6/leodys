@@ -7,9 +7,10 @@ import 'package:leodys/features/vocal_notes/data/datasources/vocal_note_local_da
 import 'package:leodys/features/vocal_notes/data/datasources/vocal_note_remote_datasource.dart';
 import 'package:leodys/features/vocal_notes/data/models/vocal_note_model.dart';
 import 'package:leodys/features/vocal_notes/domain/entities/vocal_note_entity.dart';
+import 'package:leodys/common/mixins/repository_mixin.dart';
 import 'package:leodys/features/vocal_notes/domain/repositories/vocal_note_repository.dart';
 
-class VocalNoteRepositoryImpl implements VocalNoteRepository {
+class VocalNoteRepositoryImpl with RepositoryMixin implements VocalNoteRepository {
   final VocalNoteLocalDataSource localDataSource;
   final VocalNoteRemoteDataSource remoteDataSource;
 
@@ -20,96 +21,106 @@ class VocalNoteRepositoryImpl implements VocalNoteRepository {
 
   @override
   Future<Either<Failure, List<VocalNoteEntity>>> getAllNotes() async {
-    try {
-      // 1. Charger depuis le local immédiatement
-      final localNotes = await localDataSource.getAllNotes();
+    return execute('getAllNotes', () async {
+      try {
+        // 1. Charger depuis le local immédiatement
+        final localNotes = await localDataSource.getAllNotes();
 
-      // 2. Tenter une synchro en arrière-plan si connecté (fire and forget)
-      if (InternetUtil.isConnected) {
-        _backgroundSync();
+        // 2. Tenter une synchro en arrière-plan si connecté (fire and forget)
+        if (InternetUtil.isConnected) {
+          _backgroundSync();
+        }
+
+        return Right(localNotes);
+      } catch (e) {
+        return Left(NetworkFailure(e.toString()));
       }
-
-      return Right(localNotes);
-    } catch (e) {
-      return Left(NetworkFailure(e.toString()));
-    }
+    });
   }
 
   @override
   Future<Either<Failure, VocalNoteEntity?>> getNoteById(String id) async {
-    try {
-      final note = await localDataSource.getNoteById(id);
-      return Right(note);
-    } catch (e) {
-      return Left(NetworkFailure(e.toString()));
-    }
+    return execute('getNoteById', () async {
+      try {
+        final note = await localDataSource.getNoteById(id);
+        return Right(note);
+      } catch (e) {
+        return Left(NetworkFailure(e.toString()));
+      }
+    });
   }
 
   @override
   Future<Either<Failure, void>> saveNote(VocalNoteEntity note) async {
-    try {
-      // Conversion Entity -> Model
-      final model = VocalNoteModel(
-        id: note.id,
-        title: note.title,
-        content: note.content,
-        createdAt: note.createdAt,
-        updatedAt: DateTime.now().toUtc(), // Mise à jour de la date
-        deletedAt: note.deletedAt,
-      );
+    return execute('saveNote', () async {
+      try {
+        // Conversion Entity -> Model
+        final model = VocalNoteModel(
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          createdAt: note.createdAt,
+          updatedAt: DateTime.now().toUtc(), // Mise à jour de la date
+          deletedAt: note.deletedAt,
+        );
 
-      // 1. Sauvegarder en local
-      await localDataSource.saveNote(model);
+        // 1. Sauvegarder en local
+        await localDataSource.saveNote(model);
 
-      // 2. Envoyer au serveur si connecté
-      if (InternetUtil.isConnected) {
-        try {
-          await remoteDataSource.upsertNote(model);
-        } catch (e) {
-          // Échec silencieux de l'envoi distant, sera rattrapé au prochain sync
-          // On pourrait marquer l'objet comme "dirty" ici si on voulait une synchro plus robuste
+        // 2. Envoyer au serveur si connecté
+        if (InternetUtil.isConnected) {
+          try {
+            await remoteDataSource.upsertNote(model);
+          } catch (e) {
+            // Échec silencieux de l'envoi distant, sera rattrapé au prochain sync
+            // On pourrait marquer l'objet comme "dirty" ici si on voulait une synchro plus robuste
+          }
         }
-      }
 
-      return const Right(null);
-    } catch (e) {
-      return Left(NetworkFailure(e.toString()));
-    }
+        return const Right(null);
+      } catch (e) {
+        return Left(NetworkFailure(e.toString()));
+      }
+    });
   }
 
   @override
   Future<Either<Failure, void>> deleteNote(String id) async {
-    try {
-      // 1. Supprimer en local (soft delete)
-      await localDataSource.deleteNote(id);
+    return execute('deleteNote', () async {
+      try {
+        // 1. Supprimer en local (soft delete)
+        await localDataSource.deleteNote(id);
 
-      // 2. Supprimer sur le serveur si connecté
-      if (InternetUtil.isConnected) {
-        try {
-          await remoteDataSource.deleteNote(id);
-        } catch (e) {
-          // Échec silencieux
+        // 2. Supprimer sur le serveur si connecté
+        if (InternetUtil.isConnected) {
+          try {
+            await remoteDataSource.deleteNote(id);
+          } catch (e) {
+            // Échec silencieux
+          }
         }
-      }
 
-      return const Right(null);
-    } catch (e) {
-      return Left(NetworkFailure(e.toString()));
-    }
+        return const Right(null);
+      } catch (e) {
+        return Left(NetworkFailure(e.toString()));
+      }
+    });
   }
 
   @override
   Future<Either<Failure, void>> syncNotes() async {
-    if (!InternetUtil.isConnected) {
-      return Left(NetworkFailure('Pas de connexion internet'));
-    }
+    return execute('syncNotes', () async {
+      if (!InternetUtil.isConnected) {
+        return Left(NetworkFailure('Pas de connexion internet'));
+      }
 
-    try {
-      await _executeSync();
-      return const Right(null);
-    } catch (e) {
-      return Left(NetworkFailure(e.toString()));
-    }
+      try {
+        await _executeSync();
+        return const Right(null);
+      } catch (e) {
+        return Left(NetworkFailure(e.toString()));
+      }
+    });
   }
 
   // ============================================

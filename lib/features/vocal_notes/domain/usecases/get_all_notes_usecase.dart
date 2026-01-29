@@ -13,8 +13,7 @@ class GetAllNotesUseCase {
 
   GetAllNotesUseCase(this.repository);
 
-  @override
-  Future<Either<Failure, List<VocalNoteEntity>>> call(NoParams params) async {
+  Future<Either<Failure, List<VocalNoteEntity>>> execute(NoParams params) async {
     return await repository.getAllNotes();
   }
 }

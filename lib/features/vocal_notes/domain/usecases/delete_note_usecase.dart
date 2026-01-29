@@ -8,8 +8,7 @@ class DeleteNoteUseCase {
 
   DeleteNoteUseCase(this.repository);
 
-  @override
-  Future<Either<Failure, void>> call(String id) async {
+  Future<Either<Failure, void>> execute(String id) async {
     return await repository.deleteNote(id);
   }
 }
