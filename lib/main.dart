@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'features/calendar/presentation/controllers/calendar_controller.dart';
+import 'package:leodys/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -77,6 +79,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
+        ChangeNotifierProvider(create: (_) => CalendarController()),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
@@ -102,6 +105,7 @@ class MyApp extends StatelessWidget {
               const VocalNoteEditorScreen(),
           ReaderScreen.route: (context) => const ReaderScreen(),
           DocumentsScreen.route: (context) => const DocumentsScreen(),
+          CalendarScreen.route: (context) => const CalendarScreen(),
         },
       ),
     );
