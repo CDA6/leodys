@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class AnalyzeButton extends StatelessWidget{
   final bool canAnalyze;
@@ -21,22 +22,22 @@ class AnalyzeButton extends StatelessWidget{
       child: ElevatedButton.icon(
         onPressed: canAnalyze ? onPressed : null,
         icon: isProcessing
-            ? const SizedBox(
+            ? SizedBox(
           width: 20,
           height: 20,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            color: Colors.white,
+            color: context.colorScheme.onPrimaryContainer,
           ),
         )
             : const Icon(Icons.play_arrow),
         label: Text('Analyser le texte'),
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 56),
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey.shade300,
-          disabledForegroundColor: Colors.grey.shade600,
+          backgroundColor: context.colorScheme.primaryContainer,
+          foregroundColor: context.colorScheme.onPrimaryContainer,
+          disabledBackgroundColor:  Colors.grey.withValues(alpha: 0.1),
+          disabledForegroundColor:  Colors.grey.withValues(alpha: 0.35),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

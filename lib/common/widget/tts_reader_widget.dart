@@ -35,7 +35,7 @@ class _TtsReaderWidgetState extends State<TtsReaderWidget> {
     _isSpeaking = _speechService.isSpeaking;
 
     // On écoute le stream : dès que le service dit "je parle" ou "j'ai fini",
-    // on met à jour l'interface.
+    // on met à jour l'interfaces.
     _speakingSubscription = _speechService.speaking.listen((isSpeaking) {
       if (mounted) {
         setState(() {
