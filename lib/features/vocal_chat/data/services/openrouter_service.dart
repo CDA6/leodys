@@ -11,7 +11,7 @@ import '../../domain/errors/failures.dart';
 /// Il utilise la clé API depuis les variables d'environnement.
 class OpenRouterService {
   static const String _baseUrl = 'https://openrouter.ai/api/v1';
-  static const String _model = 'tngtech/deepseek-r1t2-chimera:free';
+  static const String _model = 'arcee-ai/trinity-large-preview:free';
   static const Duration _timeout = Duration(seconds: 60);
 
   /// Récupère la clé API depuis les variables d'environnement.
