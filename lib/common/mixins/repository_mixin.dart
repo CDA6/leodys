@@ -6,7 +6,7 @@ import '../utils/app_logger.dart';
 mixin RepositoryMixin {
   String get _repositoryName => runtimeType.toString();
 
-  /// Exécute une opération de repository avec logging automatique.
+  /// Exécute une opération de repositories avec logging automatique.
   ///
   /// Utilisez cette méthode pour wrapper toutes vos opérations.
   ///

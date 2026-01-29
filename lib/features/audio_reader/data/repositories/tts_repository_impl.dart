@@ -3,7 +3,7 @@ import '../../domain/models/reader_config.dart';
 import '../../domain/repositories/tts_repository.dart';
 import '../services/tts_service.dart';
 
-/// Implémentation du repository de TTS
+/// Implémentation du repositories de TTS
 /// Relie le Domain (contrat TtsRepository) et le service technique de
 /// synthese vocal (TtsServiceImpl)
 class TtsRepositoryImpl implements TtsRepository {
