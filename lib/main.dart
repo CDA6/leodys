@@ -40,6 +40,7 @@ import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'features/calculator/presentation/views/calculator_view.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
@@ -220,7 +221,10 @@ class MyApp extends StatelessWidget {
                 create: (_) => voice_clock.sl<VoiceClockViewModel>(),
                 child: const VoiceClockScreen(),
               ),
-              MoneyManagerView.route: (context) => const MoneyManagerView(), // MERCI DE NE PAS EFFACER DE NOUVEAU
+              // NOTE MERCI DE NE
+              MoneyManagerView.route: (context) => const MoneyManagerView(),
+              CalculatorView.route: (context) => const CalculatorView(),
+              // PAS EFFACER DE NOUVEAU
               ReaderScreen.route: (context) => const ReaderScreen(),
               DocumentsScreen.route: (context) => const DocumentsScreen(),
               DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
