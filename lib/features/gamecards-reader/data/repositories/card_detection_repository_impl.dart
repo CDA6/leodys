@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'package:dartz/dartz.dart';
+import 'package:leodys/common/mixins/repository_mixin.dart';
+
+import '../../../../common/errors/failures.dart';
 import '../../domain/entities/card_entity.dart';
 import '../../domain/repositories/card_detection_repository.dart';
 import 'package:leodys/features/gamecards-reader/data/models/card_model.dart';
 import '../datasource/card_model_datasource.dart';
 
-class CardDetectionRepositoryImpl implements CardDetectionRepository {
+class CardDetectionRepositoryImpl with RepositoryMixin implements CardDetectionRepository {
   final CardModelDatasource _service;
 
   CardDetectionRepositoryImpl({required CardModelDatasource service})
@@ -16,20 +20,25 @@ class CardDetectionRepositoryImpl implements CardDetectionRepository {
   }
 
   @override
-  Future<List<CardEntity>> detectCards(File imageFile) async {
+  Future<Either<Failure, List<CardEntity>>> detectCards(File imageFile) async {
+    return execute('recognizePrintedText', () async {
+      try {
+        final rawDetections = await _service.predict(imageFile);
 
-    final rawDetections = await _service.predict(imageFile);
+        final models = rawDetections.map((detection) {
+          return CardModel(
+            label: detection.label,
+            confidence: detection.confidence,
+          );
+        }).toList();
 
-    final models = rawDetections.map((detection) {
-      return CardModel(
-        label: detection.label,
-        confidence: detection.confidence,
-      );
-    }).toList();
+        final entities = models.map((model) => model.toEntity()).toList();
 
-    final entities = models.map((model) => model.toEntity()).toList();
-
-    return _deduplicateCards(entities);
+        return Right(_deduplicateCards(entities));
+      } on Exception catch (e) {
+        return Left(OCRFailure('Erreur ML Kit: $e'));
+      }
+    });
   }
 
   List<CardEntity> _deduplicateCards(List<CardEntity> cards) {
