@@ -10,14 +10,12 @@ class KeyStorageService {
 
   Future<void> saveKey(SecretKey key) async {
     if (kIsWeb) return;
-    print("**** sauvegarde de la clé *****");
     final bytes = await key.extractBytes();
     await _storage.write(key: _keyName, value: base64Encode(bytes));
   }
 
   Future<SecretKey?> loadKey() async {
     if (kIsWeb) return null;
-    print("**** récupération de la clé *****");
     final base64Key = await _storage.read(key: _keyName);
     if (base64Key == null) return null;
     return SecretKey(base64Decode(base64Key));

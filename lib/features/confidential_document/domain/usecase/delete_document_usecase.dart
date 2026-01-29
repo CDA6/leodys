@@ -9,6 +9,7 @@ import 'package:leodys/features/confidential_document/domain/platform/platform_e
 import 'package:leodys/features/confidential_document/domain/platform/platform_info.dart';
 import 'package:leodys/features/confidential_document/domain/platform/platform_info_implement.dart';
 
+import '../../../../common/utils/app_logger.dart';
 import '../entity/status_enum.dart';
 
 class DeleteDocumentUseCase {
@@ -20,8 +21,6 @@ class DeleteDocumentUseCase {
   Future<DeleteResult> deleteDocument(String title, bool hasConnection) async{
     bool remoteDelete = false;
     try{
-      print("!!!***** NetworkStatus = $hasConnection ******!!!!");
-      print("--------- Plateforme détecter : ${_platformInfo.platform}");
      if( hasConnection) {
        List<String> tiltes = [title];
        await _remoteStorageRepository.deleteImage(tiltes);
@@ -57,6 +56,7 @@ class DeleteDocumentUseCase {
          return DeleteResult.failure;
     }
     }catch (e) {
+      AppLogger().error("Erreur lors de la suppression d'un fichier", error: e);
       return DeleteResult.failure;
     }
   }

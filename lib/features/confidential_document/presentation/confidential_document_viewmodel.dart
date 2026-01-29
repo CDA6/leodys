@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leodys/common/mixins/connectivity_mixin.dart';
+import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/confidential_document/domain/services/key_storage_service.dart';
 import 'package:leodys/features/confidential_document/domain/services/encryption_service.dart';
 import 'package:leodys/features/confidential_document/domain/entity/decryption_result.dart';
@@ -62,15 +63,11 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
   // Initialization for screen
   Future<void> i65nit() async {
     initConnectivity();
-    print("Has Connection ? $hasConnection");
 
     emailUser = _saveDoc.returnUser();
     SecretKey? key = await _keyStorageService.loadKey();
     if(key != null){
       session.setKey(key);
-      print("****Debug clé détecter : ${session.key} ****");
-    } else {
-      print("****Debug aucune clé ****");
     }
     isLoading = false;
     notifyListeners(); // On prévient l'UI que c'est bon
@@ -84,7 +81,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
     try {
       // 1. Checks de base
       if (!hasConnection || !_authRepo.isConnected) {
-        print("Synchro annulée : Pas de réseau ou pas de session locale.");
+        AppLogger().info("Synchro annulée : Pas de réseau ou pas de session locale.");
         return; // Le code saute directement au 'finally'
       }
 
@@ -92,7 +89,7 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
       bool isServerUp = await _authRepo.checkServerConnection();
 
       if (!isServerUp) {
-        print("Le serveur Supabase est injoignable.");
+        AppLogger().info("Le serveur Supabase est injoignable.");
         alerteSync = "Connexion serveur impossible.";
         return; // Le code saute directement au 'finally'
       }
@@ -113,14 +110,16 @@ class ConfidentialDocumentViewmodel extends ChangeNotifier with ConnectivityMixi
       }
 
     } catch (e) {
-      print("Erreur inattendue lors de la synchro : $e");
+      AppLogger().error(
+          "Erreur inattendue lors de la synchro",
+        error: e,
+      );
       alerteSync = "Une erreur est survenue.";
     } finally {
       // CE BLOC S'EXÉCUTE TOUJOURS
       // Que tu aies fait un "return", que ça ait réussi, ou que ça ait crashé.
       isLoading = false;
       notifyListeners();
-      print("Fin du processus de synchro (Loading arrêté)");
     }
   }
 
@@ -141,7 +140,7 @@ Future<void> clearAlerte() async {
       imageFile = bytes;
       notifyListeners();
     } catch (e) {
-      print('Erreur au chargement de l\'image: $e');
+      AppLogger().error('Erreur au chargement de l\'image', error: e);
     }
   }
 
@@ -151,14 +150,9 @@ Future<void> clearAlerte() async {
         source: ImageSource.camera,
       );
       if (pickedFile == null) return;
-      final Uint8List bytes = await pickedFile.readAsBytes();
-      print("Image présente  ??? ${bytes.isNotEmpty}");
-      // imageFile = bytes;
-      // await Future.delayed(Duration(milliseconds: 500));
-      // notifyListeners();
-      _showChosenPicture(pickedFile);
+       _showChosenPicture(pickedFile);
     } catch(e) {
-      print("Erreur lors de la prise de la photo : $e");
+      AppLogger().error('Erreur lors de la prise de la photo', error: e);
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
+import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/confidential_document/data/local_storage_repository.dart';
 import 'package:leodys/features/confidential_document/data/storage_repository.dart';
 import 'package:leodys/features/confidential_document/data/sync_registry_repository.dart';
@@ -47,8 +48,13 @@ class SaveDocumentUsecase {
           await _localStorageRepository.uploadDocument(encryptByte, title);
 
           localSuccess = true;
-        } catch (e) {
-          print("Erreur disque : $e");
+        } catch (e, stackTrace) {
+          AppLogger().error(
+              "Erreur disque",
+            error: e,
+            stackTrace : stackTrace,
+          );
+
         }
       } else {
         localSuccess =
@@ -58,7 +64,7 @@ class SaveDocumentUsecase {
         await _remoteStorageRepository.uploadDocument(encryptByte, title);
         remoteSuccess = true;
       } catch (e) {
-        print("Erreur réseau : $e");
+        AppLogger().error("Erreur réseau ", error: e);
       }
       if (localSuccess && remoteSuccess) {
         metadata = FileMetadata(title: title, status: SyncStatus.synced, lastUpdated: DateTime.now());

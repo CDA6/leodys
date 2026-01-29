@@ -5,6 +5,7 @@ import 'package:leodys/features/confidential_document/data/storage_repository.da
 import 'package:leodys/features/confidential_document/data/sync_registry_repository.dart';
 import 'package:leodys/features/confidential_document/domain/entity/status_enum.dart';
 
+import '../../../../common/utils/app_logger.dart';
 import '../entity/fileMetadata.dart';
 import '../entity/sunc_success.dart';
 
@@ -112,7 +113,7 @@ class SynchronisationUsecase {
         _syncRegistryRepository.updateEntry(metadata);
       }
     }catch(e) {
-      print(e);
+      AppLogger().error('Erreur lors de la synchronisation, récupérer le local', error: e);
     }
   }
 
@@ -145,7 +146,7 @@ class SynchronisationUsecase {
         }
       }
     }catch (e) {
-      print(e);
+      AppLogger().error('Erreur lors de l\'élimination des fichiers non référencés', error: e);
     }
     //Renvoyer un message à l'utilisateur sur le modification effectuer en local
     //Lancer avec la synchro

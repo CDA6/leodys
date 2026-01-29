@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
+import '../../../common/utils/app_logger.dart';
+
 class LocalStorageRepository {
   String? _cachedPath;
   Future<String> get _localPath async {
@@ -23,7 +25,6 @@ class LocalStorageRepository {
     final path = await _localPath;
     final localFile = File('$path/$title.enc');
     await localFile.writeAsBytes(bytes);
-    print("Fichier chiffré sauvegardé en local : ${localFile.path}");
   }
 
   Future<Map<String, Uint8List>> getAllEncryptedFiles() async {
@@ -77,13 +78,13 @@ class LocalStorageRepository {
 
       if (await localFile.exists()) {
         await localFile.delete();
-        print("Fichier local supprimé : $title");
+        AppLogger().info("Fichier local supprimé : $title");
       } else {
-        print("Suppression ignorée : le fichier $title n'existe déjà plus.");
+        AppLogger().info("Suppression ignorée : le fichier $title n'existe déjà plus.");
       }
     } catch (e) {
       // On capture l'erreur pour éviter que toute la synchro ne s'arrête
-      print("Erreur lors de la suppression du fichier $title : $e");
+      AppLogger().error("Erreur lors de la suppression du fichier $title", error: e);
     }
   }
 
@@ -105,7 +106,7 @@ class LocalStorageRepository {
             count++;
           }
         } catch (e) {
-          print("Erreur lors de la suppression de $file.${listFile[file]} : $e");
+          AppLogger().error("Erreur lors de la suppression de $file.${listFile[file]}", error: e);
         }
       }
     }

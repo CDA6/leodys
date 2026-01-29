@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
 import 'package:leodys/features/confidential_document/domain/platform/platform_enum.dart';
 
+import '../../../../common/utils/app_logger.dart';
 import '../../data/local_storage_repository.dart';
 import '../../data/storage_repository.dart';
 import '../encrypted_session.dart';
@@ -35,7 +36,7 @@ class GetDocumentUsecase {
           return _getLocal(key);
       }
     } catch (e){
-      print(e);
+      AppLogger().error("Erreur lors de la récupération des images en fonction de la platforme ", error: e);
       return null;
     }
   }
@@ -75,7 +76,6 @@ class GetDocumentUsecase {
         return null;
       }
       for (String title in listTitles) {
-        print("boucle en cours");
         Uint8List? encryptedData = await _remoteStorageRepository.getImage(
           title,
         );

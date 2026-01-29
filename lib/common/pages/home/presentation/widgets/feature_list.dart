@@ -136,8 +136,8 @@ class FeatureList extends StatelessWidget {
         icon: Icons.file_download,
         route: ConfidentialDocumentScreen.route,
         requiresInternet : false,
+      requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Stocker et visualiser des photos de vos docuemnt confidentiel (carte ID, permis, ...)',
     )
   ];
