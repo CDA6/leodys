@@ -93,9 +93,7 @@ class _CashPaymentContent extends StatelessWidget {
                             Text(
                               '${state.remainingAmount.toStringAsFixed(2)}€',
                               style: Theme.of(context).textTheme.headlineMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.primary,
+                                  ?.copyWith(fontWeight: FontWeight.bold,
                                   ),
                             ),
                           ],

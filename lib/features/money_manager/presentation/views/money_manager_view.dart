@@ -25,13 +25,17 @@ class MoneyManagerView extends StatelessWidget {
 }
 
 class _MoneyManagerContent extends StatelessWidget {
-  const _MoneyManagerContent();
+  const _MoneyManagerContent({super.key});
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MoneyManagerViewModel>();
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Paiement avec Google Pay ou avec de la monnaie.'),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
