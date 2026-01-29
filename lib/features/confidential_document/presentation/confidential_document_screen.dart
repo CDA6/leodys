@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/confidential_document/presentation/utils/no_accents_input_formater.dart';
 import 'package:provider/provider.dart';
 
@@ -31,23 +32,30 @@ class _ConfidentialDocumentContent extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
 
+            //TODO ajout de paramètres pour ne pas être caché par le bouton de paramètre
             if (vm.infoSaveImg != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(vm.infoSaveImg!)));
+              _showCustomSnackBar(context, vm.infoSaveImg!);
+              // ScaffoldMessenger.of(
+              //   context,
+              // ).showSnackBar(SnackBar(
+              //     elevation: 6.0,
+              //     behavior: SnackBarBehavior.floating,
+              //     content: Text(vm.infoSaveImg!)));
               vm.clearInfoSave();
             }
 
             if (vm.alerteSync != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(vm.alerteSync!)));
+              _showCustomSnackBar(context, vm.alerteSync!);
+              // ScaffoldMessenger.of(
+              //   context,
+              // ).showSnackBar(SnackBar(content: Text(vm.alerteSync!)));
               vm.clearAlerte();
             }
             if (vm.infoDeleteImg != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(vm.infoDeleteImg!)));
+              _showCustomSnackBar(context, vm.infoDeleteImg!);
+              // ScaffoldMessenger.of(
+              //   context,
+              // ).showSnackBar(SnackBar(content: Text(vm.infoDeleteImg!)));
               vm.clearInfoDelete();
             }
           });
@@ -67,6 +75,16 @@ class _ConfidentialDocumentContent extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showCustomSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 80),
+        content: Text(message, selectionColor:  context.colorScheme.primary,),
       ),
     );
   }
@@ -120,62 +138,70 @@ class _ActionButtons extends StatelessWidget {
     // On utilise watch pour que le widget se redessine quand isLoading ou hasConnection changent
     final vm = context.watch<ConfidentialDocumentViewmodel>();
 
-    return Wrap(
-      spacing: 12, // Un peu plus d'espace pour respirer
-      runSpacing: 10, // Espace entre les lignes si le Wrap passe à la ligne
-      alignment: WrapAlignment.center,
-      children: [
-        // --- BOUTON SYNCHRONISATION (Nouveau) ---
-        ElevatedButton.icon(
-          onPressed: (vm.isLoading || !vm.hasConnection)
-              ? null
-              : () => vm.sync(),
-          style: _buttonStyle(Colors.orangeAccent),
-          icon: vm.isLoading
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.sync),
-          label: const Text("Synchro"),
-        ),
-
-        // --- BOUTON PHOTO ---
-        if (!kIsWeb)
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Wrap(
+        spacing: 12, // Un peu plus d'espace pour respirer
+        runSpacing: 10, // Espace entre les lignes si le Wrap passe à la ligne
+        alignment: WrapAlignment.center,
+        children: [
+          // --- BOUTON SYNCHRONISATION (Nouveau) ---
           ElevatedButton.icon(
-            onPressed: vm.isLoading ? null : vm.takePicture,
-            style: _buttonStyle(Colors.blueAccent),
-            icon: const Icon(Icons.camera_alt),
-            label: const Text("Photo"),
+            onPressed: (vm.isLoading || !vm.hasConnection)
+                ? null
+                : () => vm.sync(),
+            style: _buttonStyle(context.colorScheme.surfaceContainerHighest, context.colorScheme.primary),
+            icon: vm.isLoading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.sync),
+            label: const Text("Synchro"),
           ),
 
-        // --- BOUTON TÉLÉCHARGER ---
-        ElevatedButton.icon(
-          onPressed: vm.isLoading ? null : vm.getPicture,
-          style: _buttonStyle(Colors.blueAccent),
-          icon: const Icon(Icons.file_upload),
-          label: const Text("Télécharger"),
-        ),
+          // --- BOUTON PHOTO ---
+          if (!kIsWeb)
+            ElevatedButton.icon(
+              onPressed: vm.isLoading ? null : vm.takePicture,
+              style: _buttonStyle(context.colorScheme.surfaceContainerHighest, context.colorScheme.primary),
+              icon: const Icon(Icons.camera_alt),
+              label: const Text("Photo"),
+            ),
 
-        // --- BOUTON GALERIE ---
-        ElevatedButton.icon(
-          onPressed: vm.isLoading
-              ? null
-              : () async => _handleGalleryAccess(context, vm),
-          style: _buttonStyle(Colors.teal),
-          icon: const Icon(Icons.collections),
-          label: const Text("Ma Galerie"),
-        ),
-      ],
+          // --- BOUTON TÉLÉCHARGER ---
+          ElevatedButton.icon(
+            onPressed: vm.isLoading ? null : vm.getPicture,
+            style: _buttonStyle(context.colorScheme.surfaceContainerHighest, context.colorScheme.primary),
+            icon: const Icon(Icons.file_upload),
+            label: const Text("Télécharger"),
+          ),
+
+          // --- BOUTON GALERIE ---
+          ElevatedButton.icon(
+            onPressed: vm.isLoading
+                ? null
+                : () async => _handleGalleryAccess(context, vm),
+            style: _buttonStyle(context.colorScheme.surfaceContainerHighest, context.colorScheme.primary),
+            icon: const Icon(Icons.collections),
+            label: const Text("Ma Galerie"),
+          ),
+        ],
+      ),
     );
   }
 
   // --- STYLE GÉNÉRIQUE POUR LA COHÉRENCE ---
-  ButtonStyle _buttonStyle(Color color) {
+  ButtonStyle _buttonStyle(Color color, Color font) {
     return ElevatedButton.styleFrom(
       backgroundColor: color,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      foregroundColor: font,
+      side: BorderSide(
+        color: font, // Ou une autre couleur de votre choix
+        width: 1.5,   // L'épaisseur de la bordure
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     );
   }
@@ -311,8 +337,6 @@ class _ShowGallery extends StatelessWidget {
             height: 600,
             child: GridView.builder(
               padding: const EdgeInsets.all(10),
-              // shrinkWrap: true, // IMPORTANT : permet au GridView de ne prendre que l'espace nécessaire
-              // physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columns,
                 mainAxisSpacing: 10,
@@ -322,7 +346,11 @@ class _ShowGallery extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Card(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: context.colorScheme.primary, // La couleur de la bordure
+                      width: 1.0,         // L'épaisseur
+                    ),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Column(
@@ -332,7 +360,7 @@ class _ShowGallery extends StatelessWidget {
                         onDoubleTap: () {
                           showDialog(
                             context: context,
-                            barrierColor: Colors.black,
+                            barrierColor: Colors.red,
                             builder: (_) => GestureDetector(
                               onTap: () => Navigator.pop(context),
                               child: Dialog(
@@ -362,13 +390,16 @@ class _ShowGallery extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: Text(
-                                vm.pictures![index].title,
-                                overflow: TextOverflow.ellipsis,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                                child: Text(
+                                  vm.pictures![index].title,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete),
+                              icon: Icon(Icons.delete, color: context.colorScheme.primary,),
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -388,6 +419,8 @@ class _ShowGallery extends StatelessWidget {
                                         child: const Text('Annuler'),
                                       ),
                                       TextButton(
+                                        style : TextButton.styleFrom(backgroundColor: context.colorScheme.primaryContainer,
+                                          foregroundColor: context.colorScheme.onPrimary, ),
                                         onPressed: () {
                                           vm.deletePicture(vm.pictures![index].title);
                                           Navigator.pop(context);
@@ -414,8 +447,6 @@ class _ShowGallery extends StatelessWidget {
             height: 200,
             child: Center(child: Text("Aucun fichier enregistré")),
           ),
-
-
       ],
     );
   }

@@ -1,3 +1,4 @@
+import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -68,20 +69,20 @@ void main() async {
     AppLogger().error("Failed to initialize Supabase: $e");
   }
 
-  if (InternetUtil.isConnected) {
-    try {
-      final client = Supabase.instance.client;
-      await client.auth.signInWithPassword(
-        email: 'coleen@test.com',
-        password: 'leodys123',
-      );
-      AppLogger().info("User authenticated successfully");
-    } catch (e) {
-      AppLogger().error("Failed to authenticate user: $e");
-    }
-  } else {
-    AppLogger().warning("No internet connection. Skipping authentication.");
-  }
+  // if (InternetUtil.isConnected) {
+  //   try {
+  //     final client = Supabase.instance.client;
+  //     await client.auth.signInWithPassword(
+  //       email: 'coleen@test.com',
+  //       password: 'leodys123',
+  //     );
+  //     AppLogger().info("User authenticated successfully");
+  //   } catch (e) {
+  //     AppLogger().error("Failed to authenticate user: $e");
+  //   }
+  // } else {
+  //   AppLogger().warning("No internet connection. Skipping authentication.");
+  // }
 
   //ThemeManager
   final themeManager = AppThemeManager();
@@ -202,6 +203,9 @@ class MyApp extends StatelessWidget {
 
               ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
               HistoricalsScan.route: (context) => const HistoricalsScan(),
+
+              ConfidentialDocumentScreen.route : (context) =>
+                  const ConfidentialDocumentScreen(),
             },
           );
 

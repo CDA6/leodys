@@ -29,7 +29,6 @@ class EncryptionService {
   //Decrypt
 Future<Uint8List?> decryptData(Uint8List encryptedDta, SecretKey key) async {
     try {
-      print("lance décrypte");
       final secretBox = SecretBox.fromConcatenation(encryptedDta,
           nonceLength: _algo.nonceLength,
           macLength: _algo.macAlgorithm.macLength);
