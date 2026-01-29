@@ -3,7 +3,6 @@
 *.log
 *.pyc
 *.swp
-*.md
 .DS_Store
 .atom/
 .build/
@@ -59,4 +58,4 @@ app.*.map.json
 /android/app/.gradle/
 
 # Temporary/Editor files
-*.swo!/lib/features/money_manager/README.md
+*.swo
