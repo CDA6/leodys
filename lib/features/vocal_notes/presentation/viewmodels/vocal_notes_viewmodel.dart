@@ -214,7 +214,7 @@ class VocalNotesViewModel extends ChangeNotifier {
     _isLoadingNotes = true;
     notifyListeners();
 
-    final result = await _getAllNotesUseCase.call(NoParams());
+    final result = await _getAllNotesUseCase.execute(NoParams());
     result.fold(
       (failure) {
         _errorMessage = failure.message;
@@ -242,7 +242,7 @@ class VocalNotesViewModel extends ChangeNotifier {
       updatedAt: DateTime.now().toUtc(),
     );
 
-    final result = await _saveNoteUseCase.call(note);
+    final result = await _saveNoteUseCase.execute(note);
     result.fold(
       (failure) {
         _errorMessage = failure.message;
@@ -258,7 +258,7 @@ class VocalNotesViewModel extends ChangeNotifier {
 
   /// Supprime une note.
   Future<void> deleteNote(String id) async {
-    final result = await _deleteNoteUseCase.call(id);
+    final result = await _deleteNoteUseCase.execute(id);
     result.fold(
       (failure) {
         _errorMessage = failure.message;
