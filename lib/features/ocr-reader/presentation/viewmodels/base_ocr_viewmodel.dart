@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:leodys/common/mixins/usecase_mixin.dart';
 import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/ocr-reader/domain/entities/ocr_result.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 abstract class BaseOcrViewModel extends ChangeNotifier {
   final UseCaseMixin<OcrResult, File> recognizeTextUseCase;
@@ -24,8 +25,23 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
   bool get canAnalyze => _selectedImage != null && !_isProcessing;
 
   // Methods
-  Future<void> pickImageFromCamera() async => _pickImage(ImageSource.camera);
+  Future<void> pickImageFromCamera() async {
+    // Vérifier d'abord le statut actuel
+    var status = await Permission.camera.status;
+
+    if (status.isGranted) {
+      await _pickImage(ImageSource.camera);
+    } else {
+      _errorMessage = 'Permission caméra refusée';
+
+      // TODO : si nous voulons guider l'utilisateur vers les paramètres de l'appli
+      await openAppSettings();
+      notifyListeners();
+    }
+  }
+
   Future<void> pickImageFromGallery() async => _pickImage(ImageSource.gallery);
+
   void clearImage() {
     _selectedImage = null;
     _ocrResult = null;
@@ -69,11 +85,11 @@ abstract class BaseOcrViewModel extends ChangeNotifier {
       final result = await recognizeTextUseCase(_selectedImage!).timeout(const Duration(seconds: 15));
 
       result.fold(
-        (failure) {
+            (failure) {
           _errorMessage = failure.message;
           AppLogger().error("OCR Error: ${failure.message}");
         },
-        (ocrResult) {
+            (ocrResult) {
           _ocrResult = ocrResult;
           AppLogger().info("OCR Success: ${ocrResult.text.length} caractères");
         },

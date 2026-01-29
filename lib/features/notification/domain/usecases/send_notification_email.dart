@@ -10,10 +10,10 @@ class SendNotificationEmail {
   SendNotificationEmail(this.repository);
 
   Future<void> call({required ReferentEntity referent, required String subject, required String body}) async {
-    // 1. Envoi réel via le repository (qui déléguerà à la nouvelle datasource d'envoi d'e-mails)
+    // 1. Envoi réel via le repositories (qui déléguerà à la nouvelle datasource d'envoi d'e-mails)
     await repository.sendEmailToExternalService(referent: referent, subject: subject, body: body);
 
-    // 2. Sauvegarde dans l'historique local via le repository
+    // 2. Sauvegarde dans l'historique local via le repositories
     final message = MessageEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       referentId: referent.id,
@@ -24,7 +24,7 @@ class SendNotificationEmail {
     );
     await repository.saveLocalMessage(message);
 
-    // 3. Sauvegarde dans l'historique distant (Supabase) via le repository
+    // 3. Sauvegarde dans l'historique distant (Supabase) via le repositories
     // L'implémentation concrète de 'saveRemoteMessage' sera gérée par NotificationRemoteDataSourceImpl.
     await repository.saveRemoteMessage(message);
   }
