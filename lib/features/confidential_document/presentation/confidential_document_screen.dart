@@ -32,30 +32,18 @@ class _ConfidentialDocumentContent extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
 
-            //TODO ajout de paramètres pour ne pas être caché par le bouton de paramètre
+            ///ajout de paramètres pour ne pas être caché par le bouton de paramètre
             if (vm.infoSaveImg != null) {
               _showCustomSnackBar(context, vm.infoSaveImg!);
-              // ScaffoldMessenger.of(
-              //   context,
-              // ).showSnackBar(SnackBar(
-              //     elevation: 6.0,
-              //     behavior: SnackBarBehavior.floating,
-              //     content: Text(vm.infoSaveImg!)));
               vm.clearInfoSave();
             }
 
             if (vm.alerteSync != null) {
               _showCustomSnackBar(context, vm.alerteSync!);
-              // ScaffoldMessenger.of(
-              //   context,
-              // ).showSnackBar(SnackBar(content: Text(vm.alerteSync!)));
               vm.clearAlerte();
             }
             if (vm.infoDeleteImg != null) {
               _showCustomSnackBar(context, vm.infoDeleteImg!);
-              // ScaffoldMessenger.of(
-              //   context,
-              // ).showSnackBar(SnackBar(content: Text(vm.infoDeleteImg!)));
               vm.clearInfoDelete();
             }
           });
