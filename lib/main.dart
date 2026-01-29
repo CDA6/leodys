@@ -1,3 +1,4 @@
+import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -33,6 +34,8 @@ import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+
 
 /// Global navigator key pour accéder au context depuis les services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -56,7 +59,6 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-
   // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
   final client = Supabase.instance.client;
   await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
@@ -67,7 +69,9 @@ void main() async {
   await cards.init();
 
   runApp(
-    MyApp()
+    const riverpod.ProviderScope(
+      child: MyApp(),
+    ),
   );
 }
 
@@ -115,7 +119,8 @@ class MyApp extends StatelessWidget {
           ReaderScreen.route: (context) => const ReaderScreen(),
           DocumentsScreen.route: (context) => const DocumentsScreen(),
           // OcrTypeSelectionScreen.route: (context) => const OcrTypeSelectionScreen(),
-          DisplayCardsScreen.route: (context) => const DisplayCardsScreen()
+          DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),
+          ForumScreen.route: (context) => const ForumScreen()
         },
       ),
     );
