@@ -68,21 +68,6 @@ void main() async {
     AppLogger().error("Failed to initialize Supabase: $e");
   }
 
-  if (InternetUtil.isConnected) {
-    try {
-      final client = Supabase.instance.client;
-      await client.auth.signInWithPassword(
-        email: 'coleen@test.com',
-        password: 'leodys123',
-      );
-      AppLogger().info("User authenticated successfully");
-    } catch (e) {
-      AppLogger().error("Failed to authenticate user: $e");
-    }
-  } else {
-    AppLogger().warning("No internet connection. Skipping authentication.");
-  }
-
   //ThemeManager
   final themeManager = AppThemeManager();
 
