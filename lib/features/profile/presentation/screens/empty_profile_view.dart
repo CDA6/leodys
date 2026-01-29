@@ -13,53 +13,90 @@ class EmptyProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.person_outline, size: 80),
-          const SizedBox(height: 16),
-          const Text(
-            "Complétez votre profil",
-            style: TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () {
-              final state = context.read<ProfileCubit>().state;
-              UserProfileModel? profile;
+      child: Card(
+        color: colorScheme.surfaceContainerHighest,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // icone
+              Icon(
+                Icons.person_outline,
+                size: 80,
+                color: colorScheme.onSurfaceVariant,
+              ),
 
-              if (state is ProfileLoaded) {
-                profile = state.profile;
-              } else {
-                // creation de profil vide si aucun profil existant
-                profile = UserProfileModel(
-                  userId: '',
-                  firstName: '',
-                  lastName: '',
-                  email: '',
-                  phone: '',
-                  avatarPath: null,
-                  avatarUrl: null,
-                  updatedAt: DateTime.now(),
-                  syncStatus: 'local',
-                );
+              const SizedBox(height: 16),
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (_) => getIt<ProfileEditCubit>(),
-                      child: ProfileEditScreen(profile: profile!), // profil en pré remplissage
-                    ),
-                  ),
-                );
-              }
-            },
-            child: const Text("Créer mon profil"),
+              // titre
+              Text(
+                "Complétez votre profil",
+                style: textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 8),
+
+              // description
+              Text(
+                "Ajoutez vos informations pour personnaliser votre expérience.",
+                style: textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 24),
+
+              // bouton
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final state = context.read<ProfileCubit>().state;
+                    UserProfileModel profile;
+
+                    if (state is ProfileLoaded) {
+                      profile = state.profile;
+                    } else {
+                      profile = UserProfileModel(
+                        userId: '',
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                        phone: '',
+                        avatarPath: null,
+                        avatarUrl: null,
+                        updatedAt: DateTime.now(),
+                        syncStatus: 'local',
+                      );
+                    }
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => getIt<ProfileEditCubit>(),
+                          child: ProfileEditScreen(profile: profile),
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text("Créer mon profil"),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+
 }

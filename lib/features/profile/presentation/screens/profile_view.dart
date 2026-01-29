@@ -13,7 +13,6 @@ class ProfileView extends StatelessWidget {
   final UserProfileModel profile;
   const ProfileView({super.key, required this.profile});
 
-  // permet de gérer les exceptions si l'image du profil a été supprimée localement par ex
   ImageProvider<Object> getProfileImage(UserProfileModel profile) {
     if (profile.avatarPath != null && profile.avatarPath!.isNotEmpty) {
       final file = File(profile.avatarPath!);
@@ -26,12 +25,14 @@ class ProfileView extends StatelessWidget {
       return NetworkImage(profile.avatarUrl!);
     }
 
-    // fallback si pas d'image
     return const AssetImage('assets/images/avatar_placeholder.jpg');
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mon profil'),
@@ -40,18 +41,18 @@ class ProfileView extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Avatar
+            // avatar
             CircleAvatar(
-              radius: 50,
-              backgroundImage: getProfileImage(profile)
+              radius: 52,
+              backgroundColor: colorScheme.surfaceContainerHighest,
+              backgroundImage: getProfileImage(profile),
             ),
             const SizedBox(height: 12),
 
-            // nom complet
+            // nom complet du user
             Text(
               '${profile.firstName} ${profile.lastName}',
-              style: TextStyle(
-                fontSize: 20,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -60,30 +61,35 @@ class ProfileView extends StatelessWidget {
 
             // infos du profil
             Card(
+              elevation: 0,
+              color: colorScheme.surfaceContainerHighest,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Column(
-                children:  [
+                children: [
                   ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text('Nom'),
-                    subtitle: Text(profile.lastName),
+                    leading: Icon(Icons.person, color: colorScheme.primary),
+                    title: Text('Nom', style: textTheme.bodyMedium),
+                    subtitle: Text(profile.lastName, style: textTheme.bodySmall),
                   ),
-                  Divider(height: 1),
+                  Divider(height: 1, color: colorScheme.outline),
                   ListTile(
-                    leading: Icon(Icons.person_outline),
-                    title: Text('Prénom'),
-                    subtitle: Text(profile.firstName),
+                    leading: Icon(Icons.person_outline, color: colorScheme.primary),
+                    title: Text('Prénom', style: textTheme.bodyMedium),
+                    subtitle: Text(profile.firstName, style: textTheme.bodySmall),
                   ),
-                  Divider(height: 1),
+                  Divider(height: 1, color: colorScheme.outline),
                   ListTile(
-                    leading: Icon(Icons.email),
-                    title: Text('Email'),
-                    subtitle: Text(profile.email),
+                    leading: Icon(Icons.email, color: colorScheme.primary),
+                    title: Text('Email', style: textTheme.bodyMedium),
+                    subtitle: Text(profile.email, style: textTheme.bodySmall),
                   ),
-                  Divider(height: 1),
+                  Divider(height: 1, color: colorScheme.outline),
                   ListTile(
-                    leading: Icon(Icons.phone),
-                    title: Text('Téléphone'),
-                    subtitle: Text(profile.phone),
+                    leading: Icon(Icons.phone, color: colorScheme.primary),
+                    title: Text('Téléphone', style: textTheme.bodyMedium),
+                    subtitle: Text(profile.phone, style: textTheme.bodySmall),
                   ),
                 ],
               ),
@@ -91,7 +97,7 @@ class ProfileView extends StatelessWidget {
 
             const Spacer(),
 
-            // bouton de modification
+            // Bouton modifier
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -106,11 +112,11 @@ class ProfileView extends StatelessWidget {
                         child: ProfileEditScreen(profile: profile),
                       ),
                     ),
-                  );
-
-                  if (context.mounted) {
-                    context.read<ProfileCubit>().loadProfile();
-                  }
+                  ).then((_) {
+                    if (context.mounted) {
+                      context.read<ProfileCubit>().loadProfile();
+                    }
+                  });
                 },
               ),
             ),

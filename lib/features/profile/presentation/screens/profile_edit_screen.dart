@@ -64,8 +64,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Modifier profil")),
+      appBar: AppBar(
+        title: const Text("Modifier le profil"),
+      ),
       body: BlocConsumer<ProfileEditCubit, ProfileEditState>(
         listener: (context, state) {
           if (state is ProfileEditSuccess) {
@@ -74,6 +78,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             );
             Navigator.pop(context);
           }
+
           if (state is ProfileEditFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Erreur : ${state.message}")),
@@ -89,65 +94,93 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
+                // choix de l'avatar
                 GestureDetector(
                   onTap: pickAvatar,
                   child: Stack(
+                    alignment: Alignment.bottomRight,
                     children: [
                       CircleAvatar(
-                        radius: 50,
+                        radius: 52,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
                         backgroundImage: avatarPath != null
                             ? FileImage(File(avatarPath!))
-                            : const AssetImage('assets/images/avatar_placeholder.jpg'),
+                            : const AssetImage(
+                            'assets/images/avatar_placeholder.jpg')
+                        as ImageProvider,
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            size: 20,
-                            color: Colors.white,
-                          ),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.camera_alt,
+                          size: 20,
+                          color: colorScheme.onPrimary,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: firstNameController,
-                  decoration: const InputDecoration(labelText: "Prénom"),
+
+                const SizedBox(height: 24),
+
+                // informations personnelles
+                Card(
+                  elevation: 0,
+                  color: colorScheme.surfaceContainerHighest,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: firstNameController,
+                          decoration: const InputDecoration(
+                            labelText: "Prénom",
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: lastNameController,
+                          decoration: const InputDecoration(
+                            labelText: "Nom",
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: phoneController,
+                          decoration: const InputDecoration(
+                            labelText: "Téléphone",
+                          ),
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: emailController,
+                          decoration: const InputDecoration(
+                            labelText: "Email",
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: lastNameController,
-                  decoration: const InputDecoration(labelText: "Nom"),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(labelText: "Téléphone"),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: "Email"),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: saveProfile,
-                  child: const Text("Enregistrer"),
+
+                const SizedBox(height: 24),
+
+                // bouton d'enregistrement
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: saveProfile,
+                    child: const Text("Enregistrer"),
+                  ),
                 ),
               ],
             ),
@@ -156,4 +189,5 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       ),
     );
   }
+
 }
