@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
+import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
+import 'package:provider/provider.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
@@ -128,6 +131,14 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Aide à la latéralisation via la caméra.',
+    ),
+    AppFeature(name: "Scanner de ticket de caisse",
+      icon: Icons.document_scanner,
+      route: ReceiptPage.route,
+      requiresInternet: true,
+      requiresAuth: true,
+      isAvailable: true,
+      description: "Scan de ticket de caisse"
     ),
   ];
 
