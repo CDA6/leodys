@@ -9,25 +9,27 @@ class DetectPoseUseCase {
   DetectPoseUseCase(this.repository);
 
   Future<List<BodyPoint>> call(dynamic image, {required int sensorOrientation}) async {
-    // 1. Récupération des points via le repository
+    // recupere les points bruts du repo
     List<BodyPoint> points = await repository.detectPose(image, sensorOrientation: sensorOrientation);
 
+    // petit filtre maison pour eviter les bugs quand les mains se croisent
     return _filterImpossibleWrists(points);
   }
 
   List<BodyPoint> _filterImpossibleWrists(List<BodyPoint> points) {
     try {
-      // On cherche si on a les deux poignets
+      // on cherche les 2 poignets dans la liste
+      // note : firstWhere plante s'il trouve pas, le try/catch gere ca
       var leftWrist = points.firstWhere((p) => p.label == "Poignet G");
       var rightWrist = points.firstWhere((p) => p.label == "Poignet D");
 
-      // Calcul de la distance euclidienne
+      // calcul distance math entre les 2 (pythagore classique)
       double distance = math.sqrt(math.pow(leftWrist.x - rightWrist.x, 2) +
           math.pow(leftWrist.y - rightWrist.y, 2));
 
-      // Si trop proches (< 5% de l'écran), c'est suspect
+      // si trop proches (< 5% de l'ecran), c'est souvent que l'ia confond les deux mains
       if (distance < 0.05) {
-        // On supprime celui qui a la confiance la plus basse
+        // on vire celui qui a la confiance la plus basse pour garder le "vrai"
         if (leftWrist.confidence < rightWrist.confidence) {
           points.remove(leftWrist);
         } else {
@@ -35,7 +37,7 @@ class DetectPoseUseCase {
         }
       }
     } catch (e) {
-      // Si un poignet manque, pas de filtrage à faire
+      // si un poignet manque ou les deux, pas de conflit possible, on touche a rien
     }
     return points;
   }

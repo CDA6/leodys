@@ -1,6 +1,6 @@
 import '../models/reader_config.dart';
 
-/// Classe abstraite ttsRepository qui représente une interface.
+/// Classe abstraite ttsRepository qui représente une interfaces.
 /// Elle définit les contrats que les classes de la couche data devront implémenter
 abstract class TtsRepository{
 
