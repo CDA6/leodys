@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
 
-class AnalyzeButton extends StatelessWidget{
+class ButtonAction extends StatelessWidget{
   final bool canAnalyze;
   final bool isProcessing;
   final VoidCallback? onPressed;
+  final String defaultText;
   final String processingText;
 
-  const AnalyzeButton({
+  const ButtonAction({
     super.key,
     required this.canAnalyze,
     required this.isProcessing,
     required this.onPressed,
+    required this.defaultText,
     required this.processingText,
   });
 
@@ -31,7 +33,7 @@ class AnalyzeButton extends StatelessWidget{
           ),
         )
             : const Icon(Icons.play_arrow),
-        label: Text('Analyser le texte'),
+        label: Text(defaultText),
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 56),
           backgroundColor: context.colorScheme.primaryContainer,
