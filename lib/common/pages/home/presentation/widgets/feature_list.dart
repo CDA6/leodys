@@ -206,7 +206,6 @@ class FeatureList extends StatelessWidget {
       requiresInternet: true,
       requiresAuth: false,
       isAvailable: true,
-      color: Colors.blue,
       description: 'Gestion du planning',
     ),
 
