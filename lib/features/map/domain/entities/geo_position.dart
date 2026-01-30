@@ -1,3 +1,5 @@
+import 'package:latlong2/latlong.dart';
+
 class GeoPosition {
   final double latitude;
   final double longitude;
@@ -12,5 +14,9 @@ class GeoPosition {
   @override
   String toString() {
     return "Lat=$latitude, Lng=$longitude";
+  }
+
+  LatLng toLatLng() {
+    return LatLng(latitude, longitude);
   }
 }

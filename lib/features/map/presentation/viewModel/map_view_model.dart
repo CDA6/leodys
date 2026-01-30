@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
 import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
+import 'package:leodys/features/map/domain/useCases/get_path_usecase.dart';
 import 'package:leodys/features/map/domain/useCases/search_location_usecase.dart';
 import 'package:leodys/features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'package:leodys/common/utils/app_logger.dart';
@@ -57,9 +59,17 @@ class MapViewModel {
 
   static const double searchRadiusInKm = 5;
   // </editor-fold>
+
+  // <editor-fold desc="Path Controller">
+  final GetPathUseCase getWalkingPath;
+
+  final StreamController<GeoPath?> _pathController =
+      StreamController<GeoPath?>.broadcast();
+  Stream<GeoPath?> get pathStream => _pathController.stream;
+  // </editor-fold>
   // </editor-fold>
 
-  MapViewModel(this.watchUserLocation, this.searchAddress);
+  MapViewModel(this.watchUserLocation, this.searchAddress, this.getWalkingPath);
 
   // <editor-fold desc="Methods">
   // <editor-fold desc="Lifecycle">
@@ -154,7 +164,6 @@ class MapViewModel {
   void moveToLocation(LocationSearchResult destination) {
     disableAutoFollowing();
     _selectedDestination = destination;
-
     _destinationController.add(destination.position);
 
     _cameraCommandController.add(
@@ -180,6 +189,26 @@ class MapViewModel {
   void stopDestinationController() {
     if (!_destinationController.isClosed) {
       _destinationController.add(null);
+    }
+  }
+
+  void prepareNavigation(LocationSearchResult destination) async {
+    moveToLocation(destination);
+
+    if (_lastKnownPosition != null) {
+      try {
+        final path = await getWalkingPath(
+          _lastKnownPosition!,
+          destination.position,
+        );
+
+        _pathController.add(path);
+
+        AppLogger().info("Trajet récupéré : ${path.points.length} points");
+      } catch (e) {
+        AppLogger().error("Erreur startNavigation : $e");
+        _pathController.add(null);
+      }
     }
   }
 
