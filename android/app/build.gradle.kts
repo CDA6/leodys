@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.leodys"
+    namespace = "com.cda.leodys"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.leodys"
+        applicationId = "com.cda.leodys"
 
         // 👇 ICI C'EST MODIFIÉ POUR LA COMPATIBILITÉ
         minSdk = flutter.minSdkVersion
