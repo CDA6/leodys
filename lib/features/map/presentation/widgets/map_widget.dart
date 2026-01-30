@@ -49,6 +49,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   StreamSubscription<MapCameraCommand>? _cameraSubscription;
 
+  static const int animationMapTimeMs = 500;
+
+  late bool _internalIsFollowing;
+  DateTime _lastRecenterTime = DateTime.now();
+
   void setupCameraListener(Stream<MapCameraCommand> stream) {
     _cameraSubscription?.cancel();
     _cameraSubscription = stream.listen((command) {
@@ -71,7 +76,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     );
 
     final controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: animationMapTimeMs),
       vsync: this,
     );
 
@@ -105,7 +110,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             minZoom: widget._minZoom,
             maxZoom: widget._maxZoom,
             onPositionChanged: (position, hasGesture) {
-              if (hasGesture) widget.onMapDragged();
+              if (hasGesture && _internalIsFollowing) {
+                final now = DateTime.now();
+                if (now.difference(_lastRecenterTime).inMilliseconds >
+                    animationMapTimeMs) {
+                  widget.onMapDragged();
+                }
+              }
             },
           ),
           children: [
@@ -131,6 +142,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     setupCameraListener(widget.cameraStream);
+
+    _internalIsFollowing = widget.isAutoFollowing;
+    widget.followStatusStream.listen((val) {
+      if (val != null) _internalIsFollowing = val;
+    });
   }
 
   TileLayer _buildBackgroundLayer() {
@@ -231,7 +247,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           final isFollowing = snapshot.data ?? false;
 
           return FloatingActionButton(
-            onPressed: widget.onRecenter,
+            key: ValueKey("follow_button_$isFollowing"),
+            onPressed: () {
+              _lastRecenterTime = DateTime.now();
+              widget.onRecenter();
+            },
             backgroundColor: isFollowing
                 ? context.colorScheme.primary
                 : context.colorScheme.secondary,
