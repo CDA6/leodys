@@ -1,25 +1,35 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class DysAnalogClock extends StatelessWidget {
   final DateTime time;
   final double size;
 
+
   const DysAnalogClock({super.key, required this.time, this.size = 250});
 
   @override
   Widget build(BuildContext context) {
+    final String font = context.fontFamily;
+    final double fontSize = context.baseFontSize;
     return CustomPaint(
       size: Size(size, size),
-      painter: _ClockPainter(time),
+      painter: _ClockPainter(time, font ,fontSize),
     );
   }
 }
 
 class _ClockPainter extends CustomPainter {
   final DateTime time;
+  final double fontSize;
+  final String font;
 
-  _ClockPainter(this.time);
+  _ClockPainter(
+      this.time,
+      this.font,
+      this.fontSize
+      );
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -39,9 +49,10 @@ class _ClockPainter extends CustomPainter {
     canvas.drawCircle(center, radius, paintOutline);
 
     // 2. Dessin des chiffres (Haute lisibilité)
-    const textStyle = TextStyle(
+    final textStyle = TextStyle(
       color: Colors.black,
-      fontSize: 24,
+      fontFamily: font,
+      fontSize: fontSize,
       fontWeight: FontWeight.bold,
     );
 
@@ -66,7 +77,7 @@ class _ClockPainter extends CustomPainter {
 
     // 4. Aiguille des MINUTES (Longue et fine - Rouge)
     final minuteAngle = (time.minute + time.second / 60) * 6 * pi / 180 - pi / 2;
-    _drawHand(canvas, center, minuteAngle, radius * 0.8, 5, Colors.red.shade900);
+    _drawHand(canvas, center, minuteAngle, radius * 0.8, 5, Color(0xFFE51A1A));
 
     // Point central
     canvas.drawCircle(center, 6, Paint()..color = Colors.black);
