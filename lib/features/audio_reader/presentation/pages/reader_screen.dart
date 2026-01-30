@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../common/theme/theme_context_extension.dart';
 import '../../domain/models/reader_config.dart';
 import '../../injection.dart';
 import '../controllers/reader_controller.dart';
@@ -23,6 +24,7 @@ class ReaderScreen extends StatefulWidget {
 class _ReaderScreenState extends State<ReaderScreen> {
   /// initiation des contrôleurs
   late final ReaderController readerController;
+
   ///Configuration de lecture avec des parametres par défaut
   final ReaderConfig defaultConfig = ReaderConfig.defaultConfig;
 
@@ -43,10 +45,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Utilisation d'animatedBuilder pour écouter les notifications de changeNotifier.
+    // C'est un observateur qui se recontruit quand il recoit le signal de changeNotifier
+    // sans avoir recours à setState
     return AnimatedBuilder(
       // Écoute des ChangeNotifier utilisés par l’écran
+      // animation défini l'objet à écouter
+      // ici objet à écouter est le readerController
       animation: readerController,
+      // Builder une fonction qui construit UI. cette fonction est appelé à chaque notification
+      // context donne l'acces aux theme, mediaQuery et navigator et _ pour passer un parametre non utiliser
       builder: (context, _) {
+
+        // Squelette de la page
         return Scaffold(
           appBar: AppBar(
             title: Row(
@@ -54,26 +65,47 @@ class _ReaderScreenState extends State<ReaderScreen> {
               children: [
                 Image.asset('assets/images/logo.jpeg', height: 32),
                 const SizedBox(width: 5),
-                const Text('LeoDys'),
+                Text(
+                  'LeoDys',
+                  style: TextStyle(
+                    color: context.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
-            backgroundColor: Colors.green.shade400,
+            backgroundColor: context.colorScheme.primaryContainer,
           ),
 
+          // Menu drawer
           drawer: Drawer(
             child: ListView(
               children: [
-                const DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.green),
-                  child: Text('Menu'),
+                // entete
+                DrawerHeader(
+                  // decaration pour styliser
+                  decoration: BoxDecoration(
+                    color: context.colorScheme.primaryContainer,
+                  ),
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: context.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+
+                // Ligne cliquable
                 ListTile(
+                  // leading ajoute une icone au début
                   leading: const Icon(Icons.scanner),
                   title: const Text('Scanner un document'),
+                  // trailing ajoute une icone à la fin
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/read');
+                    Navigator.pop(context); // Ferme le menu drawer
+                    Navigator.pushNamed(context, '/read'); // naviguer vers la page read
                   },
                 ),
                 ListTile(
@@ -96,24 +128,30 @@ class _ReaderScreenState extends State<ReaderScreen> {
             ),
           ),
 
-          body: Center(
+          body: Center( // centrer les éléments à l'interieur
             child: Padding(
+              // Ajouter de l'espace à lintérieur tout au autour de l'écran. Evite que les éléments
+              // touchent le bord de l'écran
               padding: const EdgeInsets.all(20),
               child: ListView(
                 children: [
                   ScanButton(
+                    // transmettre l'état de chargement du controller au widget
                     isLoading: readerController.isLoading,
                     onPressed: () {
+                      // action onPress: si loading == true alors le bouton est désactivé (null)
+                      // si loading == false le bouton actif et appel scanWithCamera au clic
                       readerController.isLoading ? null : scanWithCamera();
                     },
                   ),
 
                   const SizedBox(height: 12),
-
+                  // Processus de reconnaissance de texte à travers l'image scané
                   TextPreview(text: readerController.recognizedText),
 
                   const SizedBox(height: 12),
 
+                  // Les boutons de controle de la lecture vocale
                   AudioControls(
                     onPlay: () {
                       readerController.readText(defaultConfig);

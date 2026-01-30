@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../domain/models/document.dart';
 
 class DocumentTile extends StatelessWidget {
+
+  // VoidCallback est une fonction qui ne retourne rien
+  // Son role sera attribué plus tard en lui donnant une implémentation
   final Document document;
   final VoidCallback onRead;
   final VoidCallback onDelete;
@@ -19,15 +22,16 @@ class DocumentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
+    return Card( // conteneur visuel
+      child: ListTile( // Structure les éléments intérieur organisés en ligne
         title: Text(document.title),
         subtitle: Text(
-          document.createAt.toLocal().toString(),
+          document.createAt.toLocal().toString(), // date de création
           style: const TextStyle(fontSize: 12),
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
+        // trailing affiche les actions à droite
+        trailing: Row( // structuré en ligne
+          mainAxisSize: MainAxisSize.min, // prendre le minimum de place
           children: [
             IconButton(
               icon: const Icon(Icons.play_arrow),
