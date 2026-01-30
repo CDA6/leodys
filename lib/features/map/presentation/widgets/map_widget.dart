@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
 
@@ -18,6 +19,7 @@ class MapWidget extends StatefulWidget {
   final Stream<MapCameraCommand> cameraStream;
   final Stream<GeoPosition> currentPositionStream;
   final Stream<GeoPosition?> markerStream;
+  final Stream<bool?> followStatusStream;
 
   final double _initZoom = 18.0;
   final double _minZoom = 1.0;
@@ -33,6 +35,7 @@ class MapWidget extends StatefulWidget {
     required this.cameraStream,
     required this.currentPositionStream,
     required this.markerStream,
+    required this.followStatusStream,
   });
 
   @override
@@ -147,15 +150,25 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         Positioned(
           bottom: 16,
           right: 16,
-          child: FloatingActionButton(
-            onPressed: widget.onRecenter,
-            backgroundColor: widget.isAutoFollowing
-                ? Colors.blue
-                : Colors.white,
-            child: Icon(
-              widget.isAutoFollowing ? Icons.gps_fixed : Icons.gps_not_fixed,
-              color: widget.isAutoFollowing ? Colors.white : Colors.blue,
-            ),
+          child: StreamBuilder<bool?>(
+            stream: widget.followStatusStream,
+            initialData: widget.isAutoFollowing,
+            builder: (context, snapshot) {
+              final isFollowing = snapshot.data ?? false;
+
+              return FloatingActionButton(
+                onPressed: widget.onRecenter,
+                backgroundColor: isFollowing
+                    ? context.colorScheme.primary
+                    : context.colorScheme.secondary,
+                child: Icon(
+                  isFollowing ? Icons.gps_fixed : Icons.gps_not_fixed,
+                  color: isFollowing
+                      ? context.colorScheme.onPrimary
+                      : context.colorScheme.onSecondary,
+                ),
+              );
+            },
           ),
         ),
       ],
