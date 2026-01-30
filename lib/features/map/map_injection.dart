@@ -53,10 +53,11 @@ void setupLocationSearch() {
 
 void setupMapPresentation() {
   // Presentation Layer
-  locator.registerFactory<MapViewModel>(
+  locator.registerLazySingleton<MapViewModel>(
     () => MapViewModel(
       locator<WatchUserLocationUseCase>(),
       locator<SearchLocationUseCase>(),
     ),
+    dispose: (param) => param.dispose(),
   );
 }

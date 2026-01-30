@@ -3,7 +3,9 @@ import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
+import 'package:leodys/features/map/presentation/widgets/map_app_bar.dart';
 import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:flutter/material.dart';
 
 class MapScreen extends StatefulWidget {
@@ -46,7 +48,6 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     widget.viewModel.handleLeaving();
-    widget.viewModel.dispose();
     super.dispose();
   }
 
@@ -62,12 +63,14 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppbar(),
+      appBar: MapAppBar(
+        onSearch: (query) => widget.viewModel.onSearch(query),
+        onLocationSelected: (loc) => widget.viewModel.moveToLocation(loc),
+      ),
       body: Stack(
         children: [
           _buildMap(),
 
-          // Overlay de chargement discret
           StreamBuilder<GeoPosition>(
             stream: widget.viewModel.positionStream,
             builder: (context, snapshot) {
@@ -96,9 +99,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                             const SizedBox(width: 12),
-                            const Text(
+                            Text(
                               "Recherche position...",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: context.colorScheme.onPrimaryContainer,
+                              ),
                             ),
                           ],
                         ),
@@ -115,50 +121,6 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     );
   }
 
-  AppBar _buildAppbar() {
-    return AppBar(
-      title: const Text("Navigation Piéton"),
-      actions: [
-        SearchAnchor(
-          builder: (context, controller) {
-            return IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                AppLogger().info("Opening search location");
-                controller.openView();
-              },
-            );
-          },
-
-          suggestionsBuilder: (context, controller) async {
-            if (controller.text.length < 3) {
-              return [const ListTile(title: Text("Trois caractères minimum"))];
-            }
-
-            final results = await widget.viewModel.onSearch(controller.text);
-            if (results.isEmpty) {
-              return [const ListTile(title: Text("Aucun résultat trouvé"))];
-            }
-
-            return results.map(
-              (res) => ListTile(
-                leading: const Icon(Icons.location_on, color: Colors.blue),
-                title: Text(res.name),
-                onTap: () {
-                  AppLogger().info(
-                    "Closing search location, result choice : ${res.position.toString()}",
-                  );
-                  controller.closeView(res.name);
-                  widget.viewModel.moveToLocation(res);
-                },
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
   MapWidget _buildMap() {
     return MapWidget(
       position:
@@ -167,22 +129,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       cameraStream: widget.viewModel.cameraCommandStream,
       currentPositionStream: widget.viewModel.positionStream,
       markerStream: widget.viewModel.markerStream,
+      followStatusStream: widget.viewModel.followStatusStream,
 
       isAutoFollowing: widget.viewModel.isFollowingUser,
 
-      onRecenter: () {
-        setState(() {
-          widget.viewModel.resumeAutoFollowing();
-        });
-      },
-
-      onMapDragged: () {
-        if (widget.viewModel.isFollowingUser) {
-          setState(() {
-            widget.viewModel.disableAutoFollowing();
-          });
-        }
-      },
+      onRecenter: () => widget.viewModel.resumeAutoFollowing(),
+      onMapDragged: () => widget.viewModel.disableAutoFollowing(),
     );
   }
 }

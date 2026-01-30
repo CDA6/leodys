@@ -21,6 +21,10 @@ class MapViewModel {
   bool _isAutoFollowingUser = true;
   bool get isFollowingUser => _isAutoFollowingUser;
 
+  final StreamController<bool> _followStatusController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get followStatusStream => _followStatusController.stream;
+
   final StreamController<MapCameraCommand> _cameraCommandController =
       StreamController<MapCameraCommand>.broadcast();
   Stream<MapCameraCommand> get cameraCommandStream =>
@@ -61,7 +65,8 @@ class MapViewModel {
   // <editor-fold desc="Lifecycle">
   void handleLeaving() {
     AppLogger().info("Leaving map page, stop GPS listener");
-    stopGpsStreamListener();
+    stopGpsStreamController();
+    _searchWaitingTimer?.cancel();
   }
 
   void handleLanding() {
@@ -80,7 +85,13 @@ class MapViewModel {
   }
 
   void dispose() {
-    stopGpsStreamListener();
+    stopGpsStreamController();
+    _searchWaitingTimer?.cancel();
+
+    _positionController.close();
+    _cameraCommandController.close();
+    _destinationController.close();
+    _followStatusController.close();
   }
   // </editor-fold>
 
@@ -105,7 +116,7 @@ class MapViewModel {
     });
   }
 
-  void stopGpsStreamListener() {
+  void stopGpsStreamController() {
     _locationSubscription?.cancel();
     _locationSubscription = null;
   }
@@ -153,6 +164,7 @@ class MapViewModel {
 
   void resumeAutoFollowing() {
     _isAutoFollowingUser = true;
+    _followStatusController.add(_isAutoFollowingUser);
     if (_lastKnownPosition != null) {
       _cameraCommandController.add(
         MapCameraCommand(position: _lastKnownPosition!),
@@ -162,6 +174,13 @@ class MapViewModel {
 
   void disableAutoFollowing() {
     _isAutoFollowingUser = false;
+    _followStatusController.add(_isAutoFollowingUser);
+  }
+
+  void stopDestinationController() {
+    if (!_destinationController.isClosed) {
+      _destinationController.add(null);
+    }
   }
 
   // </editor-fold>
