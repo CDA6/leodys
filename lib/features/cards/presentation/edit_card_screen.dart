@@ -85,87 +85,150 @@ class _EditCardScreenState extends State<EditCardScreen> {
 
   /// Widget d'affichage d'image avec boutons scan/supprimer
   Widget _buildImage(String? path, File? newFile, bool isRecto) {
-    final display = newFile != null
-        ? Image.file(newFile, width: 150, height: 150, fit: BoxFit.cover)
-        : (path != null && path.isNotEmpty
-        ? Image.file(File(path), width: 150, height: 150, fit: BoxFit.cover)
-        : Container(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    Widget image;
+
+    if (newFile != null) {
+      image = Image.file(newFile, fit: BoxFit.cover);
+    } else if (path != null && path.isNotEmpty) {
+      image = Image.file(File(path), fit: BoxFit.cover);
+    } else {
+      image = Icon(
+        Icons.image,
+        size: 48,
+        color: colorScheme.onSurfaceVariant,
+      );
+    }
+
+    return Container(
       width: 150,
       height: 150,
-      color: Colors.grey[300],
-      child: const Icon(Icons.image, size: 50),
-    ));
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          Center(child: image),
 
-    return Stack(
-      children: [
-        display,
-        Positioned(
-          top: 0,
-          right: 0,
-          child: IconButton(
-            icon: const Icon(Icons.camera_alt),
-            onPressed: () => _scanImage(isRecto),
-          ),
-        ),
-        if (!isRecto && (path != null || _newVerso != null))
+          // bouton de scan recto
           Positioned(
-            bottom: 0,
-            right: 0,
+            top: 4,
+            right: 4,
             child: IconButton(
-              icon: const Icon(Icons.delete_forever, color: Colors.red),
-              onPressed: () => setState(() {
-                _newVerso = null;
-                _removeVerso = true;
-              }),
+              style: IconButton.styleFrom(
+                backgroundColor: colorScheme.surfaceContainerHighest,
+              ),
+              icon: Icon(Icons.camera_alt, color: colorScheme.primary),
+              onPressed: () => _scanImage(isRecto),
             ),
-          )
-      ],
+          ),
+
+          // verso
+          if (!isRecto && (path != null || _newVerso != null))
+            Positioned(
+              bottom: 4,
+              right: 4,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                  backgroundColor: colorScheme.surfaceContainerHighest,
+                ),
+                icon: Icon(Icons.delete_forever, color: colorScheme.error),
+                onPressed: () => setState(() {
+                  _newVerso = null;
+                  _removeVerso = true;
+                }),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Modifier la carte")),
+      appBar: AppBar(
+        title: const Text("Modifier la carte"),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Titre modifiable
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Nom de la carte",
-                border: OutlineInputBorder(),
+            // carte principale
+            Card(
+              color: colorScheme.surfaceContainerHighest,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            const SizedBox(height: 20),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // titre
+                    Text(
+                      "Informations de la carte",
+                      style: textTheme.titleMedium,
+                    ),
 
-            // Images recto/verso
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildImage(widget.card.rectoPath, _newRecto, true),
-                _buildImage(widget.card.versoPath, _newVerso, false),
-              ],
-            ),
-            const SizedBox(height: 30),
+                    const SizedBox(height: 16),
 
-            // Bouton valider
-            ElevatedButton.icon(
-              icon: const Icon(Icons.check),
-              label: const Text("Valider les modifications"),
-              onPressed: _submitChanges,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                    // nom de la carte
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: "Nom de la carte",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // recto/verso de la carte
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildImage(
+                          widget.card.rectoPath,
+                          _newRecto,
+                          true,
+                        ),
+                        _buildImage(
+                          widget.card.versoPath,
+                          _newVerso,
+                          false,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            )
+            ),
+
+            const SizedBox(height: 32),
+
+            // bouton d'enregistrement
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.check),
+                label: const Text("Valider les modifications"),
+                onPressed: _submitChanges,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+
 }
