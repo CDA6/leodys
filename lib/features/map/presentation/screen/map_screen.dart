@@ -65,7 +65,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     return Scaffold(
       appBar: MapAppBar(
         onSearch: (query) => widget.viewModel.onSearch(query),
-        onLocationSelected: (loc) => widget.viewModel.moveToLocation(loc),
+        onLocationSelected: (loc) => widget.viewModel.prepareNavigation(loc),
       ),
       body: Stack(
         children: [
@@ -77,6 +77,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             currentPositionStream: widget.viewModel.positionStream,
             markerStream: widget.viewModel.markerStream,
             followStatusStream: widget.viewModel.followStatusStream,
+            pathStream: widget.viewModel.pathStream,
 
             isAutoFollowing: widget.viewModel.isFollowingUser,
 

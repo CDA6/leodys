@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
 
@@ -20,6 +21,7 @@ class MapWidget extends StatefulWidget {
   final Stream<GeoPosition> currentPositionStream;
   final Stream<GeoPosition?> markerStream;
   final Stream<bool?> followStatusStream;
+  final Stream<GeoPath?> pathStream;
 
   final double _initZoom = 18.0;
   final double _minZoom = 1.0;
@@ -36,6 +38,7 @@ class MapWidget extends StatefulWidget {
     required this.currentPositionStream,
     required this.markerStream,
     required this.followStatusStream,
+    required this.pathStream,
   });
 
   @override
@@ -106,71 +109,14 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             },
           ),
           children: [
-            //Background map
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              minZoom: widget._minZoom,
-              maxZoom: widget._maxZoom,
-            ),
-
-            //Trajectory dot
-            // PolylineLayer(
-            //   polylines: [
-            //     Polyline(points: [], color: Colors.blue, strokeWidth: 4.0),
-            //   ],
-            // ),
-
-            //Fixed poi
+            _buildBackgroundLayer(),
+            _buildPolylineLayer(),
             _buildMarkerLayer(),
-
-            //User location
-            CurrentLocationLayer(
-              positionStream: widget.currentPositionStream.map(
-                (geoPos) => LocationMarkerPosition(
-                  latitude: geoPos.latitude,
-                  longitude: geoPos.longitude,
-                  accuracy: geoPos.accuracy,
-                ),
-              ),
-
-              alignPositionOnUpdate: AlignOnUpdate.never,
-              alignDirectionOnUpdate: AlignOnUpdate.never,
-              style: LocationMarkerStyle(
-                marker: DefaultLocationMarker(color: Colors.blue),
-                markerSize: const Size.square(20),
-                accuracyCircleColor: const Color(0x182196F3),
-                showHeadingSector: true,
-                headingSectorRadius: 60,
-                headingSectorColor: const Color(0xCC2196F3),
-              ),
-            ),
+            _buildUserLocationLayer(),
           ],
         ),
 
-        Positioned(
-          bottom: 16,
-          right: 16,
-          child: StreamBuilder<bool?>(
-            stream: widget.followStatusStream,
-            initialData: widget.isAutoFollowing,
-            builder: (context, snapshot) {
-              final isFollowing = snapshot.data ?? false;
-
-              return FloatingActionButton(
-                onPressed: widget.onRecenter,
-                backgroundColor: isFollowing
-                    ? context.colorScheme.primary
-                    : context.colorScheme.secondary,
-                child: Icon(
-                  isFollowing ? Icons.gps_fixed : Icons.gps_not_fixed,
-                  color: isFollowing
-                      ? context.colorScheme.onPrimary
-                      : context.colorScheme.onSecondary,
-                ),
-              );
-            },
-          ),
-        ),
+        _buildCenterOnUserButton(),
       ],
     );
   }
@@ -185,6 +131,37 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     setupCameraListener(widget.cameraStream);
+  }
+
+  TileLayer _buildBackgroundLayer() {
+    return TileLayer(
+      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      minZoom: widget._minZoom,
+      maxZoom: widget._maxZoom,
+    );
+  }
+
+  Widget _buildPolylineLayer() {
+    return StreamBuilder<GeoPath?>(
+      stream: widget.pathStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return PolylineLayer(
+          polylines: [
+            Polyline(
+              points: snapshot.data!.points.map((p) => p.toLatLng()).toList(),
+              color: Colors.blueAccent.withOpacity(0.8),
+              strokeWidth: 6.0,
+              borderColor: Colors.white,
+              borderStrokeWidth: 2.0,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildMarkerLayer() {
@@ -217,6 +194,56 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       width: 50,
       height: 50,
       child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+    );
+  }
+
+  CurrentLocationLayer _buildUserLocationLayer() {
+    return CurrentLocationLayer(
+      positionStream: widget.currentPositionStream.map(
+        (geoPos) => LocationMarkerPosition(
+          latitude: geoPos.latitude,
+          longitude: geoPos.longitude,
+          accuracy: geoPos.accuracy,
+        ),
+      ),
+
+      alignPositionOnUpdate: AlignOnUpdate.never,
+      alignDirectionOnUpdate: AlignOnUpdate.never,
+      style: LocationMarkerStyle(
+        marker: DefaultLocationMarker(color: Colors.blue),
+        markerSize: const Size.square(20),
+        accuracyCircleColor: const Color(0x182196F3),
+        showHeadingSector: true,
+        headingSectorRadius: 60,
+        headingSectorColor: const Color(0xCC2196F3),
+      ),
+    );
+  }
+
+  Positioned _buildCenterOnUserButton() {
+    return Positioned(
+      bottom: 16,
+      right: 16,
+      child: StreamBuilder<bool?>(
+        stream: widget.followStatusStream,
+        initialData: widget.isAutoFollowing,
+        builder: (context, snapshot) {
+          final isFollowing = snapshot.data ?? false;
+
+          return FloatingActionButton(
+            onPressed: widget.onRecenter,
+            backgroundColor: isFollowing
+                ? context.colorScheme.primary
+                : context.colorScheme.secondary,
+            child: Icon(
+              isFollowing ? Icons.gps_fixed : Icons.gps_not_fixed,
+              color: isFollowing
+                  ? context.colorScheme.onPrimary
+                  : context.colorScheme.onSecondary,
+            ),
+          );
+        },
+      ),
     );
   }
 }
