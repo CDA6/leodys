@@ -22,7 +22,7 @@ class SkeletonPainter extends CustomPainter {
     double offsetX = 0;
     double offsetY = 0;
 
-    // on garde le ratio pour pas deformer le bonhomme
+    // on garde le ratio pour pas deformer
     if (previewW < previewH) {
       scale = previewW;
       offsetX = 0;
@@ -38,14 +38,14 @@ class SkeletonPainter extends CustomPainter {
       double x = p.x * scale + offsetX;
       double y = p.y * scale + offsetY;
 
-      // effet miroir indispensable en selfie sinon c'est inversé
+      // effet miroir selfie
       if (isFrontCamera) {
         x = previewW - x;
       }
       return Offset(x, y);
     }
 
-    // on boucle juste sur les points pour afficher les pastilles (code couleur dys)
+    // boucle  sur les points pour afficher les pastilles (code couleur dys)
     for (var p in points) {
       Offset pos = getPos(p);
 
@@ -73,10 +73,10 @@ class SkeletonPainter extends CustomPainter {
         }
       }
 
-      // 1. dessine le rond de l'articulation
+      // dessine le rond de l'articulation
       canvas.drawCircle(pos, 6.0, Paint()..color = pointColor..style = PaintingStyle.fill);
 
-      // 2. dessine le label (ex: "Main G") a coté du point
+      // dessine le label
       final textSpan = TextSpan(
         text: p.label,
         style: TextStyle(

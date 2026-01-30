@@ -2,7 +2,7 @@
 import '../../domain/repositories/ocr_repository.dart';
 import '../services/ocr_service.dart';
 
-/// Implémentation du repository de OCR
+/// Implémentation du repositories de OCR
 /// Relie le Domain (contrat OcrRepository) et le service technique de
 /// reconnaissance de texte (OcrServiceImpl)
 class OcrRepositoryImpl implements OcrRepository{
