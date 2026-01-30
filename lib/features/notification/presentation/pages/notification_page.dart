@@ -4,7 +4,7 @@ import '../controllers/notification_controller.dart';
 import '../widgets/referent_list_tile.dart';
 import '../widgets/add_referent_dialog.dart';
 import '../../domain/entities/referent_entity.dart';
-
+import '../../../../common/widget/global_appbar.dart';
 import 'email_compose_page.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -29,8 +29,8 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mes Contacts Référents"),
+      appBar: GlobalAppBar(
+        title: "Mes Contacts Référents",
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle, size: 30),

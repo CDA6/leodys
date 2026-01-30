@@ -21,7 +21,17 @@ class AppLogger {
 
   void warning(String message) => logger.w(message);
 
-  void error(String message, [dynamic error]) => logger.e(message, error: error);
+  void error(
+      String message, {
+        dynamic error,
+        StackTrace? stackTrace,
+      }) {
+    logger.e(
+      message,
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
 
   void fatal(String message, [dynamic error]) => logger.f(message, error: error);
 }

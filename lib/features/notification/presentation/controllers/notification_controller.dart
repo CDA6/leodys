@@ -1,10 +1,12 @@
+import 'package:flutter/cupertino.dart';
+
 import '../../domain/entities/message_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/entities/referent_entity.dart';
 import '../../domain/usecases/send_notification_email.dart';
 import '../../domain/usecases/sync_message_history.dart';
 
-class NotificationController {
+class NotificationController extends ChangeNotifier{
   final NotificationRepository repository;
   final SendNotificationEmail sendNotificationEmail;
   final SyncMessageHistory syncMessageHistory;
