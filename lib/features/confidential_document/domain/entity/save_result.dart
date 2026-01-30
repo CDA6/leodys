@@ -1,0 +1,1 @@
+enum SaveResult {fullSuccess, localOnly, remoteOnly, failure}

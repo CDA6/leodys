@@ -71,37 +71,53 @@ class _RenameCardState extends State<RenameCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Nommer la carte")),
+      appBar: AppBar(
+        title: const Text("Nommer la carte"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            // titre
+            Text(
+              "Donnez un nom à votre carte",
+              style: textTheme.titleMedium,
+            ),
+
+            const SizedBox(height: 16),
+
+            // champ de saisie
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: "Nom de la carte",
-                border: OutlineInputBorder(),
+                errorText: error,
+                border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
-            if (error != null)
-              Text(
-                error!,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
+
+            const SizedBox(height: 24),
+
+            // bouton d'enregistrement
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _save,
+                child: const Text("Enregistrer"),
               ),
-            ElevatedButton(
-              onPressed: () => _save(),
-              child: const Text("Enregistrer"),
             ),
           ],
         ),
       ),
     );
   }
+
 
   @override
   void dispose() {

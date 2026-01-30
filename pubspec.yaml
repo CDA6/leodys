@@ -48,6 +48,8 @@ dependencies:
   google_sign_in: ^7.2.0
   tflite_flutter: ^0.11.0
   permission_handler: ^11.4.0
+  flutter_secure_storage: ^10.0.0
+  cryptography: ^2.9.0
   file_picker: ^10.3.9
   googleapis_auth: ^1.4.0
   webview_flutter: ^4.4.1
@@ -58,20 +60,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^6.0.0
   hive_generator: ^2.0.1
   build_runner: ^2.4.13
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
   fonts:
     - family: OpenDyslexic
@@ -95,37 +87,9 @@ flutter:
     - assets/images/logo.jpeg
     - .env
     - assets/yolo11n-pose.tflite
-#    - assets/models/best_float32.tflite
-#    - assets/models/yolo26n_float32.tflite
-#    - assets/images/carte_test.jpg
+    - assets/ledoys-738a4da4fb7c.json
     - assets/models/best_float32.tflite
     - assets/models/yolo26n_float32.tflite
     - assets/
     - assets/images/bills/
     - assets/images/coins/
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
