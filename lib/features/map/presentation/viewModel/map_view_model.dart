@@ -172,6 +172,7 @@ class MapViewModel {
   }
 
   void resumeAutoFollowing() {
+    AppLogger().debug("Navigation map autofollow activated");
     _isAutoFollowingUser = true;
     _followStatusController.add(_isAutoFollowingUser);
     if (_lastKnownPosition != null) {
@@ -182,6 +183,7 @@ class MapViewModel {
   }
 
   void disableAutoFollowing() {
+    AppLogger().debug("Navigation map autofollow deactivated");
     _isAutoFollowingUser = false;
     _followStatusController.add(_isAutoFollowingUser);
   }
