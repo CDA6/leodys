@@ -1,12 +1,12 @@
-import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
 import 'package:leodys/features/map/presentation/widgets/map_app_bar.dart';
 import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
-import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/gps_search_pos_overlay.dart';
 
 class MapScreen extends StatefulWidget {
   final MapViewModel viewModel;
@@ -69,72 +69,24 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       ),
       body: Stack(
         children: [
-          _buildMap(),
+          MapWidget(
+            position:
+                widget.viewModel.currentPosition ??
+                const GeoPosition(latitude: 0, longitude: 0),
+            cameraStream: widget.viewModel.cameraCommandStream,
+            currentPositionStream: widget.viewModel.positionStream,
+            markerStream: widget.viewModel.markerStream,
+            followStatusStream: widget.viewModel.followStatusStream,
 
-          StreamBuilder<GeoPosition>(
-            stream: widget.viewModel.positionStream,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData && !snapshot.hasError) {
-                return Positioned(
-                  top: 20,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              "Recherche position...",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: context.colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
+            isAutoFollowing: widget.viewModel.isFollowingUser,
+
+            onRecenter: () => widget.viewModel.resumeAutoFollowing(),
+            onMapDragged: () => widget.viewModel.disableAutoFollowing(),
           ),
+
+          GpsSearchPosOverlay(positionStream: widget.viewModel.positionStream),
         ],
       ),
-    );
-  }
-
-  MapWidget _buildMap() {
-    return MapWidget(
-      position:
-          widget.viewModel.currentPosition ??
-          const GeoPosition(latitude: 0, longitude: 0),
-      cameraStream: widget.viewModel.cameraCommandStream,
-      currentPositionStream: widget.viewModel.positionStream,
-      markerStream: widget.viewModel.markerStream,
-      followStatusStream: widget.viewModel.followStatusStream,
-
-      isAutoFollowing: widget.viewModel.isFollowingUser,
-
-      onRecenter: () => widget.viewModel.resumeAutoFollowing(),
-      onMapDragged: () => widget.viewModel.disableAutoFollowing(),
     );
   }
 }
