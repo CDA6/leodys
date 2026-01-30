@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
@@ -67,6 +68,8 @@ class MapViewModel {
       StreamController<GeoPath?>.broadcast();
   Stream<GeoPath?> get pathStream => _pathController.stream;
 
+  GeoPath? _lastPath;
+
   final StreamController<GeoPath?> _pendingPathController =
       StreamController<GeoPath?>.broadcast();
   Stream<GeoPath?> get pendingPathStream => _pendingPathController.stream;
@@ -74,6 +77,8 @@ class MapViewModel {
   final StreamController<bool> _isNavigatingController =
       StreamController<bool>.broadcast();
   Stream<bool> get isNavigatingStream => _isNavigatingController.stream;
+
+  bool _isNavigating = false;
   // </editor-fold>
   // </editor-fold>
 
@@ -110,6 +115,9 @@ class MapViewModel {
     _cameraCommandController.close();
     _destinationController.close();
     _followStatusController.close();
+    _pathController.close();
+    _pendingPathController.close();
+    _isNavigatingController.close();
   }
   // </editor-fold>
 
@@ -125,6 +133,10 @@ class MapViewModel {
         (pos) {
           _lastKnownPosition = pos;
           _positionController.add(pos);
+
+          if (_isNavigating) {
+            updatePathProgress(pos);
+          }
 
           if (_isAutoFollowingUser) {
             _cameraCommandController.add(MapCameraCommand(position: pos));
@@ -202,8 +214,11 @@ class MapViewModel {
     }
   }
 
-  void prepareNavigation(LocationSearchResult destination) async {
-    moveToLocation(destination);
+  void prepareNavigation(
+    LocationSearchResult destination, {
+    bool isRerouting = false,
+  }) async {
+    if (!isRerouting) moveToLocation(destination);
 
     if (_lastKnownPosition != null) {
       try {
@@ -211,17 +226,22 @@ class MapViewModel {
           _lastKnownPosition!,
           destination.position,
         );
-        _pendingPathController.add(path);
+        _lastPath = path;
 
-        AppLogger().info("Trajet récupéré : ${path.points.length} points");
+        if (isRerouting) {
+          _pathController.add(path);
+          AppLogger().info("Reroutage automatique effectué");
+        } else {
+          _pendingPathController.add(path);
+        }
       } catch (e) {
-        AppLogger().error("Erreur startNavigation : $e");
-        _pathController.add(null);
+        AppLogger().error("Erreur calcul trajet : $e");
       }
     }
   }
 
   void confirmNavigation(GeoPath path) {
+    _isNavigating = true;
     _pathController.add(path);
     _isNavigatingController.add(true);
     _pendingPathController.add(null);
@@ -229,11 +249,74 @@ class MapViewModel {
   }
 
   void cancelNavigation() {
+    _isNavigating = false;
     _pathController.add(null);
     _destinationController.add(null);
     _pendingPathController.add(null);
     _isNavigatingController.add(false);
     AppLogger().debug("Navigation canceled by user");
+  }
+
+  void updatePathProgress(GeoPosition userPos) {
+    if (_lastPath == null || _lastPath!.points.isEmpty) return;
+
+    int closestPointIndex = 0;
+    double minDistance = double.infinity;
+
+    for (int i = 0; i < _lastPath!.points.length; i++) {
+      double dist = _calculateDistance(userPos, _lastPath!.points[i]);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestPointIndex = i;
+      }
+    }
+
+    double distanceToFinalDestination = _calculateDistance(
+      userPos,
+      _lastPath!.points.last,
+    );
+
+    if (closestPointIndex >= _lastPath!.points.length - 1 ||
+        distanceToFinalDestination < 10) {
+      _finishNavigation();
+      return;
+    }
+
+    if (minDistance > 30 && _selectedDestination != null) {
+      AppLogger().info(
+        "Utilisateur hors trajet (${minDistance.round()}m). Reroutage...",
+      );
+      prepareNavigation(_selectedDestination!, isRerouting: true);
+      return;
+    }
+
+    // clean old passage points
+    if (closestPointIndex > 0) {
+      final updatedPoints = _lastPath!.points.sublist(closestPointIndex);
+
+      _lastPath = GeoPath(
+        points: updatedPoints,
+        steps: _lastPath!.steps,
+        totalDistance: _lastPath!.totalDistance,
+        totalDuration: _lastPath!.totalDuration,
+      );
+
+      _pathController.add(_lastPath);
+    }
+  }
+
+  double _calculateDistance(GeoPosition p1, GeoPosition p2) {
+    final Distance distance = const Distance();
+    return distance.as(LengthUnit.Meter, p1.toLatLng(), p2.toLatLng());
+  }
+
+  void _finishNavigation() {
+    _isNavigating = false;
+    _isNavigatingController.add(false);
+    _pathController.add(null);
+    _destinationController.add(null);
+    _lastPath = null;
+    AppLogger().info("Navigation terminée : l'utilisateur est arrivé.");
   }
 
   // </editor-fold>
