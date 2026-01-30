@@ -4,10 +4,7 @@ import '../models/cash_payment_state.dart';
 /// Use case pour calculer la combinaison optimale de billets et pièces
 class CalculateOptimalChangeUseCase {
   /// Calcule la combinaison optimale de billets et pièces pour un montant donné
-  ///
-  /// Algorithme Greedy (glouton) optimisé :
-  /// - Ne retourne que les dénominations avec count > 0
-  /// - Évite de proposer des billets de 500€, 200€ pour de petits montants
+  /// Algorithme Greedy (glouton)
   CashPaymentState execute(double amount) {
     final state = CashPaymentState.initial(amount);
     final allDenominations = _getEuroDenominations();
@@ -17,11 +14,11 @@ class CalculateOptimalChangeUseCase {
 
     for (var denomination in allDenominations) {
       if (remaining >= denomination.value) {
-        // Algorithme Greedy : prend le maximum d'unités possibles
+        // Prend le maximum d'unités possibles
         int count = (remaining / denomination.value).floor();
 
         if (count > 0) {
-          // Ne garde que les dénominations utiles (count > 0)
+          // Ne garde que les dénominations > 0
           denomination.count = count;
           usefulDenominations.add(denomination);
           remaining = _roundToTwoDecimals(remaining - (count * denomination.value));
@@ -53,7 +50,7 @@ class CalculateOptimalChangeUseCase {
     ];
   }
 
-  /// Arrondit à 2 décimales pour éviter les problèmes de précision
+  /// Arrondit à 2 décimales
   double _roundToTwoDecimals(double value) {
     return (value * 100).round() / 100;
   }

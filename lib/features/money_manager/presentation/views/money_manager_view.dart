@@ -24,6 +24,7 @@ class MoneyManagerView extends StatelessWidget {
   }
 }
 
+/// Contenu de la vue
 class _MoneyManagerContent extends StatelessWidget {
   const _MoneyManagerContent({super.key});
 
