@@ -7,8 +7,6 @@ import '../../domain/entities/app_feature.dart';
 /// ViewModel gérant l'état de la page d'accueil.
 ///
 /// Responsabilités :
-/// - Vérifier la connexion Internet
-/// - Gérer l'état d'authentification
 /// - Déterminer si une feature est accessible selon le contexte
 class HomeViewModel extends ChangeNotifier with ConnectivityMixin {
   bool _isAuthenticated = false;
@@ -27,7 +25,7 @@ class HomeViewModel extends ChangeNotifier with ConnectivityMixin {
     _isCheckingConnectivity = false;
 
     // TODO: Vérifier l'authentification
-    _isAuthenticated = false;
+    _isAuthenticated = true;
     notifyListeners();
   }
 

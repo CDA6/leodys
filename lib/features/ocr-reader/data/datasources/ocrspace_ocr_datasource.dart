@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:leodys/common/mixins/datasource_mixin.dart';
@@ -14,7 +15,7 @@ abstract class OCRSpaceDataSource {
 }
 
 class OCRSpaceDataSourceImpl with DataSourceMixin<OcrResultModel> implements OCRSpaceDataSource {
-  static const String _apiKey = 'K88946411988957';
+  static final String? _apiKey = dotenv.env['OCR_SPACE_KEY'];
   static const String _baseUrl = 'https://api.ocr.space/parse/image';
 
   @override
@@ -28,7 +29,7 @@ class OCRSpaceDataSourceImpl with DataSourceMixin<OcrResultModel> implements OCR
 
       final response = await http.post(
         Uri.parse(_baseUrl),
-        headers: {'apikey': _apiKey},
+        headers: {'apikey': _apiKey ?? ''},
         body: {
           'base64Image': 'data:image/jpeg;base64,$base64Image',
           'language': 'fre',

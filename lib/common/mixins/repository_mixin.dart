@@ -6,7 +6,7 @@ import '../utils/app_logger.dart';
 mixin RepositoryMixin {
   String get _repositoryName => runtimeType.toString();
 
-  /// Exécute une opération de repository avec logging automatique.
+  /// Exécute une opération de repositories avec logging automatique.
   ///
   /// Utilisez cette méthode pour wrapper toutes vos opérations.
   ///
@@ -28,7 +28,7 @@ mixin RepositoryMixin {
       );
       return result;
     } catch (e, stackTrace) {
-      AppLogger().error('[$_repositoryName.$methodName] Exception non gérée: $e', stackTrace);
+      AppLogger().error('[$_repositoryName.$methodName] Exception non gérée: $e', stackTrace: stackTrace);
       rethrow;
     }
   }

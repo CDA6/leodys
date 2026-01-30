@@ -3,6 +3,7 @@ import 'package:leodys/common/utils/internet_util.dart';
 import '../../../../common/widget/voice_text_field.dart';
 import '../controllers/notification_controller.dart';
 import '../../domain/entities/referent_entity.dart';
+import '../../../../common/widget/global_appbar.dart';
 
 class EmailComposePage extends StatefulWidget {
   final ReferentEntity referent;
@@ -30,7 +31,10 @@ class _EmailComposePageState extends State<EmailComposePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Message à ${widget.referent.name}")),
+      appBar: GlobalAppBar(
+          title:"Message à ${widget.referent.name}",
+          showAuthActions: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

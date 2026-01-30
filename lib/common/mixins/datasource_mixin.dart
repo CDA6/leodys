@@ -24,7 +24,7 @@ mixin class DataSourceMixin<T> {
       AppLogger().trace('[$_sourceName.$methodName] Sortie - Succès');
       return result;
     } catch (e, stackTrace) {
-      AppLogger().error('[$_sourceName.$methodName] Erreur: $e', stackTrace);
+      AppLogger().error('[$_sourceName.$methodName] Erreur: $e', stackTrace: stackTrace);
       rethrow;
     }
   }
