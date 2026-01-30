@@ -1,12 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/message.dart';
-import '../../data/repositories/message_repository_impl.dart';
 import '../../domain/repositories/message_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-final messageRepositoryProvider = Provider<MessageRepository>(
-  (ref) => MessageRepositoryImpl(client: Supabase.instance.client),
-);
+import '../../provider.dart';
 
 final messagesProvider = StateNotifierProvider<MessagesNotifier, List<Message>>(
   (ref) {

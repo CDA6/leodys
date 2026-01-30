@@ -18,26 +18,31 @@ class ForumController {
   /// Send a new message
   Future<void> sendMessage(String content) async {
     final user = Supabase.instance.client.auth.currentUser;
-    debugPrint('Current user: ${user?.email ?? "None"}');
-    debugPrint('User ID: ${user?.id ?? "None"}');
-    final username = user != null ? await _getUsername(user.id) : 'Anonymous';
+
+    if (user == null) {
+      throw Exception('User not authenticated');
+    }
+
+    final hasProfile = await _hasProfile(user.id);
+    if (!hasProfile) {
+      throw Exception('User has no profile');
+    }
 
     final message = Message(
-      id: Uuid().v4(),
-      userId: user?.id,  // nullable
-      username: username,
+      id: const Uuid().v4(),
+      userId: user.id,
+      username: await _getUsername(user.id),
       content: content,
       createdAt: DateTime.now(),
     );
 
     await ref.read(messagesProvider.notifier).addMessage(message);
-
   }
+
 
 
   /// Fetch the username from Supabase profiles or fallback
   Future<String> _getUsername(String userId) async {
-    if (userId == 'anonymous') return 'Anonymous';
 
     final data = await Supabase.instance.client
         .from('user_profiles')
@@ -54,6 +59,17 @@ class ForumController {
 
     final user = Supabase.instance.client.auth.currentUser;
     return user?.email ?? 'Anonymous';
+  }
+
+  Future<bool> _hasProfile(String userId) async {
+    final data = await Supabase.instance.client
+        .from('user_profiles')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+    debugPrint(data != null ? "user id = " +data['id'] : 'user is null');
+    return data != null;
   }
 
 }

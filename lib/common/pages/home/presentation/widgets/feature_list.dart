@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../../features/profile/presentation/screens/profile_screen.dart';
 import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import '../../../../../features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
@@ -192,11 +193,20 @@ class FeatureList extends StatelessWidget {
         name: "Forum",
         icon: Icons.chat,
         route: ForumScreen.route,
-        requiresAuth: false,
+        requiresAuth: true,
         requiresInternet: true,
         isAvailable: true,
         description: 'Espace de discussion pour échanger des messages avec les utilisateurs.',
-    )
+    ),
+    AppFeature(
+      name: 'Personnalisation du profil',
+      icon: Icons.person,
+      route: ProfileScreen.route,
+      requiresInternet: false,
+      requiresAuth: true,
+      isAvailable: true,
+      description: 'Personnalisez votre profil',
+    ),
   ];
 
   @override

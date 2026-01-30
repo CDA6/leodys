@@ -55,6 +55,8 @@ dependencies:
   webview_flutter: ^4.4.1
   html: ^0.15.4
   flutter_riverpod: ^2.5.1
+  flutter_bloc: ^9.1.1
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -90,3 +92,4 @@ flutter:
 #    - assets/models/best_float32.tflite
 #    - assets/models/yolo26n_float32.tflite
 #    - assets/images/carte_test.jpg
+    - assets/images/avatar_placeholder.jpg

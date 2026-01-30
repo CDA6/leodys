@@ -4,6 +4,7 @@ import 'package:leodys/features/ocr-ticket-caisse/domain/entities/receipt.dart';
 class ReceiptParser {
   Receipt parse(Map<String, dynamic> json) {
     final text = json["document"]["text"] as String? ?? "";
+    debugPrint(text);
     return fromText(text);
   }
 

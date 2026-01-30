@@ -65,6 +65,9 @@ import 'features/web_audio_reader/data/repositories/web_reader_repository_impl.d
 import 'features/web_audio_reader/data/services/tts_service.dart';
 import 'features/web_audio_reader/domain/usecases/read_text_usecase.dart';
 import 'features/web_audio_reader/presentation/pages/web_reader_screen.dart';
+import 'features/profile/providers.dart' as profile;
+import 'features/profile/presentation/screens/profile_screen.dart';
+
 
 /// Global navigator key pour accéder au context depuis les services
 /// Global navigator key pour accéder au context depuis les datasource
@@ -93,10 +96,10 @@ void main() async {
   if (InternetUtil.isConnected) {
     try {
       final client = Supabase.instance.client;
-      await client.auth.signInWithPassword(
-        email: 'coleen@test.com',
-        password: 'leodys123',
-      );
+      // await client.auth.signInWithPassword(
+      //   email: 'coleen@test.com',
+      //   password: 'leodys123',
+      // );
       AppLogger().info("User authenticated successfully");
     } catch (e) {
       AppLogger().error("Failed to authenticate user: $e");
@@ -121,6 +124,7 @@ void main() async {
   await pose_detection.init();
   await voice_clock.init();
   await gamecard_reader.init();
+  await profile.init();
 
   initVehicleRecognition();
   runApp(
@@ -265,6 +269,7 @@ class MyApp extends StatelessWidget {
               
               ConfidentialDocumentScreen.route : (context) =>
                   const ConfidentialDocumentScreen(),
+              ProfileScreen.route: (context) => const ProfileScreen(),
             },
           );
         },

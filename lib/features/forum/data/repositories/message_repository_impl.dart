@@ -1,4 +1,3 @@
-// features/forum/data/repositories/message_repository_impl.dart
 import 'package:leodys/features/forum/domain/entities/message.dart';
 import 'package:leodys/features/forum/domain/repositories/message_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
