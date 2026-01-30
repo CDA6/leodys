@@ -4,6 +4,8 @@ import 'notification_page.dart';
 import 'email_history_page.dart';
 import '../controllers/notification_controller.dart';
 import '../../../notification/notification_injection.dart';
+import '../../../../common/widget/global_appbar.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class NotificationDashboard extends StatefulWidget {
   const NotificationDashboard({super.key});
@@ -33,7 +35,10 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
     final controller = sl<NotificationController>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Ma Messagerie")),
+      appBar: GlobalAppBar(
+          title: "Ma Messagerie",
+          showAuthActions: false,
+          ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -68,7 +73,6 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                     context,
                     "Contacter un Référent",
                     Icons.person_search,
-                    _isConnected ? Colors.blue.shade100 : Colors.grey.shade300,
                     () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -81,7 +85,6 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                     context,
                     "Historique des Envois",
                     Icons.history,
-                    Colors.green.shade100,
                     () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -103,7 +106,6 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
     BuildContext context,
     String title,
     IconData icon,
-    Color color,
     VoidCallback onTap, {
     bool showWarning = false,
   }) {
@@ -115,7 +117,9 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
       enabled: !showWarning,
       // Indique au système si le bouton est actif
       child: Card(
-        color: color,
+        color: _isConnected
+            ? context.colorScheme.surfaceContainerHighest
+            : Colors.grey.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 4,
         child: InkWell(
@@ -124,7 +128,7 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 50, color: Colors.black87),
+              Icon(icon, size: 50, color: context.colorScheme.primary),
               const SizedBox(width: 20),
               Text(
                 title,
