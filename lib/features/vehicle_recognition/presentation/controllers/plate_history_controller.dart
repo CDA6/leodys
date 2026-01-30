@@ -6,7 +6,7 @@ import '../../domain/repositories/plate_history_repository.dart';
 /// des reconnaissances de plaques réussies.
 ///
 /// Il expose un état simple à l’UI
-/// et délègue toute la logique au repository.
+/// et délègue toute la logique au repositories.
 class PlateHistoryController extends ChangeNotifier {
 
   final PlateHistoryRepository repository;

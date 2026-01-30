@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:leodys/features/vocal_notes/domain/entities/vocal_note_entity.dart';
 import 'package:intl/intl.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/features/vocal_notes/domain/entities/vocal_note_entity.dart';
 
 class VocalNoteCard extends StatelessWidget {
   final VocalNoteEntity note;
@@ -18,7 +20,6 @@ class VocalNoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Format de date: "18 janv. 2026 à 15:30"
     final dateStr = DateFormat(
       'dd MMM yyyy à HH:mm',
       'fr_FR',
@@ -32,8 +33,8 @@ class VocalNoteCard extends StatelessWidget {
         onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-          child: Icon(Icons.mic, color: Theme.of(context).primaryColor),
+          backgroundColor: context.colorScheme.primary.withValues(alpha: 0.1),
+          child: Icon(Icons.mic, color: context.colorScheme.primary),
         ),
         title: Text(
           note.title,
@@ -49,12 +50,12 @@ class VocalNoteCard extends StatelessWidget {
               note.content,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: context.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 4),
             Text(
               dateStr,
-              style: TextStyle(fontSize: 12, color: Colors.grey[400]),
+              style: TextStyle(fontSize: 12, color: context.colorScheme.primary),
             ),
           ],
         ),
@@ -67,7 +68,7 @@ class VocalNoteCard extends StatelessWidget {
               tooltip: 'Lire',
             ),
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: Icon(Icons.delete_outline, color: context.stateColors.error),
               onPressed: onDelete,
               tooltip: 'Supprimer',
             ),

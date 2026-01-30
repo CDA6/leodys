@@ -86,30 +86,79 @@ class _DisplayCardsScreenState extends State<DisplayCardsScreen> {
           icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: savedCards.length,
-              itemBuilder: (context, index) {
-                final card = savedCards[index];
-
-                return ListTile(
+        body: Padding(
+          padding: const EdgeInsets.all(12),
+          // si aucune carte enregistrée
+          child: savedCards.isEmpty
+              ? Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.credit_card_off,
+                  size: 64,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurfaceVariant,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Aucune carte enregistrée",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Appuyez sur + pour en ajouter une",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium,
+                ),
+              ],
+            ),
+          )
+              // si au moins une carte enregistrée
+              : ListView.separated(
+            itemCount: savedCards.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, index) {
+              final card = savedCards[index];
+              return Card(
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: Icon(
+                    Icons.card_membership,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   title: Text(card.name),
-                  leading: Icon(Icons.card_membership),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant,
+                  ),
                   onTap: () async {
                     await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CardDetailsScreen(card: card,)));
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            CardDetailsScreen(card: card),
+                      ),
+                    );
                   },
-                );
-              },
-            )
-          )
-          ],
+                ),
+              );
+            },
+          ),
         ),
-      ),
+
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
               // ouvre l'écran de scan puis de renommage
