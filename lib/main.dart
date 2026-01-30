@@ -20,6 +20,7 @@ import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'common/services/database_service.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
+import 'features/calendar/calendar_injection.dart' as calendar_injection;
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -58,6 +59,7 @@ void main() async {
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
+  await calendar_injection.init();
 
   runApp(MyApp());
 }
@@ -79,7 +81,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
         ),
-        ChangeNotifierProvider(create: (_) => CalendarController()),
+        ChangeNotifierProvider(
+          create: (_) => calendar_injection.sl<CalendarController>(),
+        ),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,

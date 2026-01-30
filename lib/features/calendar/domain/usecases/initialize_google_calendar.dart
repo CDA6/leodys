@@ -1,10 +1,10 @@
-import '../../data/repositories/calendar_repository_impl.dart';
-
 import '../repositories/calendar_repository.dart';
 
-/// UseCase pour initialiser Google Calendar
+/// Initialise Google Calendar
 class InitializeGoogleCalendar {
-  final CalendarRepository repository = CalendarRepositoryImpl();
+  final CalendarRepository repository;
+
+  InitializeGoogleCalendar(this.repository);
 
   Future<void> call(dynamic googleUser) async {
     return await repository.initializeGoogleCalendar(googleUser);

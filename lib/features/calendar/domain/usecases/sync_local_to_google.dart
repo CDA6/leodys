@@ -1,11 +1,11 @@
-import '../../data/repositories/calendar_repository_impl.dart';
-
 import '../repositories/calendar_repository.dart';
 import 'usecase.dart';
 
-/// UseCase pour synchroniser local vers Google
+/// Synchronise les événements locaux vers Google Calendar
 class SyncLocalToGoogle implements UseCase<void, NoParams> {
-  final CalendarRepository repository = CalendarRepositoryImpl();
+  final CalendarRepository repository;
+
+  SyncLocalToGoogle(this.repository);
 
   @override
   Future<void> call(NoParams params) async {

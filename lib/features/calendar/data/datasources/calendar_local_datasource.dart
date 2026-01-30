@@ -1,72 +1,57 @@
-import 'dart:collection';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:hive/hive.dart';
 import '../models/calendar_event_model.dart';
 
-/// DataSource local pour stocker les événements en mémoire
+/// DataSource local pour stocker les événements avec Hive
 class CalendarLocalDataSource {
-  /// Stockage des événements avec LinkedHashMap
-  /// Permet de comparer les DateTime uniquement par la date
-  final _events = LinkedHashMap<DateTime, List<CalendarEventModel>>(
-    equals: isSameDay,
-    hashCode: _getHashCode,
-  );
+  static const String _boxName = 'calendar_events';
 
-  /// Fonction de hash personnalisée pour DateTime
-  static int _getHashCode(DateTime key) {
-    return key.day * 1000000 + key.month * 10000 + key.year;
+  /// Récupère la box (déjà ouverte par DatabaseService.init())
+  Box<CalendarEventModel> get _box {
+    return Hive.box<CalendarEventModel>(_boxName);
   }
 
   /// Récupère les événements pour un jour donné
   Future<List<CalendarEventModel>> getEventsForDay(DateTime day) async {
-    // Normalise la date (enlève l'heure)
+    // Normalise la date
     final normalizedDay = DateTime(day.year, day.month, day.day);
-    return _events[normalizedDay] ?? [];
+
+    // Filtre les événements du jour
+    final events = _box.values.where((event) {
+      final eventDate = DateTime(
+        event.startTime.year,
+        event.startTime.month,
+        event.startTime.day,
+      );
+      return eventDate.isAtSameMomentAs(normalizedDay);
+    }).toList();
+
+    return events;
   }
 
   /// Ajoute un événement
   Future<void> addEvent(CalendarEventModel event) async {
-    final day = DateTime(
-      event.startTime.year,
-      event.startTime.month,
-      event.startTime.day,
-    );
-
-    if (_events[day] == null) {
-      _events[day] = [];
-    }
-    _events[day]!.add(event);
+    // Utilise l'ID comme clé pour faciliter les updates/deletes
+    await _box.put(event.id, event);
   }
 
   /// Met à jour un événement
   Future<void> updateEvent(CalendarEventModel event) async {
-    final day = DateTime(
-      event.startTime.year,
-      event.startTime.month,
-      event.startTime.day,
-    );
-
-    if (_events[day] != null) {
-      final index = _events[day]!.indexWhere((e) => e.id == event.id);
-      if (index != -1) {
-        _events[day]![index] = event;
-      }
-    }
+    // Hive écrase automatiquement si la clé existe
+    await _box.put(event.id, event);
   }
 
   /// Supprime un événement
   Future<void> deleteEvent(String eventId) async {
-    for (final day in _events.keys) {
-      _events[day]!.removeWhere((event) => event.id == eventId);
-    }
+    await _box.delete(eventId);
   }
 
+  /// Récupère tous les événements
   Future<List<CalendarEventModel>> getAllEvents() async {
-    final allEvents = <CalendarEventModel>[];
+    return _box.values.toList();
+  }
 
-    _events.forEach((date, eventsList) {
-      allEvents.addAll(eventsList);
-    });
-
-    return allEvents;
+  /// Nettoie tous les événements (utile pour le dev)
+  Future<void> clearAll() async {
+    await _box.clear();
   }
 }

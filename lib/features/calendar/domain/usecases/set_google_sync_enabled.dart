@@ -1,10 +1,10 @@
-import '../../data/repositories/calendar_repository_impl.dart';
-
 import '../repositories/calendar_repository.dart';
 
-/// UseCase pour activer/désactiver la synchronisation Google
+/// Active/désactive la synchronisation Google Calendar
 class SetGoogleSyncEnabled {
-  final CalendarRepository repository = CalendarRepositoryImpl();
+  final CalendarRepository repository;
+
+  SetGoogleSyncEnabled(this.repository);
 
   void call(bool enabled) {
     repository.setGoogleCalendarEnabled(enabled);

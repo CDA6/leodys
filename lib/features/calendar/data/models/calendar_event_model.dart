@@ -1,17 +1,33 @@
+import 'package:hive/hive.dart';
 import '../../domain/entities/calendar_event.dart';
 
-/// Model de CalendarEvent pour le stockage et la sérialisation
-class CalendarEventModel {
+part 'calendar_event_model.g.dart';
 
+/// Model de CalendarEvent pour le stockage et la sérialisation
+@HiveType(typeId: 2)
+class CalendarEventModel extends HiveObject {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String? description;
+
+  @HiveField(3)
   final DateTime startTime;
+
+  @HiveField(4)
   final DateTime endTime;
+
+  @HiveField(5)
   final String? location;
+
+  @HiveField(6)
   final bool isAllDay;
 
-  const CalendarEventModel({
+  CalendarEventModel({
     required this.id,
     required this.title,
     this.description,
