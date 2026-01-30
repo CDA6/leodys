@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
@@ -22,12 +24,14 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
+  StreamSubscription? _gpsStreamSubscription;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    widget.viewModel.positionStream.listen(
+    _gpsStreamSubscription = widget.viewModel.positionStream.listen(
       (_) {},
       onError: (error) {
         if (error is GpsFailure) {
@@ -49,6 +53,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _gpsStreamSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     widget.viewModel.handleLeaving();
     super.dispose();
