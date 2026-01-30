@@ -1,16 +1,16 @@
 import '../entities/calendar_event.dart';
 
 abstract class CalendarRepository {
-  /// Récupère les événements pour un jour (local + Google si connecté)
+  /// Récupère les événements pour un jour
   Future<List<CalendarEvent>> getEventsForDay(DateTime day);
 
-  /// Ajoute un événement (local + Google si connecté)
+  /// Ajoute un événement
   Future<void> addEvent(CalendarEvent event);
 
-  /// Met à jour un événement (local + Google si connecté)
+  /// Met à jour un événement
   Future<void> updateEvent(CalendarEvent event);
 
-  /// Supprime un événement (local + Google si connecté)
+  /// Supprime un événement
   Future<void> deleteEvent(String eventId);
 
   /// Initialise Google Calendar avec un compte Google

@@ -1,11 +1,10 @@
 import 'package:hive/hive.dart';
 import '../models/calendar_event_model.dart';
 
-/// DataSource local pour stocker les événements avec Hive
 class CalendarLocalDataSource {
   static const String _boxName = 'calendar_events';
 
-  /// Récupère la box (déjà ouverte par DatabaseService.init())
+  /// Récupère la box hive
   Box<CalendarEventModel> get _box {
     return Hive.box<CalendarEventModel>(_boxName);
   }

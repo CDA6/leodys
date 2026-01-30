@@ -3,7 +3,6 @@ import 'package:googleapis/calendar/v3.dart' as calendar_api;
 import 'package:http/http.dart' as http;
 import '../models/calendar_event_model.dart';
 
-/// DataSource pour Google Calendar API (Android)
 class CalendarGoogleDataSource {
   static const String _calendarScope =
       'https://www.googleapis.com/auth/calendar';
@@ -32,7 +31,6 @@ class CalendarGoogleDataSource {
       _calendarApi = calendar_api.CalendarApi(client);
     }
 
-    print('✅ Google Calendar API initialisée');
   }
 
   /// Vérifie si l'API est prête
@@ -41,7 +39,7 @@ class CalendarGoogleDataSource {
   /// Récupère les événements pour un jour
   Future<List<CalendarEventModel>> getEventsForDay(DateTime day) async {
     if (_calendarApi == null) {
-      throw Exception('API non initialisée. Appelez initialize() d\'abord.');
+      throw Exception('API non initialisée.');
     }
 
     final startOfDay = DateTime(day.year, day.month, day.day);
@@ -82,7 +80,6 @@ class CalendarGoogleDataSource {
         );
       }).toList();
     } catch (e) {
-      print('❌ Erreur récupération événements: $e');
       throw Exception('Erreur lors de la récupération des événements');
     }
   }
@@ -126,9 +123,7 @@ class CalendarGoogleDataSource {
 
     try {
       await _calendarApi!.events.insert(googleEvent, 'primary');
-      print('✅ Événement ajouté à Google Calendar');
     } catch (e) {
-      print('❌ Erreur ajout événement: $e');
       throw Exception('Erreur lors de l\'ajout de l\'événement');
     }
   }
@@ -174,9 +169,7 @@ class CalendarGoogleDataSource {
 
     try {
       await _calendarApi!.events.update(googleEvent, 'primary', event.id);
-      print('✅ Événement mis à jour dans Google Calendar');
     } catch (e) {
-      print('❌ Erreur mise à jour événement: $e');
       throw Exception('Erreur lors de la mise à jour de l\'événement');
     }
   }
@@ -189,9 +182,7 @@ class CalendarGoogleDataSource {
 
     try {
       await _calendarApi!.events.delete('primary', eventId);
-      print('✅ Événement supprimé de Google Calendar');
     } catch (e) {
-      print('❌ Erreur suppression événement: $e');
       throw Exception('Erreur lors de la suppression de l\'événement');
     }
   }
