@@ -104,12 +104,13 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     final time = await showTimePicker(
                       context: context,
                       initialTime: _startTime,
-                      initialEntryMode: TimePickerEntryMode.input, // ← Ajoute ça
+                      initialEntryMode: TimePickerEntryMode.input,
+                      // ← Ajoute ça
                       builder: (context, child) {
                         return MediaQuery(
-                          data: MediaQuery.of(context).copyWith(
-                            alwaysUse24HourFormat: true,
-                          ),
+                          data: MediaQuery.of(
+                            context,
+                          ).copyWith(alwaysUse24HourFormat: true),
                           child: child!,
                         );
                       },
@@ -122,7 +123,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
                   },
                 ),
 
-// Heure de fin
+                // Heure de fin
                 ListTile(
                   leading: const Icon(Icons.access_time),
                   title: const Text('Heure de fin'),
@@ -131,12 +132,13 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     final time = await showTimePicker(
                       context: context,
                       initialTime: _endTime,
-                      initialEntryMode: TimePickerEntryMode.input, // ← Ajoute ça
+                      initialEntryMode: TimePickerEntryMode.input,
+                      // ← Ajoute ça
                       builder: (context, child) {
                         return MediaQuery(
-                          data: MediaQuery.of(context).copyWith(
-                            alwaysUse24HourFormat: true,
-                          ),
+                          data: MediaQuery.of(
+                            context,
+                          ).copyWith(alwaysUse24HourFormat: true),
                           child: child!,
                         );
                       },

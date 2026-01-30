@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leodys/features/calendar/domain/entities/calendar_event.dart';
-import 'package:leodys/features/calendar/presentation/controllers/calendar_controller.dart';
+import 'package:leodys/features/calendar/presentation/viewModels/calendar_controller.dart';
 import 'package:leodys/features/calendar/presentation/widgets/add_event_dialog.dart';
 import 'package:leodys/features/authentication/domain/services/auth_service.dart';
+import 'package:leodys/features/calendar/presentation/widgets/edit_event_dialog.dart';
+import 'package:leodys/features/calendar/presentation/widgets/event_card.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -188,19 +190,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  /// Construit la liste des événements
+  /// Construit la liste des événements avec des cards
   Widget _buildEventsList(CalendarController controller) {
     // Si en cours de chargement
     if (controller.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Chargement des événements...'),
+          ],
+        ),
+      );
     }
 
     // Si erreur
     if (controller.errorMessage != null) {
       return Center(
-        child: Text(
-          'Erreur: ${controller.errorMessage}',
-          style: const TextStyle(color: Colors.red),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              'Erreur: ${controller.errorMessage}',
+              style: const TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       );
     }
@@ -210,22 +229,51 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     // Si aucun événement
     if (events.isEmpty) {
-      return const Center(child: Text('Aucun événement pour ce jour'));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.event_available, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'Aucun événement pour ce jour',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Appuyez sur le bouton ci-dessus pour en créer un',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
     }
 
-    // Affiche la liste des événements
+    // Affiche la liste des événements avec EventCard
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 16),
       itemCount: events.length,
       itemBuilder: (context, index) {
         final event = events[index];
-        return ListTile(
-          title: Text(event.title),
-          subtitle: event.description != null ? Text(event.description!) : null,
-          trailing: event.isAllDay
-              ? const Text('Toute la journée')
-              : Text(
-                  '${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
-                ),
+        return EventCard(
+          event: event,
+          onEdit: () async {
+            // Ouvre le dialog d'édition
+            final updatedEvent = await showDialog<CalendarEvent>(
+              context: context,
+              builder: (context) => EditEventDialog(event: event),
+            );
+
+            // Si l'événement a été modifié
+            if (updatedEvent != null && mounted) {
+              await controller.updateEvent(updatedEvent);
+            }
+          },
+          onDelete: () async {
+            // Supprime l'événement
+            await controller.deleteEvent(event.id);
+          },
         );
       },
     );
