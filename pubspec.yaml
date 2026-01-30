@@ -87,7 +87,7 @@ flutter:
 
   assets:
     - assets/images/logo.jpeg
-    - assets/images/avatar_placeholder.jpg
+    #- assets/images/avatar_placeholder.jpg
     - .env
     - assets/yolo11n-pose.tflite
     #- assets/ledoys-738a4da4fb7c.json
