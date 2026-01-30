@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/features/gamecards-reader/presentation/screens/gamecard_reader_screen.dart';
+import 'package:leodys/features/money_manager/presentation/views/money_manager_view.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
@@ -147,6 +148,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Calculette pour dyscalculique.',
+    ),
+
+    AppFeature(
+      name: 'Paiement Google Pay ou avec de la monnaie',
+      icon: Icons.money,
+      route: MoneyManagerView.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Paiement avec Google Pay ou avec de la monnaie.',
     ),
 
     AppFeature(

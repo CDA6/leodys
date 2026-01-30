@@ -41,6 +41,7 @@ import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
+import 'features/calculator/presentation/views/calculator_view.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
@@ -56,7 +57,9 @@ import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart'
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
-
+import 'features/money_manager/domain/models/payment_transaction.dart';
+import 'features/money_manager/presentation/views/money_manager_view.dart';
+import 'features/money_manager/presentation/views/payment_history_view.dart';
 import 'features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'features/vocal_chat/presentation/viewmodels/vocal_chat_viewmodel.dart';
 import 'features/gamecards-reader/injection_container.dart' as gamecard_reader;
@@ -219,7 +222,11 @@ class MyApp extends StatelessWidget {
                 create: (_) => voice_clock.sl<VoiceClockViewModel>(),
                 child: const VoiceClockScreen(),
               ),
-
+              // NOTE MERCI DE NE
+              MoneyManagerView.route: (context) => const MoneyManagerView(),
+              PaymentHistoryView.route: (context) => const PaymentHistoryView(),
+              CalculatorView.route: (context) => const CalculatorView(),
+              // PAS EFFACER DE NOUVEAU
               ReaderScreen.route: (context) => const ReaderScreen(),
               DocumentsScreen.route: (context) => const DocumentsScreen(),
               DisplayCardsScreen.route: (context) => const DisplayCardsScreen(),

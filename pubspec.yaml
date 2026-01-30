@@ -55,6 +55,7 @@ dependencies:
   webview_flutter: ^4.4.1
   html: ^0.15.4
   flutter_riverpod: ^2.5.1
+  pay: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,8 @@ flutter:
     - .env
     - assets/yolo11n-pose.tflite
     - assets/ledoys-738a4da4fb7c.json
-#    - assets/models/best_float32.tflite
-#    - assets/models/yolo26n_float32.tflite
-#    - assets/images/carte_test.jpg
+    - assets/models/best_float32.tflite
+    - assets/models/yolo26n_float32.tflite
+    - assets/
+    - assets/images/bills/
+    - assets/images/coins/
