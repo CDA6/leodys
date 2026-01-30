@@ -11,7 +11,7 @@ import 'domain/usecases/initialize_google_calendar.dart';
 import 'domain/usecases/set_google_sync_enabled.dart';
 import 'domain/usecases/sync_local_to_google.dart';
 import 'domain/usecases/sync_google_to_local.dart';
-import 'presentation/controllers/calendar_controller.dart';
+import 'presentation/viewModels/calendar_controller.dart';
 
 final sl = GetIt.instance;
 

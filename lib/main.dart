@@ -1,3 +1,4 @@
+import 'package:leodys/constants/auth_constants.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -6,7 +7,7 @@ import 'package:leodys/common/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'features/calendar/presentation/controllers/calendar_controller.dart';
+import 'features/calendar/presentation/viewModels/calendar_controller.dart';
 import 'package:leodys/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
@@ -117,12 +118,7 @@ void main() async {
   await profile.init();
 
   initVehicleRecognition();
-  runApp(
-    riverpod.ProviderScope(
-      child: MyApp(themeManager: themeManager,),
-    ),
-  );
-
+  runApp(riverpod.ProviderScope(child: MyApp(themeManager: themeManager)));
 }
 
 class MyApp extends StatelessWidget {
@@ -196,7 +192,7 @@ class MyApp extends StatelessWidget {
                   const PrintedTextReaderScreen(),
 
               HandwrittenTextReaderScreen.route: (context) =>
-              const HandwrittenTextReaderScreen(),
+                  const HandwrittenTextReaderScreen(),
 
               NotificationDashboard.route: (context) => ChangeNotifierProvider(
                 create: (_) => messagerie.sl<NotificationController>(),
@@ -204,7 +200,7 @@ class MyApp extends StatelessWidget {
               ),
 
               VocalNotesListScreen.route: (context) =>
-                const VocalNotesListScreen(),
+                  const VocalNotesListScreen(),
 
               VocalNoteEditorScreen.route: (context) =>
                   const VocalNoteEditorScreen(),
@@ -256,31 +252,18 @@ class MyApp extends StatelessWidget {
                 final controller = WebReaderController(
                   readWebPageUseCase: readWebUseCase,
                   readTextUseCase: readTextUseCase,
-                  );
-                  return WebReaderScreen(controller: controller);
+                );
+                return WebReaderScreen(controller: controller);
               },
-
 
               ForumScreen.route: (context) => const ForumScreen(),
 
-
-              ConfidentialDocumentScreen.route : (context) =>
+              ConfidentialDocumentScreen.route: (context) =>
                   const ConfidentialDocumentScreen(),
               ProfileScreen.route: (context) => const ProfileScreen(),
+              CalendarScreen.route: (context) => const CalendarScreen(),
             },
           );
-            return MapScreen(viewModel: viewModel);
-          },
-          PrintedTextReaderScreen.route: (context) => const PrintedTextReaderScreen(),
-          HandwrittenTextReaderScreen.route: (context) => const HandwrittenTextReaderScreen(),
-          NotificationDashboard.route: (context) =>
-              const NotificationDashboard(),
-          VocalNotesListScreen.route: (context) => const VocalNotesListScreen(),
-          VocalNoteEditorScreen.route: (context) =>
-              const VocalNoteEditorScreen(),
-          ReaderScreen.route: (context) => const ReaderScreen(),
-          DocumentsScreen.route: (context) => const DocumentsScreen(),
-          CalendarScreen.route: (context) => const CalendarScreen(),
         },
       ),
     );
