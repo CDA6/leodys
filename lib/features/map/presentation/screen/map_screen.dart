@@ -21,7 +21,6 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    widget.viewModel.handleLanding();
 
     widget.viewModel.positionStream.listen(
       (_) {},
@@ -35,6 +34,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         }
       },
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.viewModel.handleLanding();
+      }
+    });
   }
 
   @override
