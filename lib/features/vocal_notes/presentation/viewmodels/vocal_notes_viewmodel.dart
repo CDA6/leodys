@@ -229,10 +229,39 @@ class VocalNotesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Génère un titre automatique au format "Note HH:mm dd/MM".
+  String _generateTitle() {
+    final now = DateTime.now();
+    final hour = now.hour.toString().padLeft(2, '0');
+    final minute = now.minute.toString().padLeft(2, '0');
+    final day = now.day.toString().padLeft(2, '0');
+    final month = now.month.toString().padLeft(2, '0');
+    return 'Note $hour:$minute $day/$month';
+  }
+
   /// Sauvegarde une note (création ou modification).
-  Future<void> saveNote(String title, String content, {String? id}) async {
+  Future<void> saveNote(String content, {String? id}) async {
     _isLoadingNotes = true;
     notifyListeners();
+
+    // Pour une modification, conserver le titre existant
+    // Pour une nouvelle note, générer un titre automatique
+    String title;
+    if (id != null) {
+      final existingNote = _notes.firstWhere(
+        (n) => n.id == id,
+        orElse: () => VocalNoteEntity(
+          id: '',
+          title: _generateTitle(),
+          content: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      );
+      title = existingNote.title;
+    } else {
+      title = _generateTitle();
+    }
 
     final note = VocalNoteEntity(
       id: id ?? const Uuid().v4(),

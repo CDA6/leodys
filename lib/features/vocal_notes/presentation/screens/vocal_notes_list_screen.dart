@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:provider/provider.dart';
 import 'package:leodys/features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 import 'package:leodys/features/vocal_notes/presentation/widgets/vocal_note_card.dart';
@@ -46,15 +48,15 @@ class _VocalNotesListScreenState extends State<VocalNotesListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.note_alt_outlined,
                     size: 64,
-                    color: Colors.grey,
+                    color: context.colorScheme.primary,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Aucune note vocale',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(fontSize: 18, color: context.colorScheme.primary),
                   ),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
@@ -113,7 +115,7 @@ class _VocalNotesListScreenState extends State<VocalNotesListScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+            child: Text('Supprimer', style: TextStyle(color: context.stateColors.error)),
           ),
         ],
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/vocal_chat_viewmodel.dart';
 import '../widgets/mic_button.dart';
@@ -80,24 +82,24 @@ class _VocalChatScreenState extends State<VocalChatScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
+                        color: context.stateColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade300),
+                        border: Border.all(color: context.stateColors.error),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: Colors.red.shade700),
+                          Icon(Icons.error_outline, color: context.stateColors.error),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               viewModel.errorMessage ?? 'Une erreur est survenue',
                               style: TextStyle(
-                                color: Colors.red.shade700,
+                                color: context.stateColors.error,
                                 fontSize: 13,
                               ),
                             ),
                           ),
-                          Icon(Icons.close, color: Colors.red.shade700, size: 18),
+                          Icon(Icons.close, color: context.stateColors.error, size: 18),
                         ],
                       ),
                     ),
@@ -115,14 +117,14 @@ class _VocalChatScreenState extends State<VocalChatScreen> {
   /// Construit l'indicateur d'état selon le statut actuel.
   Widget _buildStatusIndicator(VocalChatViewModel viewModel) {
     if (viewModel.isProcessing) {
-      return const Column(
+      return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
           Text(
             'Traitement en cours...',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: context.colorScheme.primary),
           ),
         ],
       );
@@ -132,11 +134,11 @@ class _VocalChatScreenState extends State<VocalChatScreen> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.volume_up, size: 48, color: Colors.blue.shade400),
+          Icon(Icons.volume_up, size: 48, color: context.colorScheme.primary),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Lecture en cours...',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: context.colorScheme.primary),
           ),
           const SizedBox(height: 16),
           TextButton.icon(
@@ -152,11 +154,11 @@ class _VocalChatScreenState extends State<VocalChatScreen> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.mic, size: 48, color: Colors.red.shade400),
+          Icon(Icons.mic, size: 48, color: context.stateColors.error),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Parlez maintenant...',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: context.colorScheme.error),
           ),
         ],
       );
@@ -166,11 +168,11 @@ class _VocalChatScreenState extends State<VocalChatScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.mic_none, size: 48, color: Colors.grey.shade400),
+        Icon(Icons.mic_none, size: 48, color: context.colorScheme.primary),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'Appuyez pour parler',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(fontSize: 16, color: context.colorScheme.primary),
         ),
       ],
     );
