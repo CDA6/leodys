@@ -60,12 +60,20 @@ class MapViewModel {
   static const double searchRadiusInKm = 5;
   // </editor-fold>
 
-  // <editor-fold desc="Path Controller">
+  // <editor-fold desc="Path navigation">
   final GetPathUseCase getWalkingPath;
 
   final StreamController<GeoPath?> _pathController =
       StreamController<GeoPath?>.broadcast();
   Stream<GeoPath?> get pathStream => _pathController.stream;
+
+  final StreamController<GeoPath?> _pendingPathController =
+      StreamController<GeoPath?>.broadcast();
+  Stream<GeoPath?> get pendingPathStream => _pendingPathController.stream;
+
+  final StreamController<bool> _isNavigatingController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get isNavigatingStream => _isNavigatingController.stream;
   // </editor-fold>
   // </editor-fold>
 
@@ -203,8 +211,7 @@ class MapViewModel {
           _lastKnownPosition!,
           destination.position,
         );
-
-        _pathController.add(path);
+        _pendingPathController.add(path);
 
         AppLogger().info("Trajet récupéré : ${path.points.length} points");
       } catch (e) {
@@ -212,6 +219,21 @@ class MapViewModel {
         _pathController.add(null);
       }
     }
+  }
+
+  void confirmNavigation(GeoPath path) {
+    _pathController.add(path);
+    _isNavigatingController.add(true);
+    _pendingPathController.add(null);
+    AppLogger().debug("Navigation confirmed by user");
+  }
+
+  void cancelNavigation() {
+    _pathController.add(null);
+    _destinationController.add(null);
+    _pendingPathController.add(null);
+    _isNavigatingController.add(false);
+    AppLogger().debug("Navigation canceled by user");
   }
 
   // </editor-fold>
