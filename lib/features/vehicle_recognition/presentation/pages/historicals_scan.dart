@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/features/vehicle_recognition/presentation/widgets/plate_tile.dart';
 
+import '../../../../common/theme/theme_context_extension.dart';
 import '../../injection/vehicle_recognition_injection.dart';
 import '../controllers/plate_history_controller.dart';
 import '../controllers/plate_tts_controller.dart';
@@ -42,7 +44,12 @@ class _HistoricalScanState extends State<HistoricalsScan> {
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Mes plaques scannées'),
+            title: Text('Mes plaques scannées',
+              style: TextStyle(
+              color: context.colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.bold,),
+            ),
+            backgroundColor:  context.colorScheme.primaryContainer,
           ),
           body: _buildBody(),
         );
@@ -51,50 +58,40 @@ class _HistoricalScanState extends State<HistoricalsScan> {
   }
 
   Widget _buildBody() {
+
+    // Montre un CircularProgressIndicator si ca charge
     if (historyController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // Montre le texte 'Aucune plaque si pas d'historique
     if (historyController.history.isEmpty) {
       return const Center(
         child: Text('Aucune plaque scannée'),
       );
     }
 
+    // construire les items et ajouter automatiquement des séparateur
+    // contrairement au ListView.builder
     return ListView.separated(
+      // Affichage ligne par ligne
       itemCount: historyController.history.length,
+      // séparateur avec des parametres ignorés
+      // divider représente un ligne de séparation
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {
+        // Contruire les lignes à partir de l'index corespondante
         final scan = historyController.history[index];
 
-        return ListTile(
-          title: Text(scan.plate),
-          subtitle: Text(scan.vehicleLabel),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(
-                  ttsController.isPlaying
-                      ? Icons.stop
-                      : Icons.volume_up,
-                ),
-                onPressed: () {
-                  if (ttsController.isPlaying) {
-                    ttsController.stop();
-                  } else {
-                    ttsController.play(scan);
-                  }
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () =>
-                    historyController.deleteByPlate(scan.plate),
-              ),
-            ],
-          ),
+        return PlateTile(
+          scan: scan,
+          isPlaying: ttsController.isPlaying,
+          onPlay: () => ttsController.play(scan),
+          onStop: ttsController.stop,
+          onDelete: () =>
+              historyController.deleteByPlate(scan.plate),
         );
+
       },
     );
   }

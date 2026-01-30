@@ -4,6 +4,7 @@ import 'package:leodys/features/vehicle_recognition/presentation/controllers/pla
 import 'package:leodys/features/vehicle_recognition/presentation/widgets/scan_plate_button.dart';
 import 'package:leodys/features/vehicle_recognition/presentation/widgets/vehicle_label_preview.dart';
 
+import '../../../../common/theme/theme_context_extension.dart';
 import '../../injection/vehicle_recognition_injection.dart';
 import '../controllers/scan_immatriculation_controller.dart';
 import '../widgets/audio_control_button.dart';
@@ -28,7 +29,6 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
     super.initState();
     controller = createScanImmatriculationController();
     ttsController = createPlateTtsController();
-    debugPrint('controller ok ');
   }
 
   @override
@@ -38,10 +38,10 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
+      // Listenable.merge combine plusieurs objets écoutable
       animation: Listenable.merge([controller, ttsController]),
       builder: (context, _) {
         return Scaffold(
@@ -51,21 +51,32 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
                 children: [
                   Image.asset('assets/images/logo.jpeg', height: 32),
                   const SizedBox(width: 5),
-                  const Text('LeoDys'),
+                  Text('LeoDys',
+                    style: TextStyle(
+                      color: context.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
-              backgroundColor: Colors.green.shade400,
+              backgroundColor: context.colorScheme.primaryContainer,
             ),
             drawer: Drawer(
               child: ListView(
                 children: [
-                  const DrawerHeader(
-                    decoration: BoxDecoration(color: Colors.green),
-                    child: Text('Menu'),
+                  DrawerHeader(
+                    decoration: BoxDecoration(color: context.colorScheme.primaryContainer,
+                    ),
+                    child: Text('Menu',
+                      style: TextStyle(
+                      color: context.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   ListTile(
                     leading: const Icon(Icons.photo),
-                    title: const Text('Prendre une photo'),
+                    title: const Text('Prendre une photo',),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.pop(context);
@@ -96,7 +107,7 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
             padding: const EdgeInsets.all(20),
             child: ListView(
               children: [
-                /// ACTION PRINCIPALE
+                // scan de la photo
                 ScanPlateButton(
                   isLoading: controller.isLoading,
                   onPressed: _takePictureAndScan,
@@ -104,14 +115,14 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
 
                 const SizedBox(height: 16),
 
-                /// FEEDBACK CHARGEMENT
+                // le retour visuel
                 if (controller.isLoading)
                   const Text(
                     'Analyse en cours…',
                     textAlign: TextAlign.center,
                   ),
 
-                /// AUCUN RÉSULTAT
+                // Pas de résultats
                 if (!controller.isLoading &&
                 controller.hasScanned &&
                 controller.result == null)
@@ -120,7 +131,11 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
                 textAlign: TextAlign.center,
                 ),
 
-                /// RÉSULTAT
+                // Résultats
+                // les ... sont appelés l'opérateur de décomposition
+                // si les conditions sont remplis (ici result est différent à null)
+                // on déroule SizeBox, VehicleLabelPreview et AudioContolButton
+                // sinon on affiche rien
                 if (controller.result != null) ...[
                   const SizedBox(height: 16),
                   VehicleLabelPreview(
@@ -128,7 +143,7 @@ class _ScanImmatriculationScreenState extends State<ScanImmatriculationScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  /// AUDIO
+                  // Controleur de lecture vocale
                   AudioControlButton(
                     onPlay: () =>
                         ttsController.play(controller.result!),
