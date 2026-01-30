@@ -1,8 +1,6 @@
-import '../../data/repositories/calendar_repository_impl.dart';
-
 import '../repositories/calendar_repository.dart';
 
-/// Paramètres pour la synchronisation Google vers local
+/// Paramètres pour la synchronisation Google → Local
 class SyncGoogleToLocalParams {
   final DateTime startDate;
   final DateTime endDate;
@@ -13,9 +11,11 @@ class SyncGoogleToLocalParams {
   });
 }
 
-/// UseCase pour synchroniser Google vers local
+/// Synchronise Google Calendar vers les événements locaux
 class SyncGoogleToLocal {
-  final CalendarRepository repository = CalendarRepositoryImpl();
+  final CalendarRepository repository;
+
+  SyncGoogleToLocal(this.repository);
 
   Future<void> call(SyncGoogleToLocalParams params) async {
     return await repository.syncGoogleToLocal(params.startDate, params.endDate);

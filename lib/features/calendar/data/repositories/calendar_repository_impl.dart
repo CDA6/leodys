@@ -6,8 +6,13 @@ import '../models/calendar_event_model.dart';
 
 /// Implémentation du CalendarRepository avec synchronisation
 class CalendarRepositoryImpl implements CalendarRepository {
-  final CalendarLocalDataSource localDataSource = CalendarLocalDataSource();
-  final CalendarGoogleDataSource? googleDataSource = CalendarGoogleDataSource();
+  final CalendarLocalDataSource localDataSource;
+  final CalendarGoogleDataSource? googleDataSource;
+
+  CalendarRepositoryImpl({
+    required this.localDataSource,
+    this.googleDataSource,
+  });
 
   bool _googleEnabled = false;
 

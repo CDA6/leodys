@@ -12,22 +12,37 @@ import '../../domain/usecases/usecase.dart';
 
 /// Controller pour gérer l'état du calendrier
 class CalendarController extends ChangeNotifier {
-  final GetEventsForDay getEventsForDayUseCase = GetEventsForDay();
-  final AddEvent addEventUseCase = AddEvent();
-  final UpdateEvent updateEventUseCase = UpdateEvent();
-  final DeleteEvent deleteEventUseCase = DeleteEvent();
-  final InitializeGoogleCalendar initializeGoogleCalendarUseCase = InitializeGoogleCalendar();
-  final SetGoogleSyncEnabled setGoogleSyncEnabledUseCase = SetGoogleSyncEnabled();
-  final SyncLocalToGoogle syncLocalToGoogleUseCase = SyncLocalToGoogle();
-  final SyncGoogleToLocal syncGoogleToLocalUseCase = SyncGoogleToLocal();
+  // ✅ UseCases injectés via constructeur
+  final GetEventsForDay getEventsForDayUseCase;
+  final AddEvent addEventUseCase;
+  final UpdateEvent updateEventUseCase;
+  final DeleteEvent deleteEventUseCase;
+  final InitializeGoogleCalendar initializeGoogleCalendarUseCase;
+  final SetGoogleSyncEnabled setGoogleSyncEnabledUseCase;
+  final SyncLocalToGoogle syncLocalToGoogleUseCase;
+  final SyncGoogleToLocal syncGoogleToLocalUseCase;
 
   // ✅ Cache des événements par jour
   final Map<String, List<CalendarEvent>> _eventsCache = {};
 
-  DateTime _selectedDay = DateTime.now();
+  late DateTime _selectedDay;
   bool _isLoading = false;
   String? _errorMessage;
   bool _isGoogleSyncEnabled = false;
+
+  // ✅ Constructeur avec injection
+  CalendarController({
+    required this.getEventsForDayUseCase,
+    required this.addEventUseCase,
+    required this.updateEventUseCase,
+    required this.deleteEventUseCase,
+    required this.initializeGoogleCalendarUseCase,
+    required this.setGoogleSyncEnabledUseCase,
+    required this.syncLocalToGoogleUseCase,
+    required this.syncGoogleToLocalUseCase,
+  }){
+    _selectedDay = _normalizeDate(DateTime.now());  // ✅ Normalise dès l'init
+  }
 
   // Récupère tous les événements en cache
   List<CalendarEvent> get events {
@@ -39,8 +54,11 @@ class CalendarController extends ChangeNotifier {
   }
 
   DateTime get selectedDay => _selectedDay;
+
   bool get isLoading => _isLoading;
+
   String? get errorMessage => _errorMessage;
+
   bool get isGoogleSyncEnabled => _isGoogleSyncEnabled;
 
   /// Retourne les événements pour un jour spécifique (pour le calendrier)
@@ -59,15 +77,14 @@ class CalendarController extends ChangeNotifier {
     return DateTime(date.year, date.month, date.day);
   }
 
-  /// Active/désactive la synchronisation Google Calendar
   void setGoogleSyncEnabled(bool enabled) {
     _isGoogleSyncEnabled = enabled;
     setGoogleSyncEnabledUseCase(enabled);
 
     if (enabled) {
       print('✅ Synchronisation Google Calendar activée');
-      // Recharge les événements avec Google
-      _reloadVisibleRange();
+      // ✅ Ne force PAS le rechargement automatique
+      // L'utilisateur décidera quand synchroniser via le bouton dans l'UI
     } else {
       print('❌ Synchronisation Google Calendar désactivée');
     }
@@ -95,7 +112,9 @@ class CalendarController extends ChangeNotifier {
     try {
       final events = await getEventsForDayUseCase(normalizedDay);
       _eventsCache[key] = events;
-      print('✅ Événements chargés pour $normalizedDay : ${events.length} événements');
+      print(
+        '✅ Événements chargés pour $normalizedDay : ${events.length} événements',
+      );
     } catch (e) {
       _errorMessage = 'Erreur lors du chargement des événements: $e';
       print('❌ Erreur : $e');
@@ -114,7 +133,8 @@ class CalendarController extends ChangeNotifier {
       DateTime currentDay = _normalizeDate(start);
       final normalizedEnd = _normalizeDate(end);
 
-      while (currentDay.isBefore(normalizedEnd) || currentDay.isAtSameMomentAs(normalizedEnd)) {
+      while (currentDay.isBefore(normalizedEnd) ||
+          currentDay.isAtSameMomentAs(normalizedEnd)) {
         final key = _dateKey(currentDay);
 
         // Charge seulement si pas déjà en cache
@@ -142,10 +162,18 @@ class CalendarController extends ChangeNotifier {
     final start = DateTime(now.year, now.month - 1, 1);
     final end = DateTime(now.year, now.month + 2, 0);
 
-    // Vide le cache pour forcer le rechargement
-    _eventsCache.clear();
+    // ✅ Vide le cache seulement si Google est activé
+    if (_isGoogleSyncEnabled) {
+      _eventsCache.clear();
+    }
 
-    await loadEventsForRange(start, end);
+    // ✅ Gère les erreurs
+    try {
+      await loadEventsForRange(start, end);
+    } catch (e) {
+      print('⚠️ Erreur rechargement plage visible: $e');
+      // Continue quand même, les events locaux sont là
+    }
   }
 
   /// Ajoute un événement
@@ -229,15 +257,32 @@ class CalendarController extends ChangeNotifier {
   /// Initialise Google Calendar avec le compte Google connecté
   Future<void> initializeGoogleCalendar(dynamic googleUser) async {
     try {
-      await initializeGoogleCalendarUseCase(googleUser);
-      _isGoogleSyncEnabled = true;
-      notifyListeners();
-      print('✅ Google Calendar initialisé avec succès');
+      print('🔄 Initialisation de Google Calendar...');
 
-      // Recharge les événements avec Google
-      await _reloadVisibleRange();
+      // 1. Initialise le datasource
+      await initializeGoogleCalendarUseCase(googleUser);
+      print('✅ Google Calendar API initialisée');
+
+      // 2. Active la sync
+      _isGoogleSyncEnabled = true;
+      print('✅ Synchronisation activée');
+
+      // 3. Notifie l'UI
+      notifyListeners();
+
+      // 4. Recharge avec gestion d'erreur
+      try {
+        print('🔄 Rechargement des événements avec Google...');
+        await _reloadVisibleRange();
+        print('✅ Événements rechargés avec Google Calendar');
+      } catch (e) {
+        print('⚠️ Erreur rechargement avec Google: $e');
+        // Continue quand même, les événements locaux sont là
+      }
     } catch (e) {
       print('❌ Erreur initialisation Google Calendar: $e');
+      _isGoogleSyncEnabled = false;
+      notifyListeners();
       rethrow;
     }
   }
@@ -285,13 +330,13 @@ class CalendarController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 30));
       final end = endDate ?? DateTime.now().add(const Duration(days: 90));
 
-      await syncGoogleToLocalUseCase(SyncGoogleToLocalParams(
-        startDate: start,
-        endDate: end,
-      ));
+      await syncGoogleToLocalUseCase(
+        SyncGoogleToLocalParams(startDate: start, endDate: end),
+      );
       print('✅ Synchronisation Google → local terminée');
 
       // Vide le cache et recharge
