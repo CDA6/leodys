@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/features/podcast/presentation/screens/podcast_home_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
@@ -118,6 +119,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Calculette pour dyscalculique.',
+    ),
+
+    AppFeature(
+      name: 'Podcasts',
+      icon: Icons.radio,
+      route: PodcastHomeScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Podcasts.',
     ),
 
     AppFeature(

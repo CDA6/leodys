@@ -21,6 +21,8 @@ import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
 import 'features/left_right/presentation/real_time_yolo_screen.dart';
+import 'features/podcast/data/services/audio_player_service.dart';
+import 'features/podcast/presentation/screens/podcast_home_screen.dart';
 import 'features/vehicle_recognition/presentation/pages/historicals_scan.dart';
 import 'features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import 'features/voice-clock/presentation/screen/voice_clock_screen.dart';
@@ -42,6 +44,7 @@ import 'features/authentication/domain/services/auth_service.dart';
 import 'features/vocal_notes/presentation/screens/vocal_note_editor_screen.dart';
 import 'features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
+import 'features/podcast/injection_container.dart' as podcast;
 
 import 'features/calculator/presentation/views/calculator_view.dart';
 
@@ -94,6 +97,8 @@ void main() async {
   await cards.init();
   await pose_detection.init();
   await voice_clock.init();
+  await podcast.init();
+
 
   runApp(MyApp(themeManager: themeManager));
   initVehicleRecognition();
@@ -190,6 +195,9 @@ class MyApp extends StatelessWidget {
                 create: (_) => voice_clock.sl<VoiceClockViewModel>(),
                 child: const VoiceClockScreen(),
               ),
+
+              PodcastHomeScreen.route: (context) =>
+                const PodcastHomeScreen(),
 
               ReaderScreen.route: (context) =>
                 const ReaderScreen(),

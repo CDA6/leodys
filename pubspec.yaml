@@ -48,6 +48,8 @@ dependencies:
   google_sign_in: ^7.2.0
   tflite_flutter: ^0.11.0
   permission_handler: ^11.4.0
+  xml: ^6.5.0           # REMPLACE webfeed
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -81,4 +83,4 @@ flutter:
     - assets/yolo11n-pose.tflite
     - assets/models/best_float32.tflite
     - assets/models/yolo26n_float32.tflite
-    - assets/images/carte_test.jpg
+#    - assets/images/carte_test.jpg
