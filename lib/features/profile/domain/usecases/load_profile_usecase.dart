@@ -11,7 +11,6 @@ class LoadProfileUsecase with UseCaseMixin<UserProfileModel?, void>{
 
   @override
   Future<Either<Failure, UserProfileModel?>> execute(void _) async {
-    await repository.syncProfile();
     return await repository.loadProfile();
   }
 }

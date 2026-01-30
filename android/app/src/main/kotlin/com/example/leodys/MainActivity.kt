@@ -1,4 +1,4 @@
-package com.example.leodys
+package com.cda.leodys
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

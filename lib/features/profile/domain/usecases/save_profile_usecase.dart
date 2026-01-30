@@ -13,7 +13,7 @@ class SaveProfileUsecase with UseCaseMixin<dynamic, UserProfileModel>{
   @override
   Future<Either<Failure, UserProfileModel>> execute(UserProfileModel profile) async {
     final result = await repository.saveProfile(profile);
-    await syncManager.call(null);
+    await syncManager.call(profile);
     return result;
   }
   

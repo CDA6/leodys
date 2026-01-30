@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:provider/provider.dart';
 import 'package:leodys/features/vocal_notes/presentation/viewmodels/vocal_notes_viewmodel.dart';
 import 'package:leodys/features/vocal_notes/presentation/widgets/status_indicator.dart';
@@ -14,7 +16,6 @@ class VocalNoteEditorScreen extends StatefulWidget {
 }
 
 class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
-  final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   StreamSubscription<String>? _speechSub;
   String? _noteId;
@@ -40,7 +41,6 @@ class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
     final viewModel = context.read<VocalNotesViewModel>();
     try {
       final note = viewModel.notes.firstWhere((n) => n.id == _noteId);
-      _titleController.text = note.title;
       _contentController.text = note.content;
     } catch (e) {
       // Note non trouvée
@@ -81,7 +81,6 @@ class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
   @override
   void dispose() {
     _speechSub?.cancel();
-    _titleController.dispose();
     _contentController.dispose();
     super.dispose();
   }
@@ -108,16 +107,8 @@ class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
               icon: Icons.mic,
               label: viewModel.isListening ? 'Écoute...' : 'Micro',
               isActive: viewModel.isListening,
-              activeColor: Colors.red,
-            ),
-            const SizedBox(height: 16),
-
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Titre',
-                border: OutlineInputBorder(),
-              ),
+              activeColor: context.stateColors.error,
+              inactiveColor: context.colorScheme.primary,
             ),
             const SizedBox(height: 16),
 
@@ -152,7 +143,7 @@ class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
                         viewModel.toggleListening();
                       },
                       backgroundColor: viewModel.isListening
-                          ? Colors.red
+                          ? context.stateColors.error
                           : null,
                       child: Icon(
                         viewModel.isListening ? Icons.mic_off : Icons.mic,
@@ -169,18 +160,10 @@ class _VocalNoteEditorScreenState extends State<VocalNoteEditorScreen> {
   }
 
   Future<void> _saveNote(BuildContext context) async {
-    final title = _titleController.text.trim();
     final content = _contentController.text.trim();
 
-    if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Le titre ne peut pas être vide')),
-      );
-      return;
-    }
-
     final viewModel = context.read<VocalNotesViewModel>();
-    await viewModel.saveNote(title, content, id: _noteId);
+    await viewModel.saveNote(content, id: _noteId);
 
     if (context.mounted) {
       Navigator.pop(context);

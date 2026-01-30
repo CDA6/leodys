@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/features/gamecards-reader/presentation/screens/gamecard_reader_screen.dart';
+import 'package:leodys/features/money_manager/presentation/views/money_manager_view.dart';
 import 'package:provider/provider.dart';
 
 import 'package:leodys/common/theme/theme_context_extension.dart';
@@ -7,11 +8,10 @@ import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.da
 import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
 import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
-import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'package:leodys/features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
-import 'package:provider/provider.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
@@ -151,6 +151,16 @@ class FeatureList extends StatelessWidget {
     ),
 
     AppFeature(
+      name: 'Paiement Google Pay ou avec de la monnaie',
+      icon: Icons.money,
+      route: MoneyManagerView.route,
+      requiresInternet: false,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Paiement avec Google Pay ou avec de la monnaie.',
+    ),
+
+    AppFeature(
       name: 'Aide Gauche / Droite',
       icon: Icons.accessibility_new,
       route: RealTimeYoloScreen.route,
@@ -158,6 +168,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Aide à la latéralisation via la caméra.',
+    ),
+
+    AppFeature(
+      name: 'Personnalisation du profil',
+      icon: Icons.person,
+      route: ProfileScreen.route,
+      requiresInternet: false,
+      requiresAuth: true,
+      isAvailable: true,
+      description: 'Personnalisez votre profil',
     ),
 
    //ajout bouton confidential document
@@ -169,7 +189,7 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Stocker et visualiser des photos de vos docuemnt confidentiel (carte ID, permis, ...)',
      ),
-               
+
     AppFeature(
       name: 'Lecteur Web',
       icon: Icons.chrome_reader_mode,

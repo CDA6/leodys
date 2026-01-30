@@ -47,7 +47,7 @@ class ProfileRepository {
     }
   }
 
-  Future<Either<Failure, dynamic>> syncProfile() async {
+  Future<Either<Failure, dynamic>> syncProfile(UserProfileModel profile) async {
     final localProfile = await local.loadLocalProfile();
     if(localProfile == null) {
       return Right(null);

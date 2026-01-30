@@ -29,7 +29,7 @@ class OCRSpaceDataSourceImpl with DataSourceMixin<OcrResultModel> implements OCR
 
       final response = await http.post(
         Uri.parse(_baseUrl),
-        headers: {'apikey': ?_apiKey},
+        headers: {'apikey': _apiKey ?? ''},
         body: {
           'base64Image': 'data:image/jpeg;base64,$base64Image',
           'language': 'fre',
