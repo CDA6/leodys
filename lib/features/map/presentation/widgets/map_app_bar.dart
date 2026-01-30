@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
@@ -26,20 +27,28 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: IconThemeData(color: context.colorScheme.onPrimaryContainer),
       title: Text(
         "Navigation Piéton",
-        style: TextStyle(
-          color: context.colorScheme.onPrimaryContainer,
-          fontSize: context.titleFontSize,
-        ),
+        style: TextStyle(color: context.colorScheme.onPrimaryContainer),
       ),
       actions: [
         SearchAnchor(
-          viewBackgroundColor: context.colorScheme.surface,
+          viewLeading: IconButton(
+            icon: Icon(Icons.arrow_back, color: context.colorScheme.onSurface),
+            onPressed: () {
+              Navigator.of(context).pop();
+              AppLogger().debug("Closing navigation search bar");
+            },
+          ),
+
+          viewBackgroundColor: context.colorScheme.surfaceContainerHighest,
           viewSurfaceTintColor: Colors.transparent,
           viewHintText: "Chercher une adresse...",
 
           builder: (context, controller) {
             return IconButton(
-              icon: const Icon(Icons.search),
+              icon: Icon(
+                Icons.search,
+                color: context.colorScheme.onPrimaryContainer,
+              ),
               onPressed: () {
                 AppLogger().info("Opening search location");
                 controller.openView();
@@ -57,7 +66,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   leading: Icon(
                     Icons.info_outline,
-                    color: context.colorScheme.primary,
+                    color: context.colorScheme.onSurface,
                   ),
                 ),
               ];
@@ -74,7 +83,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   leading: Icon(
                     Icons.search_off,
-                    color: Theme.of(context).colorScheme.error,
+                    color: context.stateColors.warning,
                   ),
                 ),
               ];
