@@ -1,5 +1,3 @@
-import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
-import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -17,6 +15,7 @@ import 'package:leodys/features/web_audio_reader/presentation/controllers/web_re
 import 'package:leodys/features/ocr-ticket-caisse/data/datasources/receipt_remote_datasource.dart';
 import 'package:leodys/features/ocr-ticket-caisse/data/repositories/receipt_repository_impl.dart';
 import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/pages/home/presentation/screens/home_page.dart';
@@ -27,6 +26,8 @@ import 'common/widget/global_overlay.dart';
 import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
+import 'features/confidential_document/presentation/confidential_document_screen.dart';
+import 'features/forum/presentation/screens/forum_screen.dart';
 import 'features/gamecards-reader/presentation/screens/gamecard_reader_screen.dart';
 import 'features/gamecards-reader/presentation/viewmodels/gamecard_reader_viewmodel.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
@@ -92,24 +93,6 @@ void main() async {
   } catch (e) {
     AppLogger().error("Failed to initialize Supabase: $e");
   }
-
-  if (InternetUtil.isConnected) {
-    try {
-      final client = Supabase.instance.client;
-      await client.auth.signInWithPassword(
-        email: 'coleen@test.com',
-        password: 'leodys123',
-      );
-      AppLogger().info("User authenticated successfully");
-    } catch (e) {
-      AppLogger().error("Failed to authenticate user: $e");
-    }
-  } else {
-    AppLogger().warning("No internet connection. Skipping authentication.");
-  }
-  // TEMPORAIRE POUR BYPASS L'AUTHENTIFICATION
-  final client = Supabase.instance.client;
-  await client.auth.signInWithPassword(email: 'coleen@test.com', password: 'leodys123');
 
   //ThemeManager
   final themeManager = AppThemeManager();
@@ -197,10 +180,12 @@ class MyApp extends StatelessWidget {
               },
 
               RealTimeYoloScreen.route: (context) => const RealTimeYoloScreen(),
+
               PrintedTextReaderScreen.route: (context) =>
                   const PrintedTextReaderScreen(),
+
               HandwrittenTextReaderScreen.route: (context) =>
-                  const HandwrittenTextReaderScreen(),
+              const HandwrittenTextReaderScreen(),
 
               NotificationDashboard.route: (context) => ChangeNotifierProvider(
                 create: (_) => messagerie.sl<NotificationController>(),
@@ -208,7 +193,7 @@ class MyApp extends StatelessWidget {
               ),
 
               VocalNotesListScreen.route: (context) =>
-                  const VocalNotesListScreen(),
+                const VocalNotesListScreen(),
 
               VocalNoteEditorScreen.route: (context) =>
                   const VocalNoteEditorScreen(),
@@ -246,7 +231,7 @@ class MyApp extends StatelessWidget {
                   child: const ReceiptPage(),
                 );
               },
-              
+
               WebReaderScreen.route: (context) {
                 final webDataSource = WebPageDataSource();
                 final webRepo = WebReaderRepositoryImpl(webDataSource);
@@ -263,15 +248,14 @@ class MyApp extends StatelessWidget {
                   );
                   return WebReaderScreen(controller: controller);
               },
-              
-              ScanImmatriculationScreen.route: (context) => const ScanImmatriculationScreen(),
-              HistoricalsScan.route: (context) => const HistoricalsScan(),
+
 
               ForumScreen.route: (context) => const ForumScreen(),
-              
-              
+
+
               ConfidentialDocumentScreen.route : (context) =>
                   const ConfidentialDocumentScreen(),
+              ProfileScreen.route: (context) => const ProfileScreen(),
             },
           );
         },

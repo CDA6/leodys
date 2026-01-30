@@ -8,11 +8,10 @@ import 'package:leodys/features/audio_reader/presentation/pages/reader_screen.da
 import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
 import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
-import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'package:leodys/features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
-import 'package:provider/provider.dart';
+import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
@@ -55,10 +54,10 @@ class FeatureList extends StatelessWidget {
     AppFeature(
       name: 'Scanner de jeu de carte',
       icon: Icons.view_module,
-      route: GamecardReaderScreen.route,
+      route: '/',
       requiresInternet: false,
       requiresAuth: false,
-      isAvailable: true,
+      isAvailable: false,
       description: 'Reconnaissance de jeu de carte classique',
     ),
 
@@ -170,6 +169,16 @@ class FeatureList extends StatelessWidget {
       description: 'Aide à la latéralisation via la caméra.',
     ),
 
+    AppFeature(
+      name: 'Personnalisation du profil',
+      icon: Icons.person,
+      route: ProfileScreen.route,
+      requiresInternet: false,
+      requiresAuth: true,
+      isAvailable: true,
+      description: 'Personnalisez votre profil',
+    ),
+
    //ajout bouton confidential document
     AppFeature(name: 'Document confidentiel',
         icon: Icons.file_download,
@@ -179,7 +188,7 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Stocker et visualiser des photos de vos docuemnt confidentiel (carte ID, permis, ...)',
      ),
-               
+
     AppFeature(
       name: 'Lecteur Web',
       icon: Icons.chrome_reader_mode,
