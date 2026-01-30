@@ -87,13 +87,12 @@ flutter:
 
   assets:
     - assets/images/logo.jpeg
-#    - assets/images/avatar_placeholder.jpg
+    #- assets/images/avatar_placeholder.jpg
     - .env
-#    - assets/yolo11n-pose.tflite
-#    - assets/ledoys-738a4da4fb7c.json
-#    - assets/models/best_float32.tflite
-#    - assets/models/yolo26n_float32.tflite
-#    - assets/images/carte_test.jpg
-#    - assets/
-#    - assets/images/bills/
-#    - assets/images/coins/
+    - assets/yolo11n-pose.tflite
+    #- assets/ledoys-738a4da4fb7c.json
+    - assets/models/best_float32.tflite
+    - assets/models/yolo26n_float32.tflite
+    - assets/
+    - assets/images/bills/
+    - assets/images/coins/
