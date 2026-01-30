@@ -245,6 +245,7 @@ class MapViewModel {
     _pathController.add(path);
     _isNavigatingController.add(true);
     _pendingPathController.add(null);
+    resumeAutoFollowing();
     AppLogger().debug("Navigation confirmed by user");
   }
 
