@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 
 void showGpsDialog(BuildContext context, GpsFailure failure) {
@@ -24,8 +25,17 @@ void showGpsDialog(BuildContext context, GpsFailure failure) {
     barrierDismissible: false,
 
     builder: (context) => AlertDialog(
-      title: const Icon(Icons.location_off, size: 50, color: Colors.orange),
-      content: Text(message, textAlign: TextAlign.center),
+      backgroundColor: context.colorScheme.secondaryContainer,
+      title: Icon(
+        Icons.location_off,
+        size: 50,
+        color: context.colorScheme.error,
+      ),
+      content: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+      ),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
         if (showGpsSettings)
@@ -34,7 +44,10 @@ void showGpsDialog(BuildContext context, GpsFailure failure) {
               await Geolocator.openLocationSettings();
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text("Activer le GPS"),
+            child: Text(
+              "Activer le GPS",
+              style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+            ),
           ),
 
         if (showAppSettings)
@@ -43,7 +56,10 @@ void showGpsDialog(BuildContext context, GpsFailure failure) {
               await Geolocator.openAppSettings();
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text("Autorisations"),
+            child: Text(
+              "Autorisations",
+              style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+            ),
           ),
 
         TextButton(
@@ -51,7 +67,10 @@ void showGpsDialog(BuildContext context, GpsFailure failure) {
             Navigator.pop(context); // Close dialog
             Navigator.pop(context); // Close MapScreen to return to HomePage
           },
-          child: const Text("Retour"),
+          child: Text(
+            "Retour",
+            style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+          ),
         ),
       ],
     ),
