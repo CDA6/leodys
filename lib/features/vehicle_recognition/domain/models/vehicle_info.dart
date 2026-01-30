@@ -1,7 +1,6 @@
-import 'package:leodys/features/vehicle_recognition/domain/models/plate_scan.dart';
 
-/// Cette classe représente un modele de véhicule qui contient des informations
-/// du véhicule suite au retour de la reconnaissance de la plaque immatriculation
+/// Cette classe représente un modele de véhicule avec des données
+/// retournées par l'API Plate recognizer suite à la reconnaissance de la plaque immatriculation
 class VehicleInfo {
 
   final String plate;

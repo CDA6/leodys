@@ -11,9 +11,11 @@ class PlateHistoryController extends ChangeNotifier {
 
   final PlateHistoryRepository repository;
 
+  // Vriables privées
   List<PlateScan> _history = [];
   bool _isLoading = false;
 
+  // getters
   List<PlateScan> get history => _history;
   bool get isLoading => _isLoading;
 
