@@ -32,7 +32,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = context.read<CalendarController>();
 
-      // ✅ Charge le mois courant au lieu d'un seul jour
+      // Charge le mois courant au lieu d'un seul jour
       final start = DateTime(_focusedDay.year, _focusedDay.month, 1);
       final end = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
       controller.loadEventsForRange(start, end);
@@ -108,6 +108,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 focusedDay: _focusedDay,
                 calendarFormat: _calendarFormat,
                 startingDayOfWeek: StartingDayOfWeek.monday,
+                daysOfWeekHeight: 32,
                 availableCalendarFormats: const {
                   CalendarFormat.month: 'Mois',
                   CalendarFormat.twoWeeks: '2 semaines',
@@ -395,23 +396,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
   ) async {
     final googleUser = await GoogleSignIn.instance.authenticate();
 
-    if (googleUser == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('❌ Aucun compte Google connecté')),
-        );
-      }
-      return;
-    }
-
     try {
-      // ✅ Passe par le controller au lieu d'accéder au repository directement
+      // Passe par le controller au lieu d'accéder au repository directement
       await controller.initializeGoogleCalendar(googleUser);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Synchronisation Google Calendar activée'),
+            content: Text('Synchronisation Google Calendar activée'),
             backgroundColor: Colors.green,
           ),
         );
@@ -419,7 +411,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -451,7 +443,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         Navigator.pop(context); // Ferme le dialog de chargement
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Événements envoyés vers Google Calendar'),
+            content: Text('Événements envoyés vers Google Calendar'),
             backgroundColor: Colors.green,
           ),
         );
@@ -460,7 +452,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -492,7 +484,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         Navigator.pop(context); // Ferme le dialog de chargement
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Événements importés depuis Google Calendar'),
+            content: Text('Événements importés depuis Google Calendar'),
             backgroundColor: Colors.green,
           ),
         );
@@ -501,7 +493,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     }

@@ -204,16 +204,14 @@ class _EditEventDialogState extends State<EditEventDialog> {
 
       final endDateTime = _isAllDay
           ? DateTime(
-              widget.event.endTime.year,
-              widget.event.endTime.month,
-              widget.event.endTime.day,
-              23,
-              59,
+              widget.event.startTime.year,
+              widget.event.startTime.month,
+              widget.event.startTime.day,
             )
           : DateTime(
-              widget.event.endTime.year,
-              widget.event.endTime.month,
-              widget.event.endTime.day,
+              widget.event.startTime.year,
+              widget.event.startTime.month,
+              widget.event.startTime.day,
               _endTime.hour,
               _endTime.minute,
             );
@@ -221,7 +219,6 @@ class _EditEventDialogState extends State<EditEventDialog> {
       // Crée l'événement modifié (garde le même ID)
       final updatedEvent = CalendarEvent(
         id: widget.event.id,
-        // Garde le même ID
         title: _titleController.text,
         description: _descriptionController.text.isEmpty
             ? null

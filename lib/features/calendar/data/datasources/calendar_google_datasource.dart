@@ -10,6 +10,7 @@ class CalendarGoogleDataSource {
   calendar_api.CalendarApi? _calendarApi;
   GoogleSignInAccount? _currentUser;
 
+
   /// Initialise l'API avec le compte Google connecté
   Future<void> initialize(GoogleSignInAccount googleUser) async {
     _currentUser = googleUser;
@@ -30,7 +31,6 @@ class CalendarGoogleDataSource {
       final client = _AuthenticatedClientFromHeaders(authHeaders);
       _calendarApi = calendar_api.CalendarApi(client);
     }
-
   }
 
   /// Vérifie si l'API est prête
@@ -91,6 +91,7 @@ class CalendarGoogleDataSource {
     }
 
     final googleEvent = calendar_api.Event(
+      id: event.id,
       summary: event.title,
       description: event.description,
       location: event.location,
@@ -214,4 +215,6 @@ class _AuthenticatedClientFromHeaders extends http.BaseClient {
     request.headers.addAll(_headers);
     return _inner.send(request);
   }
+
+
 }

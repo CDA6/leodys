@@ -191,8 +191,6 @@ class _AddEventDialogState extends State<AddEventDialog> {
               widget.selectedDay.year,
               widget.selectedDay.month,
               widget.selectedDay.day,
-              23,
-              59,
             )
           : DateTime(
               widget.selectedDay.year,
@@ -204,8 +202,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
       // Crée l'événement
       final event = CalendarEvent(
-        id: const Uuid().v4(),
-        // Génère un ID unique
+        id: const Uuid().v4().replaceAll('-', ''),
         title: _titleController.text,
         description: _descriptionController.text.isEmpty
             ? null
