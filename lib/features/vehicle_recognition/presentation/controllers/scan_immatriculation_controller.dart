@@ -31,7 +31,6 @@ class ScanImmatriculationController extends ChangeNotifier {
       _result = await scanUsecase.execute(file);
     } catch (e) {
       _result = null;
-      // Optionnel : AppLogger.error(e.toString());
     } finally {
       _isLoading = false;
       notifyListeners();

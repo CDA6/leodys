@@ -7,6 +7,21 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   static const String _boxName = 'document_box';
 
+  /// Sauvegarder un document sous forme de Map<String, Dynamic>
+  /// ans passer par typeAdapter
+  @override
+  Future<void> saveDocument(Document document) async {
+    final box = await Hive.openBox(_boxName);
+    await box.put(document.idText,{
+      'idText': document.idText,
+      'title': document.title,
+      'content': document.content,
+      'createAt': document.createAt.toIso8601String(),
+      // toIso8601String() est un affichage normalisé de la date
+      // préconiser pour les sauvegardes dans Hive
+    });
+  }
+
  ///Ouvre la box Hive afin d'accéder aux données stockées en local
   /// Suppression d'un document
   @override
@@ -26,6 +41,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
       return null;
     }
 
+    // reconstruire l'objet
     return Document (
         idText: data['idText'],
         title: data['title'],
@@ -52,20 +68,6 @@ class DocumentRepositoryImpl implements DocumentRepository {
       );
     }
     return documents;
-  }
-
-  /// Sauvegarder un document
-  @override
-  Future<void> saveDocument(Document document) async {
-    final box = await Hive.openBox(_boxName);
-    await box.put(document.idText,{
-      'idText': document.idText,
-      'title': document.title,
-      'content': document.content,
-      'createAt': document.createAt.toIso8601String(),
-      // toIso8601String() est un affichage normalisé de la date
-      // préconiser pour les sauvegardes dans Hive
-    });
   }
 
 }

@@ -21,9 +21,20 @@ import '../domain/usecases/speak_plate_usecase.dart';
 import '../presentation/controllers/plate_tts_controller.dart';
 import '../presentation/controllers/scan_immatriculation_controller.dart';
 import '../presentation/controllers/plate_history_controller.dart';
+
+// Get it utilise le pattern signleton.
+// Ici on récupere l'instance global su service locator et on le stock
+// dans une variable nommé sl pour service locator
+
+// Get it agit comme un conteneur. tous les services, controller, repo, usecase
+// sont enregistrés dans un meme endroit
+//
+
 final GetIt sl = GetIt.instance;
 
 void initVehicleRecognition() {
+
+  // registerLazySingleton crée une instance unique à la demande au 1ere utilisation
 
   sl.registerLazySingleton<PlateReaderConfig>(
         () => PlateReaderConfig.defaultConfig,
@@ -52,7 +63,6 @@ void initVehicleRecognition() {
     ),
   );
 
-  // À adapter selon implémentation existante
   sl.registerLazySingleton<PlateHistoryRepository>(
         () => PlateHistoryRepositoryImpl(),
   );
@@ -73,6 +83,9 @@ void initVehicleRecognition() {
 
 
   // Controllers
+
+  // registerFactory créer une nouvelle instance à chaque demande
+  // Souvent utiliser pour les controllers qui on un cycle de vie court
   sl.registerFactory(
         () => ScanImmatriculationController(
       scanUsecase: sl(),
@@ -82,7 +95,7 @@ void initVehicleRecognition() {
   sl.registerFactory(
         () => PlateTtsController(
       speakPlateUsecase: sl(),
-      readerConfig: sl(), // déjà utilisé ailleurs (audio reader)
+      readerConfig: sl(),
     ),
   );
 

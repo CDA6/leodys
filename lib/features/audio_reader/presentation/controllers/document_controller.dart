@@ -11,7 +11,6 @@ class DocumentController extends ChangeNotifier {
   DocumentController({required this.documentUsecase});
 
   bool isLoading = false;
-  String message = '';
 
   List<Document> documents = [];
   Document? selectedDocument;

@@ -9,6 +9,8 @@ import 'domain/usecases/document_usecase.dart';
 import 'domain/usecases/read_text_usecase.dart';
 import 'domain/usecases/scan_document_usecase.dart';
 
+/// Injection de dépendence faite manuellement
+
 ReaderController createReaderController() {
   final ocrService = OcrService();
   final ttsService = TtsService();

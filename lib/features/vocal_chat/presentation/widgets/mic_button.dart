@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 
 /// Bouton microphone pour le chat vocal.
 ///
@@ -41,7 +43,7 @@ class MicButton extends StatelessWidget {
           boxShadow: isListening
               ? [
             BoxShadow(
-              color: Colors.red.withOpacity(0.4),
+              color: context.stateColors.error.withValues(alpha: 0.4),
               blurRadius: 20,
               spreadRadius: 5,
             ),
@@ -51,7 +53,7 @@ class MicButton extends StatelessWidget {
         child: Icon(
           isListening ? Icons.mic : Icons.mic_none,
           size: isListening ? 48 : 40,
-          color: Colors.white,
+          color: _getIconColor(context),
         ),
       ),
     );
@@ -59,11 +61,21 @@ class MicButton extends StatelessWidget {
 
   Color _getBackgroundColor(BuildContext context) {
     if (isDisabled) {
-      return Colors.grey.shade400;
+      return context.colorScheme.outline;
     }
     if (isListening) {
-      return Colors.red;
+      return context.stateColors.error;
     }
-    return Theme.of(context).primaryColor;
+    return context.colorScheme.primary;
+  }
+
+  Color _getIconColor(BuildContext context) {
+    if (isDisabled) {
+      return context.colorScheme.onSurfaceVariant;
+    }
+    if (isListening) {
+      return context.stateColors.onError;
+    }
+    return context.colorScheme.onPrimary;
   }
 }

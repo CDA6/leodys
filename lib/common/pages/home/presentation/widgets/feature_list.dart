@@ -55,10 +55,10 @@ class FeatureList extends StatelessWidget {
     AppFeature(
       name: 'Scanner de jeu de carte',
       icon: Icons.view_module,
-      route: '/',
+      route: GamecardReaderScreen.route,
       requiresInternet: false,
       requiresAuth: false,
-      isAvailable: false,
+      isAvailable: true,
       description: 'Reconnaissance de jeu de carte classique',
     ),
 
