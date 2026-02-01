@@ -31,12 +31,12 @@ class TextPreview extends StatelessWidget {
         color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: SingleChildScrollView(
+      child: SingleChildScrollView( // rendre le contenu scrollable
         child: Text(
           text,
           style: const TextStyle(
-            fontSize: 18,
-            height: 1.5,
+            fontSize: 18, // taille des lettres
+            height: 1.5, // l'espace entrer les lignes
           )
         )
       ),
