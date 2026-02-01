@@ -151,27 +151,35 @@ class CalendarRepositoryImpl implements CalendarRepository {
       throw Exception('Google Calendar non activé');
     }
 
-    // Récupère les événements Google sur la période
     int synced = 0;
+    int deleted = 0;
     DateTime currentDate = startDate;
 
     while (currentDate.isBefore(endDate) ||
         currentDate.isAtSameMomentAs(endDate)) {
       try {
-        final googleEvents = await googleDataSource!.getEventsForDay(
-          currentDate,
-        );
+        // 1. Récupère les événements Google pour ce jour
+        final googleEvents = await googleDataSource!.getEventsForDay(currentDate);
+        final googleIds = googleEvents.map((e) => e.id).toSet();
 
+        // 2. Récupère les événements locaux pour ce jour
+        final localEvents = await localDataSource.getEventsForDay(currentDate);
+
+        // 3. Ajoute les événements Google qui n'existent pas en local
         for (var model in googleEvents) {
-          // Vérifie si l'événement existe déjà en local
-          final localEvents = await localDataSource.getEventsForDay(
-            currentDate,
-          );
           final exists = localEvents.any((e) => e.id == model.id);
-
           if (!exists) {
             await localDataSource.addEvent(model);
             synced++;
+          }
+        }
+
+        // 4. ✅ NOUVEAU : Supprime les événements locaux qui n'existent plus dans Google
+        for (var localEvent in localEvents) {
+          if (!googleIds.contains(localEvent.id)) {
+            await localDataSource.deleteEvent(localEvent.id);
+            deleted++;
+            print('🗑️ Événement supprimé en local: ${localEvent.title}');
           }
         }
       } catch (e) {
@@ -180,5 +188,7 @@ class CalendarRepositoryImpl implements CalendarRepository {
 
       currentDate = currentDate.add(const Duration(days: 1));
     }
+
+    print('✅ Sync terminée: $synced ajoutés, $deleted supprimés');
   }
 }

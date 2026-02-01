@@ -84,7 +84,7 @@ class CalendarController extends ChangeNotifier {
 
   /// Charge les événements pour un jour
   Future<void> loadEventsForDay(DateTime day) async {
-    // ✅ Normalise toujours la date
+    // Normalise toujours la date
     final normalizedDay = _normalizeDate(day);
     _selectedDay = normalizedDay;
 
