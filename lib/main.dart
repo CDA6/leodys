@@ -48,6 +48,7 @@ import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart'
 import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
 import 'features/vocal_chat/injection_container.dart' as vocal_chat;
+import 'features/text_simplification/injection_container.dart' as text_simplification;
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
 import 'features/map/domain/useCases/watch_user_location_usecase.dart';
@@ -63,6 +64,8 @@ import 'features/money_manager/presentation/views/money_manager_view.dart';
 import 'features/money_manager/presentation/views/payment_history_view.dart';
 import 'features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'features/vocal_chat/presentation/viewmodels/vocal_chat_viewmodel.dart';
+import 'features/text_simplification/presentation/screens/text_simplification_screen.dart';
+import 'features/text_simplification/presentation/viewmodels/text_simplification_viewmodel.dart';
 import 'features/gamecards-reader/injection_container.dart' as gamecard_reader;
 import 'features/web_audio_reader/data/repositories/tts_repository_impl.dart';
 import 'features/web_audio_reader/data/repositories/web_reader_repository_impl.dart';
@@ -104,6 +107,7 @@ void main() async {
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
   await vocal_chat.init();
+  await text_simplification.init();
   await cards.init();
   await pose_detection.init();
   await voice_clock.init();
@@ -203,6 +207,11 @@ class MyApp extends StatelessWidget {
               VocalChatScreen.route: (context) => ChangeNotifierProvider(
                 create: (_) => vocal_chat.sl<VocalChatViewModel>(),
                 child: const VocalChatScreen(),
+              ),
+
+              TextSimplificationScreen.route: (context) => ChangeNotifierProvider(
+                create: (_) => text_simplification.sl<TextSimplificationViewModel>(),
+                child: const TextSimplificationScreen(),
               ),
 
               VoiceClockScreen.route: (context) => ChangeNotifierProvider(
