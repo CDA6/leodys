@@ -10,6 +10,7 @@ import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:leodys/features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'package:leodys/features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
+import 'package:leodys/features/text_simplification/presentation/screens/text_simplification_screen.dart';
 import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
 import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
@@ -137,6 +138,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Discuter avec un assistant vocal',
+  ),
+
+  AppFeature(
+      name: 'Textes Simplifiés',
+      icon: Icons.text_fields,
+      route: TextSimplificationScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Simplifier des textes complexes pour les dyslexiques',
   ),
 
   AppFeature(
