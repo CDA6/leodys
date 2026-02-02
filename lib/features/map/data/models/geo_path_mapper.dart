@@ -20,18 +20,20 @@ class GeoPathMapper {
     List<GeoStep> steps = [];
     for (var leg in legs) {
       for (var step in leg['steps']) {
+        final maneuver = step['maneuver'];
+        final String type = maneuver['type'] ?? "";
+        final String? modifier = maneuver['modifier'];
+        final String streetName = step['name'] ?? "";
+
         steps.add(
           GeoStep(
-            instruction: step['maneuver']['instruction'] ?? "",
+            instruction: _generateInstruction(type, modifier, streetName),
             distance: (step['distance'] as num).toDouble(),
             position: GeoPosition(
-              latitude: step['maneuver']['location'][1] as double,
-              longitude: step['maneuver']['location'][0] as double,
+              latitude: (maneuver['location'][1] as num).toDouble(),
+              longitude: (maneuver['location'][0] as num).toDouble(),
             ),
-            maneuver: _mapManeuverType(
-              step['maneuver']['type'],
-              step['maneuver']['modifier'],
-            ),
+            maneuver: _mapManeuverType(type, modifier),
           ),
         );
       }
@@ -48,10 +50,58 @@ class GeoPathMapper {
   static ManeuverType _mapManeuverType(String type, String? modifier) {
     if (type == 'depart') return ManeuverType.depart;
     if (type == 'arrive') return ManeuverType.arrive;
+    if (type.contains('roundabout')) return ManeuverType.roundabout;
+
     if (modifier != null) {
-      if (modifier.contains('left')) return ManeuverType.turnLeft;
-      if (modifier.contains('right')) return ManeuverType.turnRight;
+      if (modifier == 'left') return ManeuverType.turnLeft;
+      if (modifier == 'right') return ManeuverType.turnRight;
+      if (modifier == 'sharp left') return ManeuverType.sharpLeft;
+      if (modifier == 'sharp right') return ManeuverType.sharpRight;
+      if (modifier == 'slight left') return ManeuverType.slightLeft;
+      if (modifier == 'slight right') return ManeuverType.slightRight;
     }
+
     return ManeuverType.straight;
+  }
+
+  static String _generateInstruction(
+    String type,
+    String? modifier,
+    String streetName,
+  ) {
+    final street = streetName.isNotEmpty ? " sur $streetName" : "";
+
+    if (type == 'depart') return "Démarrez votre trajet$street";
+    if (type == 'arrive') return "Vous êtes arrivé à destination";
+
+    String direction = "Continuez tout droit";
+
+    if (modifier != null) {
+      switch (modifier) {
+        case 'left':
+          direction = "Tournez à gauche";
+          break;
+        case 'right':
+          direction = "Tournez à droite";
+          break;
+        case 'sharp left':
+          direction = "Prenez franchement à gauche";
+          break;
+        case 'sharp right':
+          direction = "Prenez franchement à droite";
+          break;
+        case 'slight left':
+          direction = "Légèrement à gauche";
+          break;
+        case 'slight right':
+          direction = "Légèrement à droite";
+          break;
+        case 'uturn':
+          direction = "Faites demi-tour";
+          break;
+      }
+    }
+
+    return "$direction$street";
   }
 }
