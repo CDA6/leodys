@@ -23,13 +23,14 @@ class MessageEntityAdapter extends TypeAdapter<MessageEntity> {
       subject: fields[3] as String,
       body: fields[4] as String,
       sentAt: fields[5] as DateTime,
+      userId: fields[6] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, MessageEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class MessageEntityAdapter extends TypeAdapter<MessageEntity> {
       ..writeByte(4)
       ..write(obj.body)
       ..writeByte(5)
-      ..write(obj.sentAt);
+      ..write(obj.sentAt)
+      ..writeByte(6)
+      ..write(obj.userId);
   }
 
   @override
