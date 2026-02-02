@@ -16,6 +16,7 @@ import 'package:leodys/features/profile/presentation/screens/profile_screen.dart
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
+import '../../../../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import '../../../../../features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
@@ -99,7 +100,6 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Lecture vocal d\'un texte scanné à partir d\'une photo',
     ),
-
     AppFeature(
       name: 'Reconnaissance d\'immatriculation',
       icon: Icons.directions_car,
@@ -208,6 +208,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Accès aux sites gouvernementaux et lecture des informations par synthèse vocale.',
+    ),
+
+    AppFeature(
+      name: 'Agenda',
+      icon: Icons.calendar_today,
+      route: CalendarScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Gestion du planning',
     ),
 
     AppFeature(name: "Scanner de ticket de caisse",

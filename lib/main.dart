@@ -1,3 +1,4 @@
+import 'package:leodys/constants/auth_constants.dart';
 import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
 import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
@@ -6,6 +7,8 @@ import 'package:leodys/common/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'features/calendar/presentation/viewModels/calendar_controller.dart';
+import 'package:leodys/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
@@ -47,6 +50,14 @@ import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
+import 'features/calendar/calendar_injection.dart' as calendar_injection;
+
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import 'features/map/data/dataSources/geolocator_datasource.dart';
+import 'features/map/data/repositories/location_repository_impl.dart';
+import 'features/map/presentation/viewModel/map_view_model.dart';
 import 'features/vocal_chat/injection_container.dart' as vocal_chat;
 import 'features/text_simplification/injection_container.dart' as text_simplification;
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
@@ -81,22 +92,17 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
+
   await dotenv.load(fileName: ".env");
 
   // Initialisation des datasource de base
   await InternetUtil.init();
   await DatabaseService.init();
 
-  try {
-    await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-      debug: false,
-    );
-    AppLogger().info("Supabase initialized successfully");
-  } catch (e) {
-    AppLogger().error("Failed to initialize Supabase: $e");
-  }
+  await Supabase.initialize(
+    url: AuthConstants.projectUrl,
+    anonKey: AuthConstants.apiKey,
+  );
 
   //ThemeManager
   final themeManager = AppThemeManager();
@@ -106,6 +112,7 @@ void main() async {
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
+  await calendar_injection.init();
   await vocal_chat.init();
   await text_simplification.init();
   await cards.init();
@@ -115,12 +122,7 @@ void main() async {
   await profile.init();
 
   initVehicleRecognition();
-  runApp(
-    riverpod.ProviderScope(
-      child: MyApp(themeManager: themeManager,),
-    ),
-  );
-
+  runApp(riverpod.ProviderScope(child: MyApp(themeManager: themeManager)));
 }
 
 class MyApp extends StatelessWidget {
@@ -142,6 +144,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => calendar_injection.sl<CalendarController>(),
         ),
 
         ChangeNotifierProvider(
@@ -191,7 +196,7 @@ class MyApp extends StatelessWidget {
                   const PrintedTextReaderScreen(),
 
               HandwrittenTextReaderScreen.route: (context) =>
-              const HandwrittenTextReaderScreen(),
+                  const HandwrittenTextReaderScreen(),
 
               NotificationDashboard.route: (context) => ChangeNotifierProvider(
                 create: (_) => messagerie.sl<NotificationController>(),
@@ -199,7 +204,7 @@ class MyApp extends StatelessWidget {
               ),
 
               VocalNotesListScreen.route: (context) =>
-                const VocalNotesListScreen(),
+                  const VocalNotesListScreen(),
 
               VocalNoteEditorScreen.route: (context) =>
                   const VocalNoteEditorScreen(),
@@ -256,17 +261,16 @@ class MyApp extends StatelessWidget {
                 final controller = WebReaderController(
                   readWebPageUseCase: readWebUseCase,
                   readTextUseCase: readTextUseCase,
-                  );
-                  return WebReaderScreen(controller: controller);
+                );
+                return WebReaderScreen(controller: controller);
               },
-
 
               ForumScreen.route: (context) => const ForumScreen(),
 
-
-              ConfidentialDocumentScreen.route : (context) =>
+              ConfidentialDocumentScreen.route: (context) =>
                   const ConfidentialDocumentScreen(),
               ProfileScreen.route: (context) => const ProfileScreen(),
+              CalendarScreen.route: (context) => const CalendarScreen(),
             },
           );
         },
