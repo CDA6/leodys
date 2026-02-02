@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
-import 'package:leodys/features/map/presentation/widgets/cancel_navigation_button.dart';
-import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
+import 'package:leodys/features/map/presentation/widgets/gps_failure_dialog.dart';
 import 'package:leodys/features/map/presentation/widgets/map_app_bar.dart';
 import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:leodys/features/map/presentation/widgets/navigation_confirm_overlay.dart';
+import 'package:leodys/features/map/presentation/widgets/reusable/elevated_bouncing_button.dart';
 
 import '../widgets/gps_search_pos_overlay.dart';
 
@@ -37,7 +39,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         if (error is GpsFailure) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
-              showGpsDialog(context, error);
+              showGpsFailureDialog(context, error);
             }
           });
         }
@@ -74,6 +76,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       appBar: MapAppBar(
         onSearch: (query) => widget.viewModel.onSearch(query),
         onLocationSelected: (loc) => widget.viewModel.prepareNavigation(loc),
+        onClearSearch: () => widget.viewModel.cancelSearch(),
       ),
       body: Stack(
         children: [
@@ -96,14 +99,21 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           // Cancel path button, visible only if navigation was enabled
           Positioned(
             bottom: 16,
-            left: 16,
+            left: 0,
+            right: 0,
             child: StreamBuilder<bool>(
               stream: widget.viewModel.isNavigatingStream,
               initialData: false,
               builder: (context, snapshot) {
                 if (snapshot.data == true) {
-                  return CancelNavigationButton(
-                    onStop: () => _showCancelConfirmation(context),
+                  return Center(
+                    child: ElevatedBouncingButton(
+                      onPressed: () => _showCancelConfirmation(context),
+                      icon: Icon(Icons.close),
+                      text: Text("Arrêter le trajet"),
+                      backgroundColor: context.colorScheme.secondaryContainer,
+                      foregroundColor: context.colorScheme.onSecondaryContainer,
+                    ),
                   );
                 }
                 return const SizedBox.shrink();
@@ -111,22 +121,27 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             ),
           ),
 
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: StreamBuilder<GeoPath?>(
-              stream: widget.viewModel.pendingPathStream,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data == null) {
-                  return const SizedBox.shrink();
-                }
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: StreamBuilder<GeoPath?>(
+                stream: widget.viewModel.pendingPathStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return const SizedBox.shrink();
+                  }
 
-                return NavigationConfirmOverlay(
-                  path: snapshot.data!,
-                  onConfirm: () =>
-                      widget.viewModel.confirmNavigation(snapshot.data!),
-                  onCancel: () => widget.viewModel.cancelNavigation(),
-                );
-              },
+                  return NavigationConfirmOverlay(
+                    path: snapshot.data!,
+                    onConfirm: () =>
+                        widget.viewModel.confirmNavigation(snapshot.data!),
+                    onCancel: () => widget.viewModel.cancelNavigation(),
+                  );
+                },
+              ),
             ),
           ),
 
@@ -141,22 +156,34 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Arrêter le trajet ?"),
-          content: const Text(
+          backgroundColor: context.colorScheme.secondaryContainer,
+          title: Text(
+            "Arrêter le trajet ?",
+            style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+          ),
+          content: Text(
             "Voulez-vous vraiment annuler la navigation en cours ?",
+            style: TextStyle(color: context.colorScheme.onSecondaryContainer),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Continuer"),
+              child: Text(
+                "Continuer",
+                style: TextStyle(
+                  color: context.colorScheme.onSecondaryContainer,
+                ),
+              ),
             ),
-            ElevatedButton(
+            ElevatedBouncingButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 widget.viewModel.cancelNavigation();
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text("Oui, arrêter"),
+              icon: Icon(Icons.done),
+              text: Text("Oui, arrêter"),
+              backgroundColor: context.stateColors.warning,
+              foregroundColor: context.stateColors.onWarning,
             ),
           ],
         );

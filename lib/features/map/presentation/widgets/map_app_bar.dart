@@ -4,15 +4,42 @@ import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/common/utils/app_logger.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
 
-class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
+class MapAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Future<List<LocationSearchResult>> Function(String) onSearch;
   final Function(LocationSearchResult) onLocationSelected;
+  final VoidCallback onClearSearch;
 
   const MapAppBar({
     super.key,
     required this.onSearch,
     required this.onLocationSelected,
+    required this.onClearSearch,
   });
+
+  @override
+  State<MapAppBar> createState() => _MapAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _MapAppBarState extends State<MapAppBar> {
+  // 1. On déclare le controller ici
+  late final SearchController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    // 2. On l'initialise
+    _searchController = SearchController();
+  }
+
+  @override
+  void dispose() {
+    // 3. On le libère pour éviter les fuites de mémoire
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +58,27 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         SearchAnchor(
+          // 4. On lie le controller au widget
+          searchController: _searchController,
+
           viewLeading: IconButton(
             icon: Icon(Icons.arrow_back, color: context.colorScheme.onSurface),
             onPressed: () {
+              _searchController.clear(); // Vide le texte
+              widget.onClearSearch(); // Annule l'API
               Navigator.of(context).pop();
-              AppLogger().debug("Closing navigation search bar");
             },
           ),
+
+          viewTrailing: [
+            IconButton(
+              icon: Icon(Icons.close, color: context.colorScheme.onSurface),
+              onPressed: () {
+                _searchController.clear(); // Vide le texte
+                widget.onClearSearch(); // Annule l'API
+              },
+            ),
+          ],
 
           viewBackgroundColor: context.colorScheme.surfaceContainerHighest,
           viewSurfaceTintColor: Colors.transparent,
@@ -57,6 +98,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
 
           suggestionsBuilder: (context, controller) async {
+            // Ici controller est le même que _searchController
             if (controller.text.length < 3) {
               return [
                 ListTile(
@@ -72,7 +114,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
               ];
             }
 
-            final results = await onSearch(controller.text);
+            final results = await widget.onSearch(controller.text);
 
             if (results.isEmpty) {
               return [
@@ -99,7 +141,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onTap: () {
                   AppLogger().info("Choix destination : ${res.name}");
                   controller.closeView(res.name);
-                  onLocationSelected(res);
+                  widget.onLocationSelected(res);
                 },
               ),
             );
@@ -108,7 +150,4 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

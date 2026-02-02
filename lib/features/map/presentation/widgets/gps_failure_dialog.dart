@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
 import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 
-void showGpsDialog(BuildContext context, GpsFailure failure) {
+void showGpsFailureDialog(BuildContext context, GpsFailure failure) {
   String message = "Une erreur est survenue avec le GPS.";
   bool showGpsSettings = false;
   bool showAppSettings = false;
@@ -25,29 +26,30 @@ void showGpsDialog(BuildContext context, GpsFailure failure) {
     barrierDismissible: false,
 
     builder: (context) => AlertDialog(
-      backgroundColor: context.colorScheme.secondaryContainer,
+      backgroundColor: context.colorScheme.primaryContainer,
       title: Icon(
         Icons.location_off,
         size: 50,
-        color: context.colorScheme.error,
+        color: context.stateColors.warning,
       ),
       content: Text(
         message,
         textAlign: TextAlign.center,
-        style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+        style: TextStyle(color: context.colorScheme.onPrimaryContainer),
       ),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
         if (showGpsSettings)
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.stateColors.warning,
+              foregroundColor: context.stateColors.onWarning,
+            ),
             onPressed: () async {
               await Geolocator.openLocationSettings();
               if (context.mounted) Navigator.pop(context);
             },
-            child: Text(
-              "Activer le GPS",
-              style: TextStyle(color: context.colorScheme.onSecondaryContainer),
-            ),
+            child: const Text("Activer le GPS"),
           ),
 
         if (showAppSettings)
@@ -62,15 +64,20 @@ void showGpsDialog(BuildContext context, GpsFailure failure) {
             ),
           ),
 
-        TextButton(
+        ElevatedButton(
           onPressed: () {
-            Navigator.pop(context); // Close dialog
-            Navigator.pop(context); // Close MapScreen to return to HomePage
+            Navigator.pop(context);
+            Navigator.pop(context);
           },
-          child: Text(
-            "Retour",
-            style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.colorScheme.secondaryContainer,
+            foregroundColor: context.colorScheme.onSecondaryContainer,
+            elevation: 0, // Pas d'ombre
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
+          child: const Text("Retour"),
         ),
       ],
     ),
