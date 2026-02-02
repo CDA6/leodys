@@ -24,14 +24,12 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
   }
 
   Future<void> _checkConnection() async {
-    // Ajoutez 'await' si isConnected est asynchrone
     final connected = InternetUtil.isConnected;
     if (mounted) setState(() => _isConnected = connected);
   }
 
   @override
   Widget build(BuildContext context) {
-    // PLUS BESOIN de 'final controller = sl<...>' ici.
 
     return Scaffold(
       appBar: GlobalAppBar(
@@ -74,12 +72,9 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                         () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        // MODIFICATION : Plus de paramètre, la page se débrouille
                         builder: (_) => const NotificationPage(),
                       ),
                     ),
-                    // Note : Grâce à Hive, vous pourriez autoriser l'accès même hors ligne !
-                    // Si vous voulez tester, mettez : showWarning: false
                     showWarning: !_isConnected,
                   ),
                   _buildDashCard(
@@ -89,7 +84,6 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                         () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        // MODIFICATION : Plus de paramètre 'controller'
                         builder: (_) => const EmailHistoryPage(),
                       ),
                     ),
@@ -122,7 +116,7 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
       child: Card(
         color: isEnabled
             ? context.colorScheme.surfaceContainerHighest
-            : Colors.grey.withOpacity(0.2), // Correction compatibilité version
+            : Colors.grey.withOpacity(0.2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: isEnabled ? 4 : 0,
         child: InkWell(
