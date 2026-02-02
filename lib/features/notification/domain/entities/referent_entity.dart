@@ -19,12 +19,16 @@ class ReferentEntity {
   @HiveField(4)
   final String category;
 
+  @HiveField(5)
+  final String userId;
+
   const ReferentEntity({
     required this.id,
     required this.name,
     required this.email,
     required this.role,
     required this.category,
+    required this.userId,
   });
 
 }

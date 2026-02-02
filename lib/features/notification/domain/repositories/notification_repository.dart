@@ -11,4 +11,8 @@ abstract class NotificationRepository {
   Future<List<MessageEntity>> getRemoteMessageHistory();
   Future<void> saveLocalMessage(MessageEntity message);
   Future<void> saveRemoteMessage(MessageEntity message);
+  Future<void> saveRemoteReferent(ReferentEntity referent);
+  Future<void> deleteRemoteReferent(String id);
+  Future<List<ReferentEntity>> getRemoteReferents();
+
 }
