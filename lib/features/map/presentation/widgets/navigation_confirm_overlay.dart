@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'package:leodys/features/map/domain/entities/geo_path.dart';
+import 'package:leodys/features/map/presentation/widgets/reusable/elevated_bouncing_button.dart';
 
 class NavigationConfirmOverlay extends StatelessWidget {
   final GeoPath path;
@@ -16,6 +19,7 @@ class NavigationConfirmOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: context.colorScheme.secondaryContainer,
       margin: const EdgeInsets.all(16),
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -26,27 +30,36 @@ class NavigationConfirmOverlay extends StatelessWidget {
           children: [
             Text(
               "Trajet trouvé : ${(path.totalDistance / 1000).toStringAsFixed(1)} km",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: context.colorScheme.onSecondaryContainer,
+              ),
             ),
             const SizedBox(height: 8),
-            Text("Durée estimée : ${(path.totalDuration / 60).round()} min"),
+            Text(
+              "Durée estimée : ${(path.totalDuration / 60).round()} min",
+              style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onCancel,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                    ),
-                    child: const Text("Annuler"),
+                TextButton(
+                  onPressed: onCancel,
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: context.stateColors.warning,
+                    foregroundColor: context.stateColors.onWarning,
                   ),
+                  child: const Text("Annuler"),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton(
+                  child: ElevatedBouncingButton(
                     onPressed: onConfirm,
-                    child: const Text("Démarrer"),
+                    icon: Icon(Icons.done),
+                    text: Text("Démarrer"),
+                    backgroundColor: context.stateColors.success,
+                    foregroundColor: context.stateColors.onSuccess,
                   ),
                 ),
               ],

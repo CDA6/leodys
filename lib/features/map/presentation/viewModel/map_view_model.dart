@@ -179,6 +179,12 @@ class MapViewModel {
 
     return completer.future;
   }
+
+  void cancelSearch() {
+    _searchWaitingTimer?.cancel();
+    _searchResults = [];
+    AppLogger().debug("Search API call cancelled by user");
+  }
   // </editor-fold>
 
   void moveToLocation(LocationSearchResult destination) {
