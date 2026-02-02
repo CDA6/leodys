@@ -1,3 +1,4 @@
+import '../../../../common/utils/internet_util.dart';
 import '../repositories/notification_repository.dart';
 
 /// synchroniser l'historique des messages entre le stockage local et distant.
@@ -7,6 +8,11 @@ class SyncMessageHistory {
   SyncMessageHistory(this.repository);
 
   Future<void> call() async {
+    // 1. Vérification de la connexion
+    if (!InternetUtil.isConnected) {
+      print("LOG: Synchro messages annulée (Hors-ligne)");
+      return;
+    }
     print("LOG: Démarrage de la synchronisation de l'historique des messages...");
 
     final localMessages = await repository.getMessageHistory();
@@ -19,7 +25,7 @@ class SyncMessageHistory {
     for (var remoteMsg in remoteMessages) {
       if (!localMessageIds.contains(remoteMsg.id)) {
         await repository.saveLocalMessage(remoteMsg);
-        print("LOG: Message distant ajouté au local: ${remoteMsg.id}");
+        print("LOG: Message distant ajouté au local: ${remoteMsg.id} et ${remoteMsg.userId}");
       }
     }
 

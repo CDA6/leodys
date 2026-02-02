@@ -1,5 +1,6 @@
-import 'package:leodys/common/utils/app_logger.dart';
 import 'package:geolocator/geolocator.dart';
+
+import '../exceptions/geolocator_exceptions.dart';
 
 class GeolocatorDatasource {
   Stream<Position> getPositionStream() async* {
@@ -8,29 +9,25 @@ class GeolocatorDatasource {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      AppLogger().info("GPS is currently disabled");
-      throw 'GPS_DISABLED';
+      throw GpsServiceException();
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      AppLogger().info("GPS access denied. Ask user permission to use it.");
       permission = await Geolocator.requestPermission();
 
       if (permission == LocationPermission.denied) {
-        AppLogger().info("GPS access denied");
-        throw 'GPS_DENIED';
+        throw GpsPermissionException();
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      AppLogger().info("GPS access denied forever");
-      throw 'GPS_DENIED_FOREVER.';
+      throw GpsPermissionForeverException();
     }
 
     yield* Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
+        accuracy: LocationAccuracy.high,
         distanceFilter: 1,
       ),
     );

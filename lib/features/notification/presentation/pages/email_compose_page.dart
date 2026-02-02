@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/internet_util.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../common/widget/voice_text_field.dart';
 import '../controllers/notification_controller.dart';
 import '../../domain/entities/referent_entity.dart';
@@ -17,6 +18,8 @@ class EmailComposePage extends StatefulWidget {
 
 class _EmailComposePageState extends State<EmailComposePage> {
   final TextEditingController _bodyController = TextEditingController();
+  final _supabase = Supabase.instance.client;
+  late final String currentUserId = _supabase.auth.currentUser!.id;
 
   @override
   void initState() {
@@ -60,6 +63,7 @@ class _EmailComposePageState extends State<EmailComposePage> {
                   referent: widget.referent,
                   subject: "Alerte Leodys",
                   body: _bodyController.text,
+                  userId: currentUserId
                 );
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(

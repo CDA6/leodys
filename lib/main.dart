@@ -1,11 +1,14 @@
-import 'package:leodys/features/map/data/dataSources/geolocator_datasource.dart';
-import 'package:leodys/features/map/data/repositories/location_repository_impl.dart';
+import 'package:leodys/constants/auth_constants.dart';
+import 'package:leodys/features/confidential_document/presentation/confidential_document_screen.dart';
+import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
 import 'package:leodys/features/cards/presentation/display_cards_screen.dart';
 import 'package:leodys/common/utils/internet_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'features/calendar/presentation/viewModels/calendar_controller.dart';
+import 'package:leodys/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:leodys/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:leodys/features/notification/presentation/pages/notification_dashboard_page.dart';
 import 'package:leodys/features/ocr-reader/presentation/viewmodels/handwritten_text_viewmodel.dart';
@@ -43,16 +46,21 @@ import 'features/voice-clock/presentation/viewmodel/voice_clock_viewmodel.dart';
 import 'features/voice-clock/voice_clock_injection.dart' as voice_clock;
 import 'features/notification/notification_injection.dart' as messagerie;
 import 'features/cards/providers.dart' as cards;
+import 'features/map/map_injection.dart' as map;
 import 'features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'features/calculator/presentation/views/calculator_view.dart';
 import 'features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
 import 'features/ocr-reader/presentation/viewmodels/printed_text_viewmodel.dart';
 import 'features/vehicle_recognition/injection/vehicle_recognition_injection.dart';
 import 'features/vocal_notes/injection_container.dart' as vocal_notes;
+import 'features/calendar/calendar_injection.dart' as calendar_injection;
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'features/vocal_chat/injection_container.dart' as vocal_chat;
+import 'features/text_simplification/injection_container.dart'
+    as text_simplification;
 import 'features/accessibility/accessibility_injection.dart' as accessibility;
 import 'features/accessibility/presentation/screens/settings_screen.dart';
-import 'features/map/domain/useCases/watch_user_location_usecase.dart';
 import 'features/map/presentation/screen/map_screen.dart';
 import 'features/left_right/injection_container.dart' as pose_detection;
 import 'features/authentication/domain/services/auth_service.dart';
@@ -65,6 +73,8 @@ import 'features/money_manager/presentation/views/money_manager_view.dart';
 import 'features/money_manager/presentation/views/payment_history_view.dart';
 import 'features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
 import 'features/vocal_chat/presentation/viewmodels/vocal_chat_viewmodel.dart';
+import 'features/text_simplification/presentation/screens/text_simplification_screen.dart';
+import 'features/text_simplification/presentation/viewmodels/text_simplification_viewmodel.dart';
 import 'features/gamecards-reader/injection_container.dart' as gamecard_reader;
 import 'features/web_audio_reader/data/repositories/tts_repository_impl.dart';
 import 'features/web_audio_reader/data/repositories/web_reader_repository_impl.dart';
@@ -88,16 +98,10 @@ void main() async {
   await InternetUtil.init();
   await DatabaseService.init();
 
-  try {
-    await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-      debug: false,
-    );
-    AppLogger().info("Supabase initialized successfully");
-  } catch (e) {
-    AppLogger().error("Failed to initialize Supabase: $e");
-  }
+  await Supabase.initialize(
+    url: AuthConstants.projectUrl,
+    anonKey: AuthConstants.apiKey,
+  );
 
   //ThemeManager
   final themeManager = AppThemeManager();
@@ -107,20 +111,18 @@ void main() async {
   await ocr_reader.init();
   await messagerie.init();
   await vocal_notes.init(navigatorKey);
+  await calendar_injection.init();
   await vocal_chat.init();
+  await text_simplification.init();
   await cards.init();
   await pose_detection.init();
   await voice_clock.init();
   await gamecard_reader.init();
   await profile.init();
+  await map.init();
 
   initVehicleRecognition();
-  runApp(
-    riverpod.ProviderScope(
-      child: MyApp(themeManager: themeManager,),
-    ),
-  );
-
+  runApp(riverpod.ProviderScope(child: MyApp(themeManager: themeManager)));
 }
 
 class MyApp extends StatelessWidget {
@@ -142,6 +144,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => vocal_notes.sl<VocalNotesViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => calendar_injection.sl<CalendarController>(),
         ),
 
         ChangeNotifierProvider(
@@ -176,14 +181,8 @@ class MyApp extends StatelessWidget {
 
               SettingsScreen.route: (context) => const SettingsScreen(),
 
-              MapScreen.route: (context) {
-                final dataSource = GeolocatorDatasource();
-                final repository = LocationRepositoryImpl(dataSource);
-                final useCase = WatchUserLocationUseCase(repository);
-                final viewModel = MapViewModel(useCase);
-
-                return MapScreen(viewModel: viewModel);
-              },
+              MapScreen.route: (context) =>
+                  MapScreen(viewModel: map.locator<MapViewModel>()),
 
               RealTimeYoloScreen.route: (context) => const RealTimeYoloScreen(),
 
@@ -191,7 +190,7 @@ class MyApp extends StatelessWidget {
                   const PrintedTextReaderScreen(),
 
               HandwrittenTextReaderScreen.route: (context) =>
-              const HandwrittenTextReaderScreen(),
+                  const HandwrittenTextReaderScreen(),
 
               NotificationDashboard.route: (context) => ChangeNotifierProvider(
                 create: (_) => messagerie.sl<NotificationController>(),
@@ -199,7 +198,7 @@ class MyApp extends StatelessWidget {
               ),
 
               VocalNotesListScreen.route: (context) =>
-                const VocalNotesListScreen(),
+                  const VocalNotesListScreen(),
 
               VocalNoteEditorScreen.route: (context) =>
                   const VocalNoteEditorScreen(),
@@ -208,6 +207,13 @@ class MyApp extends StatelessWidget {
                 create: (_) => vocal_chat.sl<VocalChatViewModel>(),
                 child: const VocalChatScreen(),
               ),
+
+              TextSimplificationScreen.route: (context) =>
+                  ChangeNotifierProvider(
+                    create: (_) =>
+                        text_simplification.sl<TextSimplificationViewModel>(),
+                    child: const TextSimplificationScreen(),
+                  ),
 
               VoiceClockScreen.route: (context) => ChangeNotifierProvider(
                 create: (_) => voice_clock.sl<VoiceClockViewModel>(),
@@ -251,8 +257,8 @@ class MyApp extends StatelessWidget {
                 final controller = WebReaderController(
                   readWebPageUseCase: readWebUseCase,
                   readTextUseCase: readTextUseCase,
-                  );
-                  return WebReaderScreen(controller: controller);
+                );
+                return WebReaderScreen(controller: controller);
               },
               SelectableWebReaderScreen.route: (context) {
                 final ttsService = TtsService();
@@ -277,8 +283,9 @@ class MyApp extends StatelessWidget {
                 );
               },
 
-
               ForumScreen.route: (context) => const ForumScreen(),
+
+              ConfidentialDocumentScreen.route: (context) =>
               TopicScreen.route: (context) {
                 final topic = ModalRoute.of(context)!.settings.arguments as Topic;
                 return TopicScreen(topic: topic);
@@ -287,6 +294,7 @@ class MyApp extends StatelessWidget {
               ConfidentialDocumentScreen.route : (context) =>
                   const ConfidentialDocumentScreen(),
               ProfileScreen.route: (context) => const ProfileScreen(),
+              CalendarScreen.route: (context) => const CalendarScreen(),
 
             },
           );

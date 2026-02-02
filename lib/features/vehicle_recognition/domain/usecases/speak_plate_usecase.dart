@@ -10,7 +10,6 @@ class SpeakPlateUsecase {
   /// Lnacer la lecture avec une configuration de lecture
   Future<void> play(String text, PlateReaderConfig config) async {
 
-
     if (text.trim().isEmpty) return;
 
     await plateTtsRepository.play(text, config);
@@ -20,4 +19,5 @@ class SpeakPlateUsecase {
   Future<void> stop() async{
     await plateTtsRepository.stop();
   }
+
 }

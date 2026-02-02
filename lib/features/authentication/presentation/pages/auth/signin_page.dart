@@ -105,7 +105,7 @@ class _SigninPageState extends State<SigninPage> {
     }
   }
 
-  /// Nouvelle méthode : Connexion Google
+  /// Connexion Google
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
 
@@ -128,7 +128,7 @@ class _SigninPageState extends State<SigninPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur Google: ${e.message}'),
+            content: Text('Erreur Google'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -138,7 +138,7 @@ class _SigninPageState extends State<SigninPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Un problème est survenu: $e'),
+            content: Text('Un problème est survenu'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -232,7 +232,7 @@ class _SigninPageState extends State<SigninPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // ===== NOUVEAU : Bouton Google Sign-In =====
+                // Bouton Google Sign-In
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(

@@ -1,8 +1,20 @@
+import 'dart:async';
+
+import 'package:leodys/common/theme/state_color_extension.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
+import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
+import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/presentation/viewModel/map_view_model.dart';
-import 'package:leodys/features/map/presentation/widgets/gps_dialog.dart';
+import 'package:leodys/features/map/presentation/widgets/gps_failure_dialog.dart';
+import 'package:leodys/features/map/presentation/widgets/map_app_bar.dart';
 import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:leodys/features/map/presentation/widgets/navigation_confirm_overlay.dart';
+import 'package:leodys/features/map/presentation/widgets/navigation_info_overlay.dart';
+import 'package:leodys/features/map/presentation/widgets/reusable/elevated_bouncing_button.dart';
+
+import '../widgets/gps_search_pos_overlay.dart';
 
 class MapScreen extends StatefulWidget {
   final MapViewModel viewModel;
@@ -15,66 +27,172 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
-  Key _streamKey = UniqueKey();
+  StreamSubscription? _gpsStreamSubscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    widget.viewModel.handleLanding();
+
+    _gpsStreamSubscription = widget.viewModel.positionStream.listen(
+      (_) {},
+      onError: (error) {
+        if (error is GpsFailure) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              showGpsFailureDialog(context, error);
+            }
+          });
+        }
+      },
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.viewModel.handleLanding();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _gpsStreamSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     widget.viewModel.handleLeaving();
     super.dispose();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      widget.viewModel.handleLeaving();
+    } else if (state == AppLifecycleState.resumed) {
+      widget.viewModel.handleLanding();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Navigation Piéton")),
-      body: StreamBuilder<GeoPosition>(
-        key: _streamKey,
-        stream: widget.viewModel.positionStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      appBar: MapAppBar(
+        onSearch: (query) => widget.viewModel.onSearch(query),
+        onLocationSelected: (loc) => widget.viewModel.prepareNavigation(loc),
+        onClearSearch: () => widget.viewModel.cancelSearch(),
+      ),
+      body: Stack(
+        children: [
+          MapWidget(
+            position:
+                widget.viewModel.currentPosition ??
+                const GeoPosition(latitude: 0, longitude: 0),
+            cameraStream: widget.viewModel.cameraCommandStream,
+            currentPositionStream: widget.viewModel.positionStream,
+            markerStream: widget.viewModel.markerStream,
+            followStatusStream: widget.viewModel.followStatusStream,
+            pathStream: widget.viewModel.pathStream,
 
-          if (snapshot.hasError) {
-            final error = snapshot.error.toString();
+            isAutoFollowing: widget.viewModel.isFollowingUser,
 
-            //PostFrameCallback to display Popup without breaking the build
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                showGpsDialog(context, error);
-              }
-            });
+            onRecenter: () => widget.viewModel.resumeAutoFollowing(),
+            onMapDragged: () => widget.viewModel.disableAutoFollowing(),
+          ),
 
-            return const Center(
-              child: Icon(Icons.location_off, size: 80, color: Colors.grey),
-            );
-          }
+          NavigationInfoOverlay(
+            progressStream: widget.viewModel.navigationProgressStream,
+          ),
 
-          if (!snapshot.hasData) {
-            return const Center(child: Text("Recherche de position..."));
-          }
+          // Cancel path button, visible only if navigation was enabled
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: StreamBuilder<bool>(
+              stream: widget.viewModel.isNavigatingStream,
+              initialData: false,
+              builder: (context, snapshot) {
+                if (snapshot.data == true) {
+                  return Center(
+                    child: ElevatedBouncingButton(
+                      onPressed: () => _showCancelConfirmation(context),
+                      icon: Icon(Icons.close),
+                      text: Text("Arrêter le trajet"),
+                      backgroundColor: context.colorScheme.secondaryContainer,
+                      foregroundColor: context.colorScheme.onSecondaryContainer,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
 
-          return MapWidget(position: snapshot.data!);
-        },
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: StreamBuilder<GeoPath?>(
+                stream: widget.viewModel.pendingPathStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return NavigationConfirmOverlay(
+                    path: snapshot.data!,
+                    onConfirm: () =>
+                        widget.viewModel.confirmNavigation(snapshot.data!),
+                    onCancel: () => widget.viewModel.cancelNavigation(),
+                  );
+                },
+              ),
+            ),
+          ),
+
+          GpsSearchPosOverlay(positionStream: widget.viewModel.positionStream),
+        ],
       ),
     );
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      //upate the key force the stream to call getPositionStream()
-      setState(() {
-        _streamKey = UniqueKey();
-      });
-    }
+  void _showCancelConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: context.colorScheme.secondaryContainer,
+          title: Text(
+            "Arrêter le trajet ?",
+            style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+          ),
+          content: Text(
+            "Voulez-vous vraiment annuler la navigation en cours ?",
+            style: TextStyle(color: context.colorScheme.onSecondaryContainer),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                "Continuer",
+                style: TextStyle(
+                  color: context.colorScheme.onSecondaryContainer,
+                ),
+              ),
+            ),
+            ElevatedBouncingButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.viewModel.cancelNavigation();
+              },
+              icon: Icon(Icons.done),
+              text: Text("Oui, arrêter"),
+              backgroundColor: context.stateColors.warning,
+              foregroundColor: context.stateColors.onWarning,
+            ),
+          ],
+        );
+      },
+    );
   }
 }

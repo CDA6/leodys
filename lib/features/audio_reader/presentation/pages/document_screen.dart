@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../common/theme/theme_context_extension.dart';
 import '../../domain/models/reader_config.dart';
 import '../../injection.dart';
 import '../controllers/document_controller.dart';
@@ -41,38 +42,51 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Mes documents'),
+            title: Text(
+              'Mes documents',
+              style: TextStyle(
+                color: context.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: context.colorScheme.primaryContainer,
           ),
+          // Opérateur conditionnel:
+          // si ca charge alors affiche CircularProgressIndicator
           body: documentController.isLoading
               ? const Center(child: CircularProgressIndicator())
+          // Sinon si le chargement est fini mais pas de document
               : documentController.documents.isEmpty
+          // affiche un message
               ? const Center(child: Text('Aucun document enregistré'))
-              : ListView.builder(
-            itemCount: documentController.documents.length,
-            itemBuilder: (context, index) {
-              final document =
-              documentController.documents[index];
+          // ou sinon affiche la liste des documents
+              : ListView.builder( // Construire les éléments un par un
+                  // Affiche les documents ligne par ligne
+                  itemCount: documentController.documents.length,
+                  itemBuilder: (context, index) {
+                    // Construire les lignes pour chaque document à l'index correspondant
+                    final document = documentController.documents[index];
 
-              return DocumentTile(
-                document: document,
-                onRead: () {
-                  readerController.loadDocument(document);
-                  readerController.readText(
-                    ReaderConfig.defaultConfig,
-                  );
-                },
-                onPause: (){
-                  readerController.pause();
-                },
-                onStop: (){readerController.stop();
+                    // Retourne les document scannés en ligne
+                    // et les actions que l'utilisateur peut effectuer
+                    return DocumentTile(
+                      document: document,
+                      onRead: () {
+                        readerController.loadDocument(document);
+                        readerController.readText(ReaderConfig.defaultConfig);
+                      },
+                      onPause: () {
+                        readerController.pause();
+                      },
+                      onStop: () {
+                        readerController.stop();
+                      },
+                      onDelete: () {
+                        documentController.deleteDocument(document.idText);
+                      },
+                    );
                   },
-                onDelete: () {
-                  documentController
-                      .deleteDocument(document.idText);
-                },
-              );
-            },
-          ),
+                ),
         );
       },
     );
