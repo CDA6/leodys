@@ -11,6 +11,7 @@ import 'package:leodys/features/map/presentation/widgets/map_app_bar.dart';
 import 'package:leodys/features/map/presentation/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:leodys/features/map/presentation/widgets/navigation_confirm_overlay.dart';
+import 'package:leodys/features/map/presentation/widgets/navigation_info_overlay.dart';
 import 'package:leodys/features/map/presentation/widgets/reusable/elevated_bouncing_button.dart';
 
 import '../widgets/gps_search_pos_overlay.dart';
@@ -94,6 +95,10 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
             onRecenter: () => widget.viewModel.resumeAutoFollowing(),
             onMapDragged: () => widget.viewModel.disableAutoFollowing(),
+          ),
+
+          NavigationInfoOverlay(
+            progressStream: widget.viewModel.navigationProgressStream,
           ),
 
           // Cancel path button, visible only if navigation was enabled
