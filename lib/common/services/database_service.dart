@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:leodys/features/calendar/data/models/calendar_event_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../constants/auth_constants.dart';
 import '../../constants/supabase_constants.dart';
@@ -21,6 +22,7 @@ class DatabaseService {
   static void _registerAdapters() {
     Hive.registerAdapter(MessageEntityAdapter());
     Hive.registerAdapter(ReferentEntityAdapter());
+    Hive.registerAdapter(CalendarEventModelAdapter());
     Hive.registerAdapter(PaymentTransactionAdapter());
   }
 
@@ -28,6 +30,7 @@ class DatabaseService {
     await Hive.openBox<ReferentEntity>('referent_entity');
     await Hive.openBox<MessageEntity>('message_history');
     await Hive.openBox<PaymentTransaction>('payment_transactions');
+    await Hive.openBox<CalendarEventModel>('calendar_events');
 
     // Optionnel : Clear pour le dev si nécessaire
     // await Hive.box<ReferentEntity>('referent_entity').clear();
