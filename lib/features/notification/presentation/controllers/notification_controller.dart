@@ -24,12 +24,11 @@ class NotificationController extends ChangeNotifier{
     isLoading = true;
     notifyListeners(); // Affiche un loader
 
-    // On récupère les listes depuis le repository (Hive)
     referents = await repository.getReferents();
     messages = await repository.getMessageHistory();
 
     isLoading = false;
-    notifyListeners(); // Affiche les données
+    notifyListeners();
   }
 
   Future<void> addReferent(String name, String email, String category, String userId) async {
@@ -51,7 +50,6 @@ class NotificationController extends ChangeNotifier{
     try {
       await repository.saveRemoteReferent(newRef);
     } catch (e) {
-      // Optionnel: Gérer ici une file d'attente de synchro si échec (mode hors-ligne)
       print("Erreur synchro remote referent: $e");
     }
 

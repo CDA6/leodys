@@ -17,7 +17,6 @@ abstract class NotificationRemoteDataSource {
 /// Implémentation concrète pour la persistance des messages dans Supabase.
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   final _supabase = Supabase.instance.client;
-  // Remplacer la variable par un getter dynamique
   String get _currentUserId => _supabase.auth.currentUser?.id ?? '';
 
 
@@ -40,7 +39,6 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
 
   Future<void> saveMessageToRemote(MessageEntity message) async {
     if (_currentUserId.isEmpty) return;
-    // On convertit l'entité en modèle pour obtenir le JSON
     final model = MessageModel.fromEntity(message);
 
     await _supabase.from('messages').insert(model.toJson());
@@ -56,7 +54,6 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
         .eq('user_id', _currentUserId)
         .order('sent_at', ascending: false);
 
-    // On mappe le résultat JSON vers une liste de MessageModel (qui sont des MessageEntity)
     return (response as List)
         .map((json) => MessageModel.fromJson(json))
         .toList();
