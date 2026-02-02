@@ -60,3 +60,5 @@ app.*.map.json
 # Temporary/Editor files
 *.swo
 *.env
+
+/assets/ledoys-738a4da4fb7c.json
