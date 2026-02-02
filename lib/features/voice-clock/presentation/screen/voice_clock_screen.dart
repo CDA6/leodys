@@ -70,7 +70,7 @@ class VoiceClockScreen extends StatelessWidget {
       label: Text(label, style: const TextStyle(fontSize: 18)),
       selected: isSelected,
       onSelected: (_) => vm.setClockType(type),
-      selectedColor: Colors.blue.shade200,
+      selectedColor: context.colorScheme.primary,
     );
   }
 }
