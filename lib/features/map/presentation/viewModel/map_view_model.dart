@@ -6,6 +6,7 @@ import 'package:leodys/features/map/domain/entities/geo_path.dart';
 import 'package:leodys/features/map/domain/entities/geo_position.dart';
 import 'package:leodys/features/map/domain/entities/location_search_result.dart';
 import 'package:leodys/features/map/domain/entities/map_camera_command.dart';
+import 'package:leodys/features/map/domain/entities/navigation_progress.dart';
 import 'package:leodys/features/map/domain/failures/gps_failures.dart';
 import 'package:leodys/features/map/domain/useCases/get_path_usecase.dart';
 import 'package:leodys/features/map/domain/useCases/search_location_usecase.dart';
@@ -79,6 +80,11 @@ class MapViewModel {
   Stream<bool> get isNavigatingStream => _isNavigatingController.stream;
 
   bool _isNavigating = false;
+
+  final StreamController<NavigationProgress?> _navigationProgressController =
+      StreamController<NavigationProgress?>.broadcast();
+  Stream<NavigationProgress?> get navigationProgressStream =>
+      _navigationProgressController.stream;
   // </editor-fold>
   // </editor-fold>
 
@@ -118,6 +124,7 @@ class MapViewModel {
     _pathController.close();
     _pendingPathController.close();
     _isNavigatingController.close();
+    _navigationProgressController.close();
   }
   // </editor-fold>
 
@@ -251,6 +258,8 @@ class MapViewModel {
     _pathController.add(path);
     _isNavigatingController.add(true);
     _pendingPathController.add(null);
+    _emitProgress();
+
     resumeAutoFollowing();
     AppLogger().debug("Navigation confirmed by user");
   }
@@ -261,6 +270,7 @@ class MapViewModel {
     _destinationController.add(null);
     _pendingPathController.add(null);
     _isNavigatingController.add(false);
+    _navigationProgressController.add(null);
     AppLogger().debug("Navigation canceled by user");
   }
 
@@ -310,6 +320,10 @@ class MapViewModel {
 
       _pathController.add(_lastPath);
     }
+
+    if (_lastPath != null) {
+      _emitProgress();
+    }
   }
 
   double _calculateDistance(GeoPosition p1, GeoPosition p2) {
@@ -323,7 +337,28 @@ class MapViewModel {
     _pathController.add(null);
     _destinationController.add(null);
     _lastPath = null;
+    _navigationProgressController.add(null);
     AppLogger().info("Navigation terminée : l'utilisateur est arrivé.");
+  }
+
+  void _emitProgress() {
+    if (_lastPath == null || _lastPath!.isEmpty) {
+      _navigationProgressController.add(null);
+      return;
+    }
+
+    _navigationProgressController.add(
+      NavigationProgress(
+        remainingDistance: _lastPath!.totalDistance,
+        remainingDuration: _lastPath!.totalDuration,
+        nextInstruction: _lastPath!.steps.isNotEmpty
+            ? _lastPath!.steps.first.instruction
+            : null,
+        maneuverType: _lastPath!.steps.isNotEmpty
+            ? _lastPath!.steps.first.maneuver
+            : null,
+      ),
+    );
   }
 
   // </editor-fold>
