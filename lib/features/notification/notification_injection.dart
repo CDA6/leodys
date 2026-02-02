@@ -8,6 +8,7 @@ import 'domain/repositories/notification_repository.dart';
 import 'domain/usecases/send_notification_email.dart';
 import 'domain/usecases/sync_message_history.dart';
 import 'presentation/controllers/notification_controller.dart';
+import 'domain/usecases/sync_referents.dart';
 
 final sl = GetIt.instance;
 
@@ -15,9 +16,10 @@ Future<void> init() async {
   // Use Cases
   sl.registerFactory(() => SendNotificationEmail(sl()));
   sl.registerFactory(() => SyncMessageHistory(sl()));
+  sl.registerFactory(() => SyncReferents(sl()));
 
   // Controller
-  sl.registerFactory(() => NotificationController(sl(), sl(),  sl()));
+  sl.registerFactory(() => NotificationController(sl(), sl(),  sl(), sl()));
 
   // Repository
   sl.registerLazySingleton<NotificationRepository>(
@@ -33,12 +35,14 @@ Future<void> init() async {
         () => NotificationLocalDataSourceImpl(),
   );
 
-  sl.registerLazySingleton<EmailSenderDataSource>(
-        () => EmailSenderDataSourceImpl(),
-  );
 
   sl.registerLazySingleton<NotificationRemoteDataSource>(
         () => NotificationRemoteDataSourceImpl(),
   );
+
+  sl.registerLazySingleton<EmailSenderDataSource>(
+        () => EmailSenderDataSourceImpl(),
+  );
+
 
 }

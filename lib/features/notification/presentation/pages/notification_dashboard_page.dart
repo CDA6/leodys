@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:leodys/common/utils/internet_util.dart';
+import 'package:leodys/common/theme/theme_context_extension.dart';
 import 'notification_page.dart';
 import 'email_history_page.dart';
-import '../controllers/notification_controller.dart';
-import '../../../notification/notification_injection.dart';
 import '../../../../common/widget/global_appbar.dart';
-import 'package:leodys/common/theme/theme_context_extension.dart';
 
 class NotificationDashboard extends StatefulWidget {
   const NotificationDashboard({super.key});
@@ -32,13 +30,12 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = sl<NotificationController>();
 
     return Scaffold(
       appBar: GlobalAppBar(
-          title: "Ma Messagerie",
-          showAuthActions: false,
-          ),
+        title: "Ma Messagerie",
+        showAuthActions: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -56,7 +53,7 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                     ),
                   ),
                   subtitle: Text(
-                    "L'envoi d'e-mails est désactivé.",
+                    "L'envoi d'e-mails est désactivé, mais vous pouvez consulter vos données.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -65,7 +62,6 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
             Expanded(
               child: GridView.count(
                 crossAxisCount: 1,
-                // 1 colonne pour de très grandes cibles (Accessibilité DYS)
                 childAspectRatio: 2.5,
                 mainAxisSpacing: 20,
                 children: [
@@ -73,7 +69,7 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                     context,
                     "Contacter un Référent",
                     Icons.person_search,
-                    () => Navigator.push(
+                        () => Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => const NotificationPage(),
@@ -85,11 +81,10 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
                     context,
                     "Historique des Envois",
                     Icons.history,
-                    () => Navigator.push(
+                        () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            EmailHistoryPage(controller: controller),
+                        builder: (_) => const EmailHistoryPage(),
                       ),
                     ),
                   ),
@@ -103,38 +98,45 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
   }
 
   Widget _buildDashCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap, {
-    bool showWarning = false,
-  }) {
+      BuildContext context,
+      String title,
+      IconData icon,
+      VoidCallback onTap, {
+        bool showWarning = false,
+      }) {
+    // Si on est en "warning" (hors ligne), le bouton est désactivé
+    final bool isEnabled = !showWarning;
+
     return Semantics(
       label: title,
       hint: showWarning
           ? 'Indisponible car vous êtes hors-ligne'
           : 'Appuyez pour voir vos contacts',
-      enabled: !showWarning,
-      // Indique au système si le bouton est actif
+      enabled: isEnabled,
       child: Card(
-        color: _isConnected
+        color: isEnabled
             ? context.colorScheme.surfaceContainerHighest
-            : Colors.grey.withValues(alpha: 0.1),
+            : Colors.grey.withOpacity(0.2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 4,
+        elevation: isEnabled ? 4 : 0,
         child: InkWell(
-          onTap: onTap,
+          onTap: isEnabled ? onTap : null,
           borderRadius: BorderRadius.circular(20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 50, color: context.colorScheme.primary),
+              Icon(
+                  icon,
+                  size: 50,
+                  color: isEnabled ? context.colorScheme.primary : Colors.grey
+              ),
               const SizedBox(width: 20),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
+                  color: isEnabled ? Colors.black : Colors.grey,
                 ),
               ),
               if (showWarning) ...[

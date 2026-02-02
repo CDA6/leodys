@@ -22,13 +22,14 @@ class ReferentEntityAdapter extends TypeAdapter<ReferentEntity> {
       email: fields[2] as String,
       role: fields[3] as String,
       category: fields[4] as String,
+      userId: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, ReferentEntity obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ReferentEntityAdapter extends TypeAdapter<ReferentEntity> {
       ..writeByte(3)
       ..write(obj.role)
       ..writeByte(4)
-      ..write(obj.category);
+      ..write(obj.category)
+      ..writeByte(5)
+      ..write(obj.userId);
   }
 
   @override

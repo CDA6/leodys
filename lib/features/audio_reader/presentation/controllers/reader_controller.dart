@@ -81,7 +81,6 @@ class ReaderController extends ChangeNotifier {
   /// Charge un document existant pour lecture
   void loadDocument(Document document){
     recognizedText = document.content;
-    message ='';
     notifyListeners();
   }
 
@@ -101,7 +100,6 @@ class ReaderController extends ChangeNotifier {
   ///Réinitialise la lecture
   void reset(){
     recognizedText='';
-    message='';
     notifyListeners();
   }
 }

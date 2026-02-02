@@ -10,12 +10,13 @@ import 'package:leodys/features/forum/presentation/screens/forum_screen.dart';
 import 'package:leodys/features/ocr-reader/presentation/screens/handwritten_text_reader_screen.dart';
 import 'package:leodys/features/vocal_notes/presentation/screens/vocal_notes_list_screen.dart';
 import 'package:leodys/features/vocal_chat/presentation/screens/vocal_chat_screen.dart';
+import 'package:leodys/features/text_simplification/presentation/screens/text_simplification_screen.dart';
 import 'package:leodys/features/ocr-ticket-caisse/presentation/pages/receipt_page.dart';
 import 'package:leodys/features/profile/presentation/screens/profile_screen.dart';
 import '../../../../../features/cards/presentation/display_cards_screen.dart';
 import '../../../../../features/left_right/presentation/real_time_yolo_screen.dart';
 import '../../../../../features/ocr-reader/presentation/screens/printed_text_reader_screen.dart';
-import '../../../../../features/profile/presentation/screens/profile_screen.dart';
+import '../../../../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../../../../features/vehicle_recognition/presentation/pages/scan_immatriculation_screen.dart';
 import '../../../../../features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 import '../../domain/entities/app_feature.dart';
@@ -99,7 +100,6 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Lecture vocal d\'un texte scanné à partir d\'une photo',
     ),
-
     AppFeature(
       name: 'Reconnaissance d\'immatriculation',
       icon: Icons.directions_car,
@@ -138,6 +138,16 @@ class FeatureList extends StatelessWidget {
       requiresAuth: false,
       isAvailable: true,
       description: 'Discuter avec un assistant vocal',
+  ),
+
+  AppFeature(
+      name: 'Textes Simplifiés',
+      icon: Icons.text_fields,
+      route: TextSimplificationScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Simplifier des textes complexes pour les dyslexiques',
   ),
 
   AppFeature(
@@ -200,6 +210,16 @@ class FeatureList extends StatelessWidget {
       description: 'Accès aux sites gouvernementaux et lecture des informations par synthèse vocale.',
     ),
 
+    AppFeature(
+      name: 'Agenda',
+      icon: Icons.calendar_today,
+      route: CalendarScreen.route,
+      requiresInternet: true,
+      requiresAuth: false,
+      isAvailable: true,
+      description: 'Gestion du planning',
+    ),
+
     AppFeature(name: "Scanner de ticket de caisse",
       icon: Icons.document_scanner,
       route: ReceiptPage.route,
@@ -213,20 +233,11 @@ class FeatureList extends StatelessWidget {
         name: "Forum",
         icon: Icons.chat,
         route: ForumScreen.route,
-        requiresAuth: true,
+        requiresAuth: false,
         requiresInternet: true,
         isAvailable: true,
         description: 'Espace de discussion pour échanger des messages avec les utilisateurs.',
-    ),
-    AppFeature(
-      name: 'Personnalisation du profil',
-      icon: Icons.person,
-      route: ProfileScreen.route,
-      requiresInternet: false,
-      requiresAuth: true,
-      isAvailable: true,
-      description: 'Personnalisez votre profil',
-    ),
+    )
   ];
 
   @override

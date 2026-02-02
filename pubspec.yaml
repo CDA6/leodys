@@ -46,18 +46,23 @@ dependencies:
   uuid: ^4.5.2
   intl: ^0.20.2
   google_sign_in: ^7.2.0
+  googleapis: ^15.0.0
+  googleapis_auth: ^2.0.0
+  extension_google_sign_in_as_googleapis_auth: ^3.0.0
   tflite_flutter: ^0.11.0
   permission_handler: ^11.4.0
+  table_calendar: ^3.2.0
+  equatable: ^2.0.0
   flutter_secure_storage: ^10.0.0
   cryptography: ^2.9.0
+  flutter_map_location_marker: ^10.2.0
   file_picker: ^10.3.9
-  googleapis_auth: ^1.4.0
   webview_flutter: ^4.4.1
   html: ^0.15.4
   flutter_riverpod: ^2.5.1
   flutter_bloc: ^9.1.1
   path: ^1.9.1
-  pay: ^2.0.0
+  pay: ^3.3.0
 
 dev_dependencies:
   flutter_test:
