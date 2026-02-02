@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/referent_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
@@ -18,7 +20,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
 
   @override
-  Future<List<ReferentEntity>> getReferents() => localDataSource.getReferents();
+  Future<List<ReferentEntity>> getReferents() async {
+    final localData = await localDataSource.getReferents();
+    return localData;
+  }
 
   @override
   Future<void> addReferent(ReferentEntity referent) => localDataSource.saveReferent(referent);
@@ -42,4 +47,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<void> sendEmailToExternalService({required ReferentEntity referent, required String subject, required String body}) {
     return emailSenderDataSource.sendEmail(referent: referent, subject: subject, body: body);
   }
+
+  @override
+  Future<void> saveRemoteReferent(ReferentEntity referent) =>
+      remoteMessageDataSource.saveReferentToRemote(referent);
+
+  @override
+  Future<void> deleteRemoteReferent(String id) =>
+      remoteMessageDataSource.deleteReferentFromRemote(id);
+
+  @override
+  Future<List<ReferentEntity>> getRemoteReferents() =>
+      remoteMessageDataSource.getReferentsFromRemote();
 }

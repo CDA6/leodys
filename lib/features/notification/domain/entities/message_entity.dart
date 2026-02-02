@@ -22,6 +22,9 @@ class MessageEntity {
   @HiveField(5)
   final DateTime sentAt;
 
+  @HiveField(6)
+  final String userId;
+
   const MessageEntity({
     required this.id,
     required this.referentId,
@@ -29,6 +32,7 @@ class MessageEntity {
     required this.subject,
     required this.body,
     required this.sentAt,
+    required this.userId
   });
 
 }

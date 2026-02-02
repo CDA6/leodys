@@ -13,6 +13,7 @@ class DatabaseService {
     _registerAdapters();
     await _openBoxes();
 
+
     await Supabase.initialize(
       url: AuthConstants.projectUrl,
       anonKey: AuthConstants.apiKey,
@@ -33,7 +34,9 @@ class DatabaseService {
     await Hive.openBox<CalendarEventModel>('calendar_events');
 
     // Optionnel : Clear pour le dev si nécessaire
-    // await Hive.box<ReferentEntity>('referent_entity').clear();
+
+    //await Hive.box<ReferentEntity>('referent_entity').clear();
+    //await Hive.box<MessageEntity>('message_history').clear();
   }
 
 
