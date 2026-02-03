@@ -285,7 +285,7 @@ class MyApp extends StatelessWidget {
 
               ForumScreen.route: (context) => const ForumScreen(),
 
-              ConfidentialDocumentScreen.route: (context) =>
+              // ConfidentialDocumentScreen.route: (context) =>
               TopicScreen.route: (context) {
                 final topic = ModalRoute.of(context)!.settings.arguments as Topic;
                 return TopicScreen(topic: topic);
