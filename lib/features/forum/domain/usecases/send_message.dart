@@ -1,11 +1,11 @@
-import 'package:leodys/features/forum/domain/repositories/message_repository.dart';
-import 'package:leodys/features/forum/domain/entities/message.dart';
+import '../repositories/forum_repository.dart';
+import '../entities/message.dart';
 
 class SendMessage {
-  final MessageRepository repository;
+  final ForumRepository repository;
   SendMessage(this.repository);
 
   Future<void> call(Message message) async {
-    return repository.sendMessage(message);
+    await repository.sendMessage(message);
   }
 }

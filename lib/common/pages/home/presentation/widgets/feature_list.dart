@@ -32,8 +32,8 @@ class FeatureList extends StatelessWidget {
   const FeatureList({super.key});
 
   /// Liste de toutes les fonctionnalités de l'application.
-  static const List<AppFeature> _features = [
-    AppFeature(
+  static final List<AppFeature> _features = [
+    const AppFeature(
       name: 'Scanner de texte numérique',
       icon: Icons.keyboard,
       route: PrintedTextReaderScreen.route,
@@ -43,7 +43,7 @@ class FeatureList extends StatelessWidget {
       description: 'Reconnaissance de texte simple',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Scanner de texte manuscrit',
       icon: Icons.edit,
       route: HandwrittenTextReaderScreen.route,
@@ -53,7 +53,7 @@ class FeatureList extends StatelessWidget {
       description: 'Reconnaissance de texte complexe',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Scanner de jeu de carte',
       icon: Icons.view_module,
       route: GamecardReaderScreen.route,
@@ -63,7 +63,7 @@ class FeatureList extends StatelessWidget {
       description: 'Reconnaissance de jeu de carte classique',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Carte',
       icon: Icons.map,
       route: '/map',
@@ -72,7 +72,7 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Visualiser et naviguer sur la carte',
     ),
-    AppFeature(
+    const AppFeature(
       name: 'Messagerie',
       icon: Icons.message,
       route: '/messagerie',
@@ -81,7 +81,7 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Envoyer des notifications par mail',
     ),
-    AppFeature(
+    const AppFeature(
       name: 'Horloge',
       icon: Icons.access_time,
       route: '/voice-clock',
@@ -91,7 +91,7 @@ class FeatureList extends StatelessWidget {
       description: "Ecouter l'heure",
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Lecteur d\'écran',
       icon: Icons.speaker,
       route: ReaderScreen.route,
@@ -100,7 +100,8 @@ class FeatureList extends StatelessWidget {
       isAvailable: true,
       description: 'Lecture vocal d\'un texte scanné à partir d\'une photo',
     ),
-    AppFeature(
+
+    const AppFeature(
       name: 'Reconnaissance d\'immatriculation',
       icon: Icons.directions_car,
       route: ScanImmatriculationScreen.route,
@@ -110,7 +111,7 @@ class FeatureList extends StatelessWidget {
       description: 'Afficher les informations d\'un véhicule à partir d\'une plaque d\'immatriculation',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Scanner de cartes de fidélité',
       icon: Icons.card_membership_sharp,
       route: DisplayCardsScreen.route,
@@ -120,7 +121,7 @@ class FeatureList extends StatelessWidget {
       description: 'Scan de cartes de fidélité.',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Notes Vocales',
       icon: Icons.mic_none,
       route: VocalNotesListScreen.route,
@@ -130,7 +131,7 @@ class FeatureList extends StatelessWidget {
       description: 'Créer et gérer des notes vocales',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Chat Vocal',
       icon: Icons.chat,
       route: VocalChatScreen.route,
@@ -140,7 +141,7 @@ class FeatureList extends StatelessWidget {
       description: 'Discuter avec un assistant vocal',
   ),
 
-  AppFeature(
+  const AppFeature(
       name: 'Textes Simplifiés',
       icon: Icons.text_fields,
       route: TextSimplificationScreen.route,
@@ -160,7 +161,7 @@ class FeatureList extends StatelessWidget {
       description: 'Calculette pour dyscalculique.',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Paiement Google Pay ou avec de la monnaie',
       icon: Icons.money,
       route: MoneyManagerView.route,
@@ -170,7 +171,7 @@ class FeatureList extends StatelessWidget {
       description: 'Paiement avec Google Pay ou avec de la monnaie.',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Aide Gauche / Droite',
       icon: Icons.accessibility_new,
       route: RealTimeYoloScreen.route,
@@ -180,7 +181,7 @@ class FeatureList extends StatelessWidget {
       description: 'Aide à la latéralisation via la caméra.',
     ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Personnalisation du profil',
       icon: Icons.person,
       route: ProfileScreen.route,
@@ -191,7 +192,7 @@ class FeatureList extends StatelessWidget {
     ),
 
    //ajout bouton confidential document
-    AppFeature(name: 'Document confidentiel',
+    const AppFeature(name: 'Document confidentiel',
         icon: Icons.file_download,
         route: ConfidentialDocumentScreen.route,
         requiresInternet : false,
@@ -200,7 +201,7 @@ class FeatureList extends StatelessWidget {
       description: 'Stocker et visualiser des photos de vos docuemnt confidentiel (carte ID, permis, ...)',
      ),
 
-    AppFeature(
+    const AppFeature(
       name: 'Lecteur Web',
       icon: Icons.chrome_reader_mode,
       route: WebReaderScreen.route,
@@ -220,7 +221,7 @@ class FeatureList extends StatelessWidget {
       description: 'Gestion du planning',
     ),
 
-    AppFeature(name: "Scanner de ticket de caisse",
+     AppFeature(name: "Scanner de ticket de caisse",
       icon: Icons.document_scanner,
       route: ReceiptPage.route,
       requiresInternet: true,
@@ -237,7 +238,7 @@ class FeatureList extends StatelessWidget {
         requiresInternet: true,
         isAvailable: true,
         description: 'Espace de discussion pour échanger des messages avec les utilisateurs.',
-    )
+    ),
   ];
 
   @override

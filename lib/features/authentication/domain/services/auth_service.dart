@@ -70,6 +70,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signOut() async {
     _isLoggedOut = true;
+    _authRepository.logOut();
     notifyListeners();
   }
 

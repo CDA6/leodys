@@ -30,7 +30,9 @@ import 'features/accessibility/presentation/viewmodels/settings_viewmodel.dart';
 import 'features/audio_reader/presentation/pages/document_screen.dart';
 import 'features/audio_reader/presentation/pages/reader_screen.dart';
 import 'features/confidential_document/presentation/confidential_document_screen.dart';
+import 'features/forum/domain/entities/topic.dart';
 import 'features/forum/presentation/screens/forum_screen.dart';
+import 'features/forum/presentation/screens/topic_screen.dart';
 import 'features/gamecards-reader/presentation/screens/gamecard_reader_screen.dart';
 import 'features/gamecards-reader/presentation/viewmodels/gamecard_reader_viewmodel.dart';
 import 'features/ocr-reader/injection_container.dart' as ocr_reader;
@@ -80,6 +82,8 @@ import 'features/web_audio_reader/data/services/tts_service.dart';
 import 'features/web_audio_reader/domain/usecases/read_text_usecase.dart';
 import 'features/web_audio_reader/presentation/pages/web_reader_screen.dart';
 import 'features/profile/providers.dart' as profile;
+import 'features/web_audio_reader/presentation/pages/selectable_web_reader_screen.dart';
+import 'features/web_audio_reader/domain/entities/reader_config.dart';
 
 /// Global navigator key pour accéder au context depuis les services
 /// Global navigator key pour accéder au context depuis les datasource
@@ -88,7 +92,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
-
   await dotenv.load(fileName: ".env");
 
   // Initialisation des datasource de base
@@ -257,13 +260,42 @@ class MyApp extends StatelessWidget {
                 );
                 return WebReaderScreen(controller: controller);
               },
+              SelectableWebReaderScreen.route: (context) {
+                final ttsService = TtsService();
+                final ttsRepo = TtsRepositoryImpl(ttsService);
+                final readTextUseCase = ReadTextUseCase(ttsRepo);
+
+                final controller = WebReaderController(
+                  readWebPageUseCase: ReadWebPageUseCase(
+                    WebReaderRepositoryImpl(WebPageDataSource()),
+                  ),
+                  readTextUseCase: readTextUseCase,
+                );
+
+                return SelectableWebReaderScreen(
+                  controller: controller,
+                  config: ReaderConfig(
+                    languageCode: "fr-FR",
+                    speechRate: 0.45,
+                    pitch: 1.0,
+                  ),
+                  url: "https://www.service-public.fr",
+                );
+              },
 
               ForumScreen.route: (context) => const ForumScreen(),
 
-              ConfidentialDocumentScreen.route: (context) =>
+              // ConfidentialDocumentScreen.route: (context) =>
+              TopicScreen.route: (context) {
+                final topic = ModalRoute.of(context)!.settings.arguments as Topic;
+                return TopicScreen(topic: topic);
+              },
+
+              ConfidentialDocumentScreen.route : (context) =>
                   const ConfidentialDocumentScreen(),
               ProfileScreen.route: (context) => const ProfileScreen(),
               CalendarScreen.route: (context) => const CalendarScreen(),
+
             },
           );
         },
