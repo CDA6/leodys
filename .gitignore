@@ -61,3 +61,4 @@ app.*.map.json
 *.swo
 *.env
 nul
+/assets/ledoys-738a4da4fb7c.json

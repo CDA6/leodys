@@ -1,93 +1,118 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:leodys/features/forum/presentation/providers/message_provider.dart';
-import 'package:leodys/features/forum/presentation/controllers/forum_controller.dart';
+import 'package:leodys/features/forum/presentation/screens/topic_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../provider.dart';
 
-class ForumScreen extends ConsumerStatefulWidget {
-  static const String route = "/forum";
-
+class ForumScreen extends ConsumerWidget {
   const ForumScreen({super.key});
+  static final String route = "/forum";
 
   @override
-  ConsumerState<ForumScreen> createState() => _ForumScreenState();
-}
-
-class _ForumScreenState extends ConsumerState<ForumScreen> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-
-    // Fetch all messages when screen opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(messagesProvider.notifier).loadMessages();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final messages = ref.watch(messagesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
     final forumController = ref.read(forumControllerProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Forum')),
-      body: Column(
-        children: [
-          Expanded(
-            child: messages.isEmpty
-                ? const Center(child: Text("No messages yet."))
-                : ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return ListTile(
-                  title: Text(message.content),
-                  subtitle: Text(message.username + "       :      " +DateFormat('dd MM yyyy, HH:mm').format(message.createdAt)),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: "Type a message...",
-                      border: OutlineInputBorder(),
+    final topicsAsync = ref.watch(topicsProvider); // Watch provider
+
+    return topicsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) {
+        debugPrint(err.toString());
+        return Center(child: Text("Erreur: $err"));
+      },
+      data: (topics) {
+        return Scaffold(
+          appBar: AppBar(title: const Text("Forum")),
+          body: ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: topics.length,
+            itemBuilder: (context, index) {
+              final topic = topics[index];
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () async {
-                    final text = _controller.text.trim();
-                    if (text.isEmpty) return;
-
-                    // Send message and update provider
-                    await forumController.sendMessage(text);
-
-                    // Clear the input
-                    _controller.clear();
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  title: Text(
+                    topic.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => TopicScreen(topic: topic),
+                      ),
+                    );
                   },
                 ),
-              ],
-            ),
+              );
+            },
           ),
-        ],
-      ),
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () async {
+              final titleController = TextEditingController();
+
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Créer un nouveau sujet"),
+                  content: TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      hintText: "Titre du sujet",
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Annuler"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        final title = titleController.text.trim();
+                        if (title.isNotEmpty) {
+                          Navigator.pop(context, title);
+                        }
+                      },
+                      child: const Text("Créer"),
+                    ),
+                  ],
+                ),
+              );
+
+              if (result != null && result.isNotEmpty) {
+                final user = Supabase.instance.client.auth.currentUser;
+                if (user == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Vous devez être connecté pour créer un sujet")),
+                  );
+                  return;
+                }
+
+                // Add topic
+                await forumController.addTopic(result, user.id);
+
+                // Refresh the topics provider so UI updates
+                ref.invalidate(topicsProvider);
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }
+

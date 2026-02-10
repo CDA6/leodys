@@ -1,59 +1,45 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:leodys/features/forum/domain/entities/message.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../presentation/providers/message_provider.dart';
-
-final forumControllerProvider = Provider<ForumController>(
-      (ref) => ForumController(ref: ref),
-);
+import '../../domain/entities/topic.dart';
+import '../../domain/entities/message.dart';
+import '../../provider.dart';
 
 class ForumController {
   final Ref ref;
 
   ForumController({required this.ref});
 
-  /// Send a new message
-  Future<void> sendMessage(String content) async {
-    final user = Supabase.instance.client.auth.currentUser;
-    debugPrint('Current user: ${user?.email ?? "None"}');
-    debugPrint('User ID: ${user?.id ?? "None"}');
-    final username = user != null ? await _getUsername(user.id) : 'Anonymous';
+  Future<List<Topic>> loadTopics() async {
+    final getTopics = ref.read(getTopicsUseCaseProvider);
+    return await getTopics.call();
+  }
 
+  Future<void> addTopic(String title, String userId) async {
+    final createTopic = ref.read(createTopicUseCaseProvider);
+    final topic = Topic(
+      id: const Uuid().v4(),
+      title: title,
+      userId: userId,
+      createdAt: DateTime.now(),
+    );
+    await createTopic.call(topic);
+  }
+
+  Future<List<Message>> loadMessages(String topicId) async {
+    final getMessages = ref.read(getMessagesUseCaseProvider);
+    return await getMessages.call(topicId);
+  }
+
+  Future<void> addMessage(String topicId, String content, String userId, String username) async {
+    final sendMessage = ref.read(sendMessageUseCaseProvider);
     final message = Message(
-      id: Uuid().v4(),
-      userId: user?.id,  // nullable
+      id: const Uuid().v4(),
+      userId: userId,
       username: username,
       content: content,
       createdAt: DateTime.now(),
+      topicId: topicId,
     );
-
-    await ref.read(messagesProvider.notifier).addMessage(message);
-
+    await sendMessage.call(message);
   }
-
-
-  /// Fetch the username from Supabase profiles or fallback
-  Future<String> _getUsername(String userId) async {
-    if (userId == 'anonymous') return 'Anonymous';
-
-    final data = await Supabase.instance.client
-        .from('user_profiles')
-        .select('first_name, last_name')
-        .eq('id', userId)
-        .maybeSingle();
-
-    if (data != null) {
-      final firstName = data['first_name'] as String? ?? '';
-      final lastName = data['last_name'] as String? ?? '';
-      final fullName = '$firstName $lastName'.trim();
-      if (fullName.isNotEmpty) return fullName;
-    }
-
-    final user = Supabase.instance.client.auth.currentUser;
-    return user?.email ?? 'Anonymous';
-  }
-
 }
